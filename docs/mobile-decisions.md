@@ -2,7 +2,7 @@
 
 Addendum to `MOBILE-ORCHESTRATION-DIRECTIVE.md`. Resolves all seven open decisions from `mobile-adaptation.md` §16 with binding outcomes. The planning agent must treat these as settled — do not re-surface these decisions to the operator.
 
-**Evidence source:** `mobile-open-decisions-context.md` (codebase audit, platform facts, schema inspection).
+**Evidence source:** `mobile-open-decisions-brief.md` (codebase audit, platform facts, schema inspection).
 
 ---
 
