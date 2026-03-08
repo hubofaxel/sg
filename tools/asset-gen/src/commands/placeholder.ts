@@ -16,6 +16,7 @@ const GROUP_COLORS: Record<string, { r: number; g: number; b: number }> = {
 	bosses: { r: 200, g: 50, b: 200 }, // purple
 	backgrounds: { r: 16, g: 16, b: 32 }, // dark navy
 	music: { r: 0, g: 0, b: 0 }, // n/a
+	sfx: { r: 0, g: 0, b: 0 }, // n/a
 	effects: { r: 255, g: 200, b: 50 }, // yellow
 	projectiles: { r: 50, g: 255, b: 128 }, // green
 };

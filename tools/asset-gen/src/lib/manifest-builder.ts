@@ -25,7 +25,7 @@ async function buildEntry(entry: AssetCatalogEntry): Promise<AssetEntry | null> 
 	if (entry.kind === 'audio') {
 		// Audio entries reference multiple format fallbacks
 		const basePath = fullPath;
-		const extensions = ['.ogg', '.mp3'];
+		const extensions = ['.mp3', '.ogg'];
 		const paths: string[] = [];
 		for (const ext of extensions) {
 			const audioPath = basePath + ext;
@@ -35,7 +35,7 @@ async function buildEntry(entry: AssetCatalogEntry): Promise<AssetEntry | null> 
 		}
 		// Include placeholder entry even if no files exist yet
 		if (paths.length === 0) {
-			paths.push(`${entry.outputPath}.ogg`);
+			paths.push(`${entry.outputPath}.mp3`);
 		}
 		return {
 			type: 'audio',

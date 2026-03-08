@@ -49,6 +49,21 @@ export const STYLE_BIBLE = {
 		'heavy armor plating or organic shell details',
 		'intimidating but still pixel-art readable',
 	],
+	sfx: [
+		'retro arcade sound effect',
+		'punchy and immediate, no long reverb tails',
+		'clean transient at the start for responsive game feel',
+		'8-bit or 16-bit inspired but with modern clarity',
+		'short duration, suitable for rapid repeated playback',
+	],
+
+	music: [
+		'electronic game soundtrack',
+		'space shooter / sci-fi theme',
+		'driving rhythm suitable for action gameplay',
+		'loopable structure for seamless repetition',
+		'high energy but not fatiguing over extended play sessions',
+	],
 } as const;
 
 export function getStyleDirectives(...categories: (keyof typeof STYLE_BIBLE)[]): string {

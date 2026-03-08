@@ -6,14 +6,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { ASSET_CATALOG, type AssetCatalogEntry, getCatalogEntry } from '../config/asset-catalog.js';
+import { composeMusic, generateSfx, writeAudioFile } from '../lib/elevenlabs-client.js';
 import { ASSETS_ROOT } from '../lib/manifest-builder.js';
 import { editImage, editImageWithResponses, generateImage } from '../lib/openai-client.js';
 
 function resolveOutputPath(entry: AssetCatalogEntry): string {
 	let outputPath = entry.outputPath;
-	// Audio entries don't have extension in catalog
+	// Audio entries don't have extension in catalog — add format extension
 	if (entry.kind === 'audio') {
-		outputPath += '.ogg';
+		outputPath += `.${entry.audioFormat ?? 'mp3'}`;
 	}
 	return path.join(ASSETS_ROOT, outputPath);
 }
@@ -65,15 +66,33 @@ async function generateOne(entry: AssetCatalogEntry): Promise<void> {
 			break;
 		}
 
+		case 'elevenlabs-sfx': {
+			const sfxResult = await generateSfx(entry);
+			const sfxPath = writeAudioFile(ASSETS_ROOT, entry.outputPath, sfxResult);
+			console.log(`  OK: ${sfxPath} (${sfxResult.buffer.length} bytes)`);
+			break;
+		}
+
+		case 'elevenlabs-music': {
+			const musicResult = await composeMusic(entry);
+			const musicPath = writeAudioFile(ASSETS_ROOT, entry.outputPath, musicResult);
+			console.log(`  OK: ${musicPath} (${musicResult.buffer.length} bytes)`);
+			break;
+		}
+
 		default:
 			throw new Error(`Unknown sourceMode: ${entry.sourceMode}`);
 	}
 }
 
 export async function generateAll(): Promise<void> {
-	const entries = ASSET_CATALOG.filter(
-		(e) => e.sourceMode === 'openai-generate' || e.sourceMode === 'openai-edit',
-	);
+	const generatable: Set<string> = new Set([
+		'openai-generate',
+		'openai-edit',
+		'elevenlabs-sfx',
+		'elevenlabs-music',
+	]);
+	const entries = ASSET_CATALOG.filter((e) => generatable.has(e.sourceMode));
 	console.log(`Generating ${entries.length} assets...\n`);
 
 	for (const entry of entries) {

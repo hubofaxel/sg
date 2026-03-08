@@ -4,6 +4,25 @@
 // Usage: pnpm --filter @sg/asset-gen cli <command> [options]
 // ---------------------------------------------------------------------------
 
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+// Load .env from package root (tools/asset-gen/.env)
+const envPath = resolve(import.meta.dirname, '../.env');
+if (existsSync(envPath)) {
+	for (const line of readFileSync(envPath, 'utf-8').split('\n')) {
+		const trimmed = line.trim();
+		if (!trimmed || trimmed.startsWith('#')) continue;
+		const eqIdx = trimmed.indexOf('=');
+		if (eqIdx === -1) continue;
+		const key = trimmed.slice(0, eqIdx).trim();
+		const value = trimmed.slice(eqIdx + 1).trim();
+		if (!process.env[key]) {
+			process.env[key] = value;
+		}
+	}
+}
+
 const [command, ...args] = process.argv.slice(2);
 
 function parseFlag(flag: string): string | undefined {

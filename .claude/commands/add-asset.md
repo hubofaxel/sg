@@ -14,5 +14,9 @@ Steps:
 Required information:
 - **key**: Asset key matching content data (e.g., `enemy-scout`)
 - **kind**: `sprite-sheet`, `image`, or `audio`
-- **group**: `ships`, `enemies`, `bosses`, `backgrounds`, `music`, `effects`, `projectiles`
+- **group**: `ships`, `enemies`, `bosses`, `backgrounds`, `music`, `sfx`, `effects`, `projectiles`
+- **sourceMode**: `openai-generate`, `openai-edit`, `elevenlabs-sfx`, `elevenlabs-music`, `manual`, or `placeholder`
 - **frameWidth/frameHeight/frameCount**: Required for sprite sheets
+- **audioDuration**: Required for SFX (seconds)
+- **musicLengthMs**: Required for music (milliseconds)
+- **compositionPlan**: Optional structured plan for ElevenLabs music

@@ -10,9 +10,16 @@ export type AssetGroup =
 	| 'bosses'
 	| 'backgrounds'
 	| 'music'
+	| 'sfx'
 	| 'effects'
 	| 'projectiles';
-export type SourceMode = 'placeholder' | 'manual' | 'openai-generate' | 'openai-edit';
+export type SourceMode =
+	| 'placeholder'
+	| 'manual'
+	| 'openai-generate'
+	| 'openai-edit'
+	| 'elevenlabs-sfx'
+	| 'elevenlabs-music';
 export type GenerationTier = 'cheap' | 'canonical';
 export type OpenAIModel = 'gpt-image-1.5' | 'gpt-image-1-mini';
 export type OpenAIApi = 'images.generate' | 'images.edit' | 'responses.create';
@@ -46,6 +53,15 @@ export interface AssetCatalogEntry {
 	quality?: ImageQuality;
 	background?: ImageBackground;
 	outputFormat?: OutputFormat;
+
+	// audio-specific
+	audioDuration?: number;
+	audioFormat?: 'mp3' | 'ogg';
+	musicLengthMs?: number;
+
+	// music composition plan (ElevenLabs music.compose)
+	// biome-ignore lint/suspicious/noExplicitAny: ElevenLabs composition plan is a freeform JSON structure
+	compositionPlan?: any;
 
 	// lineage
 	parentKey?: string;
@@ -248,9 +264,124 @@ export const ASSET_CATALOG: AssetCatalogEntry[] = [
 		key: 'music-outer-rim',
 		kind: 'audio',
 		group: 'music',
-		sourceMode: 'manual',
+		sourceMode: 'elevenlabs-music',
 		generationTier: 'canonical',
+		promptId: 'music-outer-rim',
 		outputPath: 'audio/music/music-outer-rim',
+		audioFormat: 'mp3',
+		musicLengthMs: 120_000,
+	},
+
+	// --- SFX ---
+	{
+		key: 'sfx-laser',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-laser',
+		outputPath: 'audio/sfx/sfx-laser',
+		audioDuration: 0.5,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-explosion-small',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-explosion-small',
+		outputPath: 'audio/sfx/sfx-explosion-small',
+		audioDuration: 1.0,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-explosion-large',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-explosion-large',
+		outputPath: 'audio/sfx/sfx-explosion-large',
+		audioDuration: 1.5,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-hit',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-hit',
+		outputPath: 'audio/sfx/sfx-hit',
+		audioDuration: 0.5,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-pickup',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-pickup',
+		outputPath: 'audio/sfx/sfx-pickup',
+		audioDuration: 0.5,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-enemy-death',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-enemy-death',
+		outputPath: 'audio/sfx/sfx-enemy-death',
+		audioDuration: 0.8,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-player-death',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-player-death',
+		outputPath: 'audio/sfx/sfx-player-death',
+		audioDuration: 1.5,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-boss-alarm',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-boss-alarm',
+		outputPath: 'audio/sfx/sfx-boss-alarm',
+		audioDuration: 2.0,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-menu-select',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-menu-select',
+		outputPath: 'audio/sfx/sfx-menu-select',
+		audioDuration: 0.5,
+		audioFormat: 'mp3',
+	},
+	{
+		key: 'sfx-menu-confirm',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-menu-confirm',
+		outputPath: 'audio/sfx/sfx-menu-confirm',
+		audioDuration: 0.5,
+		audioFormat: 'mp3',
 	},
 
 	// --- Defaults ---
@@ -269,6 +400,7 @@ export const ASSET_CATALOG: AssetCatalogEntry[] = [
 		sourceMode: 'manual',
 		generationTier: 'canonical',
 		outputPath: 'audio/music/default-music',
+		audioFormat: 'mp3',
 	},
 ];
 

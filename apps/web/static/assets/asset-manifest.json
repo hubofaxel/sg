@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-03-08T06:16:56.481Z",
+	"generatedAt": "2026-03-08T06:34:52.870Z",
 	"assets": [
 		{
 			"type": "sprite-sheet",
@@ -130,7 +130,57 @@
 		{
 			"type": "audio",
 			"key": "music-outer-rim",
-			"paths": ["audio/music/music-outer-rim.ogg"]
+			"paths": ["audio/music/music-outer-rim.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-laser",
+			"paths": ["audio/sfx/sfx-laser.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-explosion-small",
+			"paths": ["audio/sfx/sfx-explosion-small.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-explosion-large",
+			"paths": ["audio/sfx/sfx-explosion-large.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-hit",
+			"paths": ["audio/sfx/sfx-hit.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-pickup",
+			"paths": ["audio/sfx/sfx-pickup.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-enemy-death",
+			"paths": ["audio/sfx/sfx-enemy-death.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-player-death",
+			"paths": ["audio/sfx/sfx-player-death.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-boss-alarm",
+			"paths": ["audio/sfx/sfx-boss-alarm.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-menu-select",
+			"paths": ["audio/sfx/sfx-menu-select.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-menu-confirm",
+			"paths": ["audio/sfx/sfx-menu-confirm.mp3"]
 		},
 		{
 			"type": "image",
@@ -144,7 +194,7 @@
 		{
 			"type": "audio",
 			"key": "default-music",
-			"paths": ["audio/music/default-music.ogg"]
+			"paths": ["audio/music/default-music.mp3"]
 		}
 	]
 }

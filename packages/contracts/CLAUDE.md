@@ -12,7 +12,8 @@
 
 ```
 src/
-  common/base.schema.ts       # EntityId, Vec2, Hitbox, StatRange, DropTable, Cooldown
+  asset/asset.schema.ts        # AssetManifest, AssetEntry (sprite-sheet/image/audio), FrameConfig
+  common/base.schema.ts        # EntityId, Vec2, Hitbox, StatRange, DropTable, Cooldown
   weapon/weapon.schema.ts      # Weapon, WeaponLevel, SecondaryWeapon, WeaponRecipe
   ship/ship.schema.ts          # Ship, ShipStats, ShipUpgrade, PlayerShipState
   enemy/enemy.schema.ts        # Enemy, Boss, BossPhase, MovementPattern, AttackType

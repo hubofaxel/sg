@@ -12,6 +12,7 @@ Follow these steps exactly:
    - `packages/game/` with `package.json`, `tsconfig.json`, `src/index.ts`
    - `packages/ui/` with `package.json`, `tsconfig.json`, `src/index.ts`
    - `tools/scripts/` with `package.json`
+   - `tools/asset-gen/` with `package.json`, `tsconfig.json`, `src/index.ts`
 6. Add root `biome.json`
 7. Install Phaser 4 RC exact: `pnpm --filter @sg/game add phaser@4.0.0-rc.6`
 8. Install Zod 4: `pnpm --filter @sg/contracts add zod@4`

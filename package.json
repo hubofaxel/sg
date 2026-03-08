@@ -19,7 +19,6 @@
 		"format": "biome format --write .",
 		"validate": "pnpm check && pnpm lint && pnpm test && pnpm asset:validate",
 		"asset:gen": "pnpm --filter @sg/asset-gen cli generate --all",
-		"asset:gen:key": "pnpm --filter @sg/asset-gen cli generate --key",
 		"asset:assemble": "pnpm --filter @sg/asset-gen cli assemble --all",
 		"asset:manifest": "pnpm --filter @sg/asset-gen cli manifest",
 		"asset:validate": "pnpm --filter @sg/asset-gen cli validate",

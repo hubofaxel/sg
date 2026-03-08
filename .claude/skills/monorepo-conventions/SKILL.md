@@ -17,6 +17,7 @@ sg/
   packages/content/           # JSON game data (@sg/content)
   packages/ui/                # Shared non-Phaser UI (@sg/ui)
   tools/scripts/              # Build/dev/asset scripts (@sg/scripts)
+  tools/asset-gen/            # AI asset generation pipeline (@sg/asset-gen)
 ```
 
 ### Package naming
@@ -27,6 +28,7 @@ All packages use `@sg/` scope:
 - `@sg/content`
 - `@sg/ui`
 - `@sg/scripts`
+- `@sg/asset-gen`
 
 ### Dependency rules (strict — no violations)
 - `@sg/contracts` depends on: nothing (leaf node)
@@ -34,6 +36,7 @@ All packages use `@sg/` scope:
 - `@sg/game` depends on: `@sg/contracts`, `@sg/content`, `phaser`
 - `@sg/ui` depends on: `@sg/contracts`, `svelte`
 - `@sg/web` depends on: `@sg/game`, `@sg/contracts`, `@sg/content`, `@sg/ui`
+- `@sg/asset-gen` depends on: `@sg/contracts`, `openai`, `sharp`, `@elevenlabs/elevenlabs-js`
 - Circular dependencies are forbidden — will break the build
 
 ### Cross-package imports

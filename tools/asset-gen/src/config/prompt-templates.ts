@@ -11,6 +11,60 @@ type PromptTemplate = {
 	details: string;
 };
 
+type AudioPromptTemplate = {
+	description: string;
+};
+
+const AUDIO_TEMPLATES: Record<string, AudioPromptTemplate> = {
+	// --- SFX ---
+	'sfx-laser': {
+		description:
+			'Quick laser blast sound. Sharp electronic zap with a bright attack and fast decay. Sci-fi plasma weapon firing.',
+	},
+	'sfx-explosion-small': {
+		description:
+			'Small explosion. Brief percussive burst with crackling debris. Minor enemy destroyed or projectile impact.',
+	},
+	'sfx-explosion-large': {
+		description:
+			'Large explosion. Deep rumbling boom with extended debris scatter. Boss phase transition or heavy damage.',
+	},
+	'sfx-hit': {
+		description:
+			'Shield or hull hit impact. Metallic thud with slight electronic distortion. Damage taken feedback.',
+	},
+	'sfx-pickup': {
+		description:
+			'Power-up or item collected. Rising bright chime, positive and rewarding. Brief melodic sparkle.',
+	},
+	'sfx-enemy-death': {
+		description:
+			'Enemy destruction. Quick electronic crunch followed by brief fizzle. Satisfying kill confirmation.',
+	},
+	'sfx-player-death': {
+		description:
+			'Player ship destroyed. Dramatic explosion with descending electronic warble. Longer than enemy death, more impactful.',
+	},
+	'sfx-boss-alarm': {
+		description:
+			'Boss incoming warning klaxon. Two-tone alarm siren, urgent and foreboding. Repeating alert pattern.',
+	},
+	'sfx-menu-select': {
+		description:
+			'Menu cursor movement. Subtle electronic tick or soft blip. Quick and unobtrusive UI feedback.',
+	},
+	'sfx-menu-confirm': {
+		description:
+			'Menu selection confirmed. Bright affirmative beep, slightly longer than menu-select. Positive UI confirmation.',
+	},
+
+	// --- Music ---
+	'music-outer-rim': {
+		description:
+			'Electronic space shooter game soundtrack. Driving synthwave rhythm with pulsing bassline and atmospheric pads. Dark sci-fi mood with urgent energy. Suitable for intense arcade action in deep space. Loopable structure.',
+	},
+};
+
 const TEMPLATES: Record<string, PromptTemplate> = {
 	// --- Ships ---
 	'ship-viper': {
@@ -77,7 +131,15 @@ export function buildPrompt(entry: AssetCatalogEntry): string {
 		throw new Error(`No prompt template for promptId: ${entry.promptId ?? entry.key}`);
 	}
 
-	const styleCategories: ('sprites' | 'backgrounds' | 'ships' | 'enemies' | 'bosses')[] = [];
+	const styleCategories: (
+		| 'sprites'
+		| 'backgrounds'
+		| 'ships'
+		| 'enemies'
+		| 'bosses'
+		| 'sfx'
+		| 'music'
+	)[] = [];
 
 	if (entry.kind === 'sprite-sheet' || entry.kind === 'image') {
 		if (entry.group === 'backgrounds') {
@@ -94,4 +156,22 @@ export function buildPrompt(entry: AssetCatalogEntry): string {
 	const style = getStyleDirectives(...styleCategories);
 
 	return `${template.subject}\n\n${template.details}\n\nStyle requirements: ${style}`;
+}
+
+/** Build an audio prompt for ElevenLabs SFX or music generation */
+export function buildAudioPrompt(entry: AssetCatalogEntry): string {
+	const template = entry.promptId ? AUDIO_TEMPLATES[entry.promptId] : undefined;
+	if (!template) {
+		throw new Error(`No audio prompt template for promptId: ${entry.promptId ?? entry.key}`);
+	}
+
+	if (entry.sourceMode === 'elevenlabs-sfx') {
+		// ElevenLabs SFX has a 450-char limit — keep prompt concise
+		return template.description;
+	}
+
+	// Music prompts can be longer — include style directives
+	const styleCategory = entry.group === 'music' ? 'music' : 'sfx';
+	const style = getStyleDirectives(styleCategory);
+	return `${template.description}\n\nStyle: ${style}`;
 }
