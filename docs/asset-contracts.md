@@ -34,14 +34,14 @@ AI image generation produces 1024x1024+ output that gets reduced to final size. 
 | `enemy-zigzagger` | generated-final | WaveManager → EnemyMovement | 48x48 | 2 (banking L, banking R) | shipped |
 | `boss-iron-sentinel` | generated-final | BossManager | 128x128 | 2 (shields-up, core-exposed) | shipped |
 
-### Backgrounds — need regeneration
+### Backgrounds — shipped
 
-| Key | Strategy | Owner | Dims | Status | Issue |
-|---|---|---|---|---|---|
-| `bg-starfield-sparse` | generated-final | GameScene (Level 1) | 1536x1024 | needs-regen | Identical hash to dense/void |
-| `bg-starfield-dense` | generated-final | GameScene (Levels 2-3) | 1536x1024 | needs-regen | Identical hash to sparse/void |
-| `bg-endless-void` | generated-final | GameScene (Endless mode) | 1536x1024 | needs-regen | Identical hash to sparse/dense |
-| `default-bg` | manual | PreloadScene fallback | 480x320 | shipped | — |
+| Key | Strategy | Owner | Dims | Status |
+|---|---|---|---|---|
+| `bg-starfield-sparse` | generated-final | GameScene (Level 1) | 1536x1024 | shipped |
+| `bg-starfield-dense` | generated-final | GameScene (Levels 2-3) | 1536x1024 | shipped |
+| `bg-endless-void` | generated-final | GameScene (Endless mode) | 1536x1024 | shipped |
+| `default-bg` | manual | PreloadScene fallback | 480x320 | shipped |
 
 ### Audio — shipped
 
@@ -63,7 +63,12 @@ AI image generation produces 1024x1024+ output that gets reduced to final size. 
 | `sfx-menu-select` | wired-existing | MenuScene | Button hover/focus |
 | `sfx-menu-confirm` | wired-existing | MenuScene | Start game |
 | `sfx-pickup` | wired-existing | DropManager (Phase 7) | Item collected |
-| `default-music` | manual | Fallback | No file on disk — known gap |
+
+### Audio — defaults
+
+| Key | Strategy | Owner | Status |
+|---|---|---|---|
+| `default-music` | generated-final | AudioManager fallback | shipped |
 
 ### Phase 7 — Drop System (planned)
 
@@ -72,33 +77,33 @@ AI image generation produces 1024x1024+ output that gets reduced to final size. 
 | `pickup-currency` | generated-source OR code-drawn | DropManager | 16x16, 1 frame | Single image + code pulse/bob. Decision: code-driven animation, not sprite sheet. |
 | `pickup-token` | generated-source OR code-drawn | DropManager | 16x16, 1 frame | Same approach as currency. Distinct color (cyan/green vs gold). |
 
-### Phase 8 — Stage Presentation (planned)
+### Phase 8 — Stage Presentation (catalogued, ready to generate)
 
-| Key | Strategy | Owner | Notes |
-|---|---|---|---|
-| `sfx-stage-clear` | generated-final | GameScene → handleStageClear | ~2s victory jingle |
+| Key | Strategy | Owner | Duration | Notes |
+|---|---|---|---|---|
+| `sfx-stage-clear` | generated-final | GameScene → handleStageClear | 2.0s | Arcade victory stinger, bright synth arpeggio |
 
-### Phase 9 — Ship Visual State (planned)
+### Phase 9 — Ship Visual State (code-drawn, no assets)
 
-| Key | Strategy | Owner | Notes |
+| Effect | Strategy | Owner | Notes |
 |---|---|---|---|
 | Muzzle flash | code-drawn | GameScene → handleFiring | Expanding white circles with additive blend |
 | Engine glow | code-drawn | GameScene → handleMovement | Tinted rectangle behind ship, intensity from velocity |
 | Projectile visuals | code-drawn | GameScene → handleFiring | Color/size from weaponStats per tier |
 
-### Phase 10 — Audio Polish (planned)
+### Phase 10 — Audio Polish (catalogued, ready to generate)
 
-| Key | Strategy | Owner | Notes |
-|---|---|---|---|
-| `music-boss` | generated-final | AudioManager | Heavier synthwave, 140+ BPM, ~60-90s, loopable |
-| `sfx-low-health` | generated-final | AudioManager / HUD | Rhythmic warning pulse, ~0.5s |
+| Key | Strategy | Owner | Duration | Notes |
+|---|---|---|---|---|
+| `music-boss` | generated-final | AudioManager | 75s | Composition-plan workflow: 5 sections (intro → groove → escalation → breakdown → re-entry). 146 BPM E minor aggressive synthwave. Loop point is editorial post-gen. |
+| `sfx-low-health` | generated-final | AudioManager / HUD | 0.5s | Synthetic heartbeat warning pulse, designed for loop playback without fatigue |
 
-### Phase 12 — Encounter Director (planned)
+### Phase 12 — Encounter Director (catalogued, ready to generate)
 
-| Key | Strategy | Owner | Notes |
-|---|---|---|---|
-| `sfx-telegraph` | generated-final | EncounterDirector | Brief warning chirp, ~0.3s |
-| `sprite-telegraph` | generated-source | EncounterDirector | 32x32 warning marker, 2 frames (bright/dim) |
+| Key | Strategy | Owner | Duration/Dims | Notes |
+|---|---|---|---|---|
+| `sfx-telegraph` | generated-final | EncounterDirector | 0.5s (trim to ~0.3s post-gen) | Sharp warning ping. API minimum is 0.5s; trim in post. |
+| `sprite-telegraph` | generated-final | EncounterDirector | 32×32, 2 frames | Diamond warning marker: bright (white-yellow center) / dim (deep red). Geometric, no organic detail. |
 
 ## Acceptance Criteria by Type
 

@@ -10,6 +10,8 @@
 - `ASSETS_ROOT` resolves to `apps/web/static/assets/` via `import.meta.dirname`
 - Provenance records go in `.work/records/` (gitignored), never in the runtime manifest
 - Run via `pnpm --filter @sg/asset-gen cli <command>`
+- Phase-aware validation: `CURRENT_PHASE` in `asset-catalog.ts` gates which entries the validator checks. Bump when entering a new phase. Future-phase assets can be catalogued + generated ahead of time without breaking `pnpm asset:validate`.
+- Music composition plans: `music-boss` uses `compositionPlan` (structured sections) instead of plain prompt. `forceInstrumental: true` applied to all prompt-mode music.
 
 ## Staging → Review → Promote workflow
 
@@ -46,9 +48,9 @@ Assets under ~32px in their shipped form default to **code-drawn** unless there 
 API keys are loaded via **direnv + gopass** (not `.env` files):
 - Keys stored in gopass: `ship-game/openai-api-key`, `ship-game/elevenlabs-api-key`
 - Loaded automatically via `.envrc` at project root when you `cd` into the repo
+- **Claude Code sessions**: `.claude/hooks/load-env.sh` writes direnv exports to `CLAUDE_ENV_FILE` on SessionStart — no manual `eval` needed
 - Run `direnv allow` once after cloning or modifying `.envrc`
 - The `src/index.ts` env loader reads `tools/asset-gen/.env` as a fallback only if env vars are not already set
-- For CLI sessions without direnv: `eval "$(direnv export bash)"` before running commands
 
 ## Key paths
 - `src/config/asset-catalog.ts` — single source of truth for every asset key (dimensions, generation params)
