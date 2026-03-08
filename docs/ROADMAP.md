@@ -22,23 +22,24 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 **Goal**: Enemies shoot back. Hits feel impactful.
 
-### Enemy attacks (schema already supports this)
-- Implement `EnemyAttackSystem` reading `attackType`, `fireInterval`, `projectileDamage` from content
+### Enemy attacks ✓
+- `EnemyAttackSystem` reads `attackType`, `fireInterval`, `projectileDamage` from content
 - Attack patterns: `aimed-shot`, `spread-shot`, `contact-only`, `ram`
 - Enemy projectile group + player-vs-enemy-bullet collision
-- Respect `fireInterval` from content data per enemy
+- `fireInterval` respected from content data per enemy
 
-### Combat feedback system
-- `CombatFeedbackSchema` in contracts: `hitFlashMs`, `hitPauseMs`, `screenShake`, `deathEffectKey`
+### Combat feedback system ✓
+- `CombatFeedbackSchema` in contracts: `hitFlashMs`, `hitPauseMs`, `screenShake`, `screenShakeMs`, `deathBurstMs`, `spawnInMs`
 - White tint-on-hit for enemies (flash duration from data)
-- Hit-stop: brief game pause on strong hits (configurable ms)
-- Screen shake: camera shake on player hit, bomb, boss damage
-- Enemy death burst: brief expand + fade or particle effect
-- Spawn-in: enemies fade/scale in over ~200ms instead of popping
+- Hit-stop: brief physics pause on kills (configurable ms)
+- Screen shake: camera shake on player damage
+- Enemy death burst: scale-up + fade-out (duration from data)
+- Spawn-in: enemies scale+fade in with Back.easeOut curve
 
-### Contracts changes
-- Add `CombatFeedbackSchema` to `common/`
-- Add `combatFeedback` optional field to `EnemySchema` and `WeaponLevelStatsSchema`
+### Contracts changes ✓
+- `CombatFeedbackSchema` added to `common/base.schema.ts`
+- `combatFeedback` optional field on `EnemySchema`, `BossSchema`, and `WeaponLevelStatsSchema`
+- Bruiser and Iron Sentinel boss have explicit feedback overrides in content
 
 ---
 

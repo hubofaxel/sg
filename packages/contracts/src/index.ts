@@ -20,6 +20,8 @@ export {
 } from './asset/asset.schema';
 // Common primitives
 export {
+	type CombatFeedback,
+	CombatFeedbackSchema,
 	type Cooldown,
 	CooldownSchema,
 	type DropEntry,

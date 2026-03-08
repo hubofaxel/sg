@@ -282,7 +282,7 @@ export class GameScene extends Phaser.Scene {
 			this.scoreText.setText(`SCORE: ${this.score}`);
 			this.eventBus.emit('score', this.score);
 			this.audioManager.playSfx('sfx-enemy-death', 0.4);
-			hitStop(this, 30);
+			hitStop(this, enemy);
 			this.waveManager.onEnemyDestroyed();
 			deathBurst(enemy);
 		} else {

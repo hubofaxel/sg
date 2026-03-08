@@ -174,6 +174,16 @@ export class WaveManager {
 		enemy.setData('movementPattern', def.movementPattern);
 		enemy.setData('spawnTime', this.scene.time.now);
 
+		// Attack data — read by EnemyAttack system
+		enemy.setData('attackType', def.attackType);
+		if (def.fireInterval != null) enemy.setData('fireInterval', def.fireInterval);
+		if (def.projectileDamage != null) enemy.setData('projectileDamage', def.projectileDamage);
+
+		// Combat feedback overrides — read by CombatFeedback system
+		if (def.combatFeedback) {
+			enemy.setData('combatFeedback', def.combatFeedback);
+		}
+
 		this.enemiesAliveInWave++;
 		this.enemiesSpawnedInWave++;
 

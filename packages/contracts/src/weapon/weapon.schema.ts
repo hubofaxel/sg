@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CooldownSchema, EntityIdSchema, HitboxSchema } from '../common/base.schema';
+import { CombatFeedbackSchema, CooldownSchema, EntityIdSchema, HitboxSchema } from '../common/base.schema';
 
 // ---------------------------------------------------------------------------
 // Weapon classification
@@ -42,6 +42,8 @@ export const WeaponLevelStatsSchema = z.object({
 	homingStrength: z.number().min(0).max(1).optional(),
 	/** Currency cost to upgrade TO this level (level 1 = 0, it's the base) */
 	upgradeCost: z.number().int().nonnegative().default(0),
+	/** Combat feedback overrides when this weapon hits (uses defaults if omitted) */
+	combatFeedback: CombatFeedbackSchema.optional(),
 });
 export type WeaponLevelStats = z.infer<typeof WeaponLevelStatsSchema>;
 
