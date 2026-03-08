@@ -81,6 +81,10 @@ export class WaveManager {
 		return this.stage.levels.length;
 	}
 
+	get musicKey(): string | undefined {
+		return this.stage.musicKey;
+	}
+
 	start(): void {
 		this.startWave();
 	}
@@ -160,7 +164,6 @@ export class WaveManager {
 		this.enemies.add(enemy);
 
 		const body = enemy.body as Phaser.Physics.Arcade.Body;
-		body.setVelocityY(def.speed);
 		body.setSize(def.hitbox.width, def.hitbox.height);
 
 		enemy.setData('health', def.health);
@@ -168,6 +171,8 @@ export class WaveManager {
 		enemy.setData('contactDamage', def.contactDamage);
 		enemy.setData('enemyId', def.id);
 		enemy.setData('speed', def.speed);
+		enemy.setData('movementPattern', def.movementPattern);
+		enemy.setData('spawnTime', this.scene.time.now);
 
 		this.enemiesAliveInWave++;
 		this.enemiesSpawnedInWave++;
