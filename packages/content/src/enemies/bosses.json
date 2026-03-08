@@ -66,5 +66,78 @@
 			"deathBurstMs": 400,
 			"spawnInMs": 500
 		}
+	},
+	{
+		"id": "boss-void-reaper",
+		"name": "Void Reaper",
+		"description": "Stage 2 boss. Fast, aggressive hunter with minion swarms.",
+		"size": "boss",
+		"health": 450,
+		"speed": 60,
+		"contactDamage": 4,
+		"hitbox": { "width": 56, "height": 56, "offset": { "x": 0, "y": 0 } },
+		"spriteKey": "boss-void-reaper",
+		"entryPosition": { "x": 0, "y": -120 },
+		"anchorPosition": { "x": 0, "y": 70 },
+		"phases": [
+			{
+				"phase": 0,
+				"healthThreshold": 1.0,
+				"movementPattern": "sine-wave",
+				"attackType": "spread-shot",
+				"weaponType": "spread-shot",
+				"projectileDamage": 7,
+				"fireInterval": 1.8,
+				"speedMultiplier": 1.0,
+				"spriteFrame": 0,
+				"minionSpawns": []
+			},
+			{
+				"phase": 1,
+				"healthThreshold": 0.65,
+				"movementPattern": "sine-wave",
+				"attackType": "spread-shot",
+				"weaponType": "spread-shot",
+				"projectileDamage": 8,
+				"fireInterval": 1.4,
+				"speedMultiplier": 1.4,
+				"spriteFrame": 0,
+				"minionSpawns": [
+					{ "enemyId": "enemy-weaver", "interval": 3.5, "maxConcurrent": 3 },
+					{ "enemyId": "enemy-kamikaze", "interval": 4.0, "maxConcurrent": 2 }
+				]
+			},
+			{
+				"phase": 2,
+				"healthThreshold": 0.3,
+				"movementPattern": "zigzag",
+				"attackType": "spread-shot",
+				"weaponType": "spread-shot",
+				"projectileDamage": 9,
+				"fireInterval": 1.0,
+				"speedMultiplier": 1.8,
+				"spriteFrame": 1,
+				"minionSpawns": [
+					{ "enemyId": "enemy-weaver", "interval": 2.5, "maxConcurrent": 4 },
+					{ "enemyId": "enemy-kamikaze", "interval": 3.0, "maxConcurrent": 3 },
+					{ "enemyId": "enemy-zigzagger", "interval": 5.0, "maxConcurrent": 2 }
+				]
+			}
+		],
+		"drops": [
+			{ "type": "currency", "chance": 1.0, "quantity": 200 },
+			{ "type": "upgrade-token", "chance": 0.8, "quantity": 2 },
+			{ "type": "weapon-recipe", "chance": 0.4, "quantity": 1, "itemId": "recipe-beam" }
+		],
+		"guaranteedDropOnDeath": true,
+		"scoreValue": 1000,
+		"combatFeedback": {
+			"hitFlashMs": 100,
+			"hitPauseMs": 50,
+			"screenShake": 0.01,
+			"screenShakeMs": 250,
+			"deathBurstMs": 500,
+			"spawnInMs": 600
+		}
 	}
 ]

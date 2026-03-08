@@ -75,6 +75,11 @@ export class DropManager {
 		return this.runCurrency;
 	}
 
+	/** Add currency directly (stage clear rewards, bonuses) */
+	addCurrency(amount: number): void {
+		this.runCurrency += amount;
+	}
+
 	get stats(): DropPickupStats {
 		let active = 0;
 		for (const obj of this.group.getChildren()) {

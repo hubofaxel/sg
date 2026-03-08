@@ -29,7 +29,8 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 |---|---|---|
 | BulletPool | `ObjectPool.ts` | Recycles Rectangle projectiles instead of create/destroy (player + enemy pools) |
 | DebugOverlay | `DebugOverlay.ts` | Backtick-toggled HUD: FPS, pool stats, enemy count, tween count |
-| WaveManager | `WaveManager.ts` | Drives spawning from campaign data; sets all enemy data keys on spawn |
+| HudManager | `HudManager.ts` | Score/lives/credits/wave text, wave banners, game-over and stage-clear screens |
+| WaveManager | `WaveManager.ts` | Drives spawning from campaign data; sets all enemy data keys on spawn; multi-stage support via `stageIndex` |
 | BossManager | `BossManager.ts` | Boss encounter lifecycle: intro → phases → minions → death sequence |
 | EnemyMovement | `EnemyMovement.ts` | Per-frame movement: linear, sine-wave, zigzag, spiral, strafe-hover |
 | EnemyAttack | `EnemyAttack.ts` | Enemy ranged attacks: aimed-shot, spread-shot (reads attackType, fireInterval, projectileDamage). `beam` is in schema but not yet implemented. |
@@ -58,6 +59,16 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 6. Minions respect `maxConcurrent` cap per spawn definition
 7. Boss death: chain explosions → `deathBurst` → minion cleanup → stage clear
 8. Health bar renders at screen top with color-coded fill (green→yellow→red)
+
+### Stage progression flow
+
+1. GameScene.init() receives `{ stageIndex }` data (default 0)
+2. WaveManager loads `campaign.stages[stageIndex]`
+3. All waves clear → boss encounter → boss defeat → `handleStageClear()`
+4. Stage clear: plays `sfx-stage-clear`, awards `clearReward` currency, emits `stage-clear` event
+5. If `hasNextStage`: HUD shows "NEXT STAGE" → `startNextStage()` restarts GameScene with `stageIndex + 1`
+6. If final stage: HUD shows "CONTINUE" → returns to menu
+7. Score and lives reset between stages (fresh start per stage)
 
 ### Object pooling
 

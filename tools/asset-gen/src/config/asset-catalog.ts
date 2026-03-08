@@ -74,7 +74,7 @@ export interface AssetCatalogEntry {
 
 // ---------------------------------------------------------------------------
 /** Current development phase. Validator skips catalog entries with phase > this. */
-export const CURRENT_PHASE = 7;
+export const CURRENT_PHASE = 8;
 
 // Catalog entries — 31 asset keys total (23 shipped + 5 future phases + 3 branding)
 // ---------------------------------------------------------------------------

@@ -300,9 +300,10 @@ describe('content validation', () => {
 			}
 		});
 
-		it('contains the Iron Sentinel boss', () => {
+		it('contains the Iron Sentinel and Void Reaper bosses', () => {
 			const ids = new Set(bosses.map((b) => b.id));
 			expect(ids).toContain('boss-iron-sentinel');
+			expect(ids).toContain('boss-void-reaper');
 		});
 	});
 
