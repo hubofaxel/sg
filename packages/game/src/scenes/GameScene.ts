@@ -9,6 +9,7 @@ import { DebugOverlay } from '../systems/DebugOverlay';
 import { DropManager } from '../systems/DropManager';
 import { updateEnemyAttack } from '../systems/EnemyAttack';
 import { updateEnemyMovement } from '../systems/EnemyMovement';
+import { HudManager } from '../systems/HudManager';
 import { BulletPool } from '../systems/ObjectPool';
 import { updateEnemyAnimation, updateShipBanking } from '../systems/SpriteFrames';
 import { WaveManager } from '../systems/WaveManager';
@@ -43,14 +44,11 @@ export class GameScene extends Phaser.Scene {
 	private enemies!: Phaser.Physics.Arcade.Group;
 	private debugOverlay!: DebugOverlay;
 	private dropManager!: DropManager;
+	private hud!: HudManager;
 	private score = 0;
 	private lives = PLAYER_MAX_LIVES;
 	private lastFired = 0;
 	private invincible = false;
-	private scoreText!: Phaser.GameObjects.Text;
-	private livesText!: Phaser.GameObjects.Text;
-	private currencyText!: Phaser.GameObjects.Text;
-	private waveText!: Phaser.GameObjects.Text;
 	private gameOver = false;
 	private waveManager!: WaveManager;
 	private bossManager: BossManager | null = null;
@@ -171,28 +169,7 @@ export class GameScene extends Phaser.Scene {
 		);
 
 		// HUD
-		this.scoreText = this.add.text(10, 10, 'SCORE: 0', {
-			fontSize: '16px',
-			fontFamily: 'monospace',
-			color: '#ffffff',
-		});
-		this.livesText = this.add.text(10, 30, `LIVES: ${this.lives}`, {
-			fontSize: '16px',
-			fontFamily: 'monospace',
-			color: '#ff6666',
-		});
-		this.currencyText = this.add.text(10, 50, 'CREDITS: 0', {
-			fontSize: '16px',
-			fontFamily: 'monospace',
-			color: '#ffdd00',
-		});
-		this.waveText = this.add
-			.text(width / 2, 12, '', {
-				fontSize: '14px',
-				fontFamily: 'monospace',
-				color: '#888888',
-			})
-			.setOrigin(0.5, 0);
+		this.hud = new HudManager({ scene: this, initialLives: this.lives });
 
 		// Wave manager — drives gameplay from campaign data
 		this.waveManager = new WaveManager({
@@ -203,11 +180,11 @@ export class GameScene extends Phaser.Scene {
 				spawnIn(enemy);
 			},
 			onWaveCleared: (waveIndex) => {
-				this.showWaveBanner(`WAVE ${waveIndex + 2}`);
+				this.hud.showBanner(`WAVE ${waveIndex + 2}`);
 				this.updateWaveHud();
 			},
 			onLevelCleared: (levelIndex) => {
-				this.showWaveBanner(`LEVEL ${levelIndex + 2} — ${this.waveManager.levelName}`);
+				this.hud.showBanner(`LEVEL ${levelIndex + 2} — ${this.waveManager.levelName}`);
 				// Switch background for new level
 				this.setBackground(width, height);
 			},
@@ -220,7 +197,7 @@ export class GameScene extends Phaser.Scene {
 		});
 
 		this.updateWaveHud();
-		this.showWaveBanner(`${this.waveManager.stageName} — ${this.waveManager.levelName}`);
+		this.hud.showBanner(`${this.waveManager.stageName} — ${this.waveManager.levelName}`);
 		this.waveManager.start();
 
 		// Start background music
@@ -338,7 +315,7 @@ export class GameScene extends Phaser.Scene {
 		if (health <= 0) {
 			const scoreValue = (enemy.getData('scoreValue') as number) || 10;
 			this.score += scoreValue;
-			this.scoreText.setText(`SCORE: ${this.score}`);
+			this.hud.updateScore(this.score);
 			this.eventBus.emit('score', this.score);
 
 			const isBoss = enemy.getData('isBoss') as boolean;
@@ -404,13 +381,13 @@ export class GameScene extends Phaser.Scene {
 		const pickup = dropObj as Phaser.GameObjects.Rectangle;
 		const result = this.dropManager.collectPickup(pickup);
 		if (result) {
-			this.currencyText.setText(`CREDITS: ${this.dropManager.currency}`);
+			this.hud.updateCurrency(this.dropManager.currency);
 		}
 	}
 
 	private takeDamage(): void {
 		this.lives--;
-		this.livesText.setText(`LIVES: ${this.lives}`);
+		this.hud.updateLives(this.lives);
 		this.audioManager.playSfx('sfx-hit', 0.5);
 		screenShake(this, 0.008, 150);
 
@@ -444,60 +421,14 @@ export class GameScene extends Phaser.Scene {
 		this.audioManager.stopMusic();
 		this.player.setAlpha(0.3);
 
-		const { width, height } = this.scale;
-
-		this.add
-			.text(width / 2, height * 0.35, 'GAME OVER', {
-				fontSize: '40px',
-				fontFamily: 'monospace',
-				color: '#ff4444',
-			})
-			.setOrigin(0.5);
-
-		this.add
-			.text(width / 2, height * 0.45, `SCORE: ${this.score}`, {
-				fontSize: '24px',
-				fontFamily: 'monospace',
-				color: '#ffffff',
-			})
-			.setOrigin(0.5);
-
-		this.add
-			.text(width / 2, height * 0.52, `CREDITS: ${this.dropManager.currency}`, {
-				fontSize: '18px',
-				fontFamily: 'monospace',
-				color: '#ffdd00',
-			})
-			.setOrigin(0.5);
-
-		const restart = this.add
-			.text(width / 2, height * 0.6, 'PRESS SPACE OR CLICK TO RESTART', {
-				fontSize: '16px',
-				fontFamily: 'monospace',
-				color: '#aaaaaa',
-			})
-			.setOrigin(0.5);
-
-		this.tweens.add({
-			targets: restart,
-			alpha: 0.3,
-			duration: 800,
-			yoyo: true,
-			repeat: -1,
-		});
-
 		this.eventBus.emit('death');
-
-		this.time.delayedCall(500, () => {
-			this.input.keyboard?.once('keydown-SPACE', () => this.returnToMenu());
-			this.input.once('pointerdown', () => this.returnToMenu());
-		});
+		this.hud.showGameOver(this.score, this.dropManager.currency, () => this.returnToMenu());
 	}
 
 	private startBossEncounter(bossId: string): void {
 		const { width, height } = this.scale;
 
-		this.waveText.setText('BOSS');
+		this.hud.setWaveTextBoss();
 
 		this.bossManager = new BossManager({
 			scene: this,
@@ -548,52 +479,7 @@ export class GameScene extends Phaser.Scene {
 		this.enemyBulletPool.releaseAll();
 		// Don't releaseAll drops on stage clear — let player collect remaining pickups
 		this.audioManager.stopMusic();
-		const { width, height } = this.scale;
-
-		this.add
-			.text(width / 2, height * 0.3, 'STAGE CLEAR!', {
-				fontSize: '40px',
-				fontFamily: 'monospace',
-				color: '#00ff88',
-			})
-			.setOrigin(0.5);
-
-		this.add
-			.text(width / 2, height * 0.42, `SCORE: ${this.score}`, {
-				fontSize: '24px',
-				fontFamily: 'monospace',
-				color: '#ffffff',
-			})
-			.setOrigin(0.5);
-
-		this.add
-			.text(width / 2, height * 0.5, `CREDITS: ${this.dropManager.currency}`, {
-				fontSize: '18px',
-				fontFamily: 'monospace',
-				color: '#ffdd00',
-			})
-			.setOrigin(0.5);
-
-		const cont = this.add
-			.text(width / 2, height * 0.6, 'PRESS SPACE OR CLICK TO CONTINUE', {
-				fontSize: '16px',
-				fontFamily: 'monospace',
-				color: '#aaaaaa',
-			})
-			.setOrigin(0.5);
-
-		this.tweens.add({
-			targets: cont,
-			alpha: 0.3,
-			duration: 800,
-			yoyo: true,
-			repeat: -1,
-		});
-
-		this.time.delayedCall(500, () => {
-			this.input.keyboard?.once('keydown-SPACE', () => this.returnToMenu());
-			this.input.once('pointerdown', () => this.returnToMenu());
-		});
+		this.hud.showStageClear(this.score, this.dropManager.currency, () => this.returnToMenu());
 	}
 
 	private returnToMenu(): void {
@@ -656,29 +542,11 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private updateWaveHud(): void {
-		this.waveText.setText(
-			`LVL ${this.waveManager.levelNumber}/${this.waveManager.totalLevels}  WAVE ${this.waveManager.waveNumber}/${this.waveManager.totalWavesInLevel}`,
+		this.hud.updateWave(
+			this.waveManager.levelNumber,
+			this.waveManager.totalLevels,
+			this.waveManager.waveNumber,
+			this.waveManager.totalWavesInLevel,
 		);
-	}
-
-	private showWaveBanner(text: string): void {
-		const { width, height } = this.scale;
-		const banner = this.add
-			.text(width / 2, height * 0.2, text, {
-				fontSize: '22px',
-				fontFamily: 'monospace',
-				color: '#ffcc00',
-			})
-			.setOrigin(0.5)
-			.setAlpha(0);
-
-		this.tweens.add({
-			targets: banner,
-			alpha: 1,
-			duration: 300,
-			hold: 1500,
-			yoyo: true,
-			onComplete: () => banner.destroy(),
-		});
 	}
 }
