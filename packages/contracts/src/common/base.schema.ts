@@ -84,3 +84,23 @@ export const CooldownSchema = z.object({
 	startOn: z.enum(['fire', 'expiry']).default('fire'),
 });
 export type Cooldown = z.infer<typeof CooldownSchema>;
+
+// ---------------------------------------------------------------------------
+// Combat feedback — visual/audio juice parameters for hits, kills, and spawns
+// ---------------------------------------------------------------------------
+
+export const CombatFeedbackSchema = z.object({
+	/** Duration in ms for the white tint-on-hit flash (0 = no flash) */
+	hitFlashMs: z.number().int().nonnegative().default(80),
+	/** Duration in ms for the hit-stop physics pause on kill (0 = no pause) */
+	hitPauseMs: z.number().int().nonnegative().default(30),
+	/** Camera shake intensity on this entity's damage/death (0 = no shake) */
+	screenShake: z.number().nonnegative().default(0),
+	/** Camera shake duration in ms */
+	screenShakeMs: z.number().int().nonnegative().default(100),
+	/** Duration in ms for the death burst expand+fade effect (0 = instant destroy) */
+	deathBurstMs: z.number().int().nonnegative().default(150),
+	/** Duration in ms for the spawn-in scale+fade animation (0 = instant appear) */
+	spawnInMs: z.number().int().nonnegative().default(200),
+});
+export type CombatFeedback = z.infer<typeof CombatFeedbackSchema>;

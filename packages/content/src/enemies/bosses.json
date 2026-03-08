@@ -53,6 +53,14 @@
 			{ "type": "currency", "chance": 1.0, "quantity": 100 },
 			{ "type": "weapon-recipe", "chance": 0.5, "quantity": 1, "itemId": "recipe-missile" }
 		],
-		"scoreValue": 500
+		"scoreValue": 500,
+		"combatFeedback": {
+			"hitFlashMs": 120,
+			"hitPauseMs": 60,
+			"screenShake": 0.008,
+			"screenShakeMs": 200,
+			"deathBurstMs": 400,
+			"spawnInMs": 500
+		}
 	}
 ]

@@ -1,6 +1,11 @@
-import { starterShips } from '@sg/content';
+import { primaryWeapons, starterShips } from '@sg/content';
+import type { WeaponLevelStats } from '@sg/contracts';
 import Phaser from 'phaser';
 import type { GameEventBus } from '../events';
+import { AudioManager } from '../systems/AudioManager';
+import { deathBurst, flashOnHit, hitStop, screenShake, spawnIn } from '../systems/CombatFeedback';
+import { updateEnemyAttack } from '../systems/EnemyAttack';
+import { updateEnemyMovement } from '../systems/EnemyMovement';
 import { WaveManager } from '../systems/WaveManager';
 import { SCENE_KEYS } from './index';
 
@@ -10,10 +15,9 @@ const PLAYER_SPEED = SHIP.baseStats.speed;
 const PLAYER_HITBOX = SHIP.baseStats.hitbox;
 const PLAYER_MAX_LIVES = SHIP.baseStats.maxLives;
 
-// Weapon constants (level 1 basic laser from content)
-const BULLET_SPEED = 600;
-const FIRE_RATE = 250; // ms
-const BULLET_DAMAGE = 10;
+// Weapon — read level 1 stats from content
+const DEFAULT_WEAPON = primaryWeapons.find((w) => w.type === SHIP.baseStats.defaultWeaponType)!;
+const WEAPON_LEVEL = 1;
 
 const INVINCIBLE_DURATION = 1500; // ms after taking a hit
 
@@ -28,6 +32,7 @@ export class GameScene extends Phaser.Scene {
 		D: Phaser.Input.Keyboard.Key;
 	};
 	private bullets!: Phaser.Physics.Arcade.Group;
+	private enemyBullets!: Phaser.Physics.Arcade.Group;
 	private enemies!: Phaser.Physics.Arcade.Group;
 	private score = 0;
 	private lives = PLAYER_MAX_LIVES;
@@ -38,6 +43,8 @@ export class GameScene extends Phaser.Scene {
 	private waveText!: Phaser.GameObjects.Text;
 	private gameOver = false;
 	private waveManager!: WaveManager;
+	private audioManager!: AudioManager;
+	private weaponStats!: WeaponLevelStats;
 	private stageClear = false;
 
 	constructor() {
@@ -52,18 +59,17 @@ export class GameScene extends Phaser.Scene {
 		this.invincible = false;
 		this.gameOver = false;
 		this.stageClear = false;
+		this.weaponStats = DEFAULT_WEAPON.levels[WEAPON_LEVEL - 1];
 	}
 
 	create(): void {
 		const { width, height } = this.scale;
 
-		// Background
-		if (this.textures.exists('bg-starfield-sparse')) {
-			const bg = this.add.image(width / 2, height / 2, 'bg-starfield-sparse');
-			bg.setDisplaySize(width, height);
-		} else {
-			this.cameras.main.setBackgroundColor('#0a0a1a');
-		}
+		// Audio
+		this.audioManager = new AudioManager(this);
+
+		// Background — use first level's background key from campaign
+		this.setBackground(width, height);
 
 		// Player
 		if (this.textures.exists(SHIP.spriteKey)) {
@@ -102,6 +108,13 @@ export class GameScene extends Phaser.Scene {
 			runChildUpdate: false,
 		});
 
+		// Enemy bullet group
+		this.enemyBullets = this.physics.add.group({
+			classType: Phaser.GameObjects.Rectangle,
+			runChildUpdate: false,
+			maxSize: 100,
+		});
+
 		// Collisions
 		this.physics.add.overlap(
 			this.bullets,
@@ -114,6 +127,13 @@ export class GameScene extends Phaser.Scene {
 			this.player,
 			this.enemies,
 			this.onPlayerHitEnemy as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+			undefined,
+			this,
+		);
+		this.physics.add.overlap(
+			this.player,
+			this.enemyBullets,
+			this.onEnemyBulletHitPlayer as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
 			undefined,
 			this,
 		);
@@ -142,13 +162,17 @@ export class GameScene extends Phaser.Scene {
 			scene: this,
 			enemies: this.enemies,
 			screenWidth: width,
-			onEnemySpawned: () => {},
+			onEnemySpawned: (enemy, _data) => {
+				spawnIn(enemy);
+			},
 			onWaveCleared: (waveIndex) => {
 				this.showWaveBanner(`WAVE ${waveIndex + 2}`);
 				this.updateWaveHud();
 			},
 			onLevelCleared: (levelIndex) => {
 				this.showWaveBanner(`LEVEL ${levelIndex + 2} — ${this.waveManager.levelName}`);
+				// Switch background for new level
+				this.setBackground(width, height);
 			},
 			onStageClear: () => {
 				this.handleStageClear();
@@ -159,6 +183,10 @@ export class GameScene extends Phaser.Scene {
 		this.showWaveBanner(`${this.waveManager.stageName} — ${this.waveManager.levelName}`);
 		this.waveManager.start();
 
+		// Start background music
+		const musicKey = this.waveManager.musicKey;
+		if (musicKey) this.audioManager.playMusic(musicKey);
+
 		this.eventBus.emit('scene-change', 'game');
 	}
 
@@ -167,7 +195,17 @@ export class GameScene extends Phaser.Scene {
 
 		this.handleMovement();
 		this.handleFiring(time);
+		this.updateEnemies(time);
 		this.cleanupOffscreen();
+	}
+
+	private updateEnemies(time: number): void {
+		const { width } = this.scale;
+		for (const obj of this.enemies.getChildren()) {
+			const enemy = obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
+			updateEnemyMovement(enemy, width, this.player.x);
+			updateEnemyAttack(enemy, this.enemyBullets, this.player.x, this.player.y, time);
+		}
 	}
 
 	private handleMovement(): void {
@@ -191,15 +229,36 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private handleFiring(time: number): void {
-		if (time - this.lastFired < FIRE_RATE) return;
+		const cooldownMs = this.weaponStats.cooldown.duration * 1000;
+		if (time - this.lastFired < cooldownMs) return;
 		this.lastFired = time;
 
-		const bullet = this.add.rectangle(this.player.x, this.player.y - 20, 4, 12, 0x00ffff);
-		this.physics.add.existing(bullet);
-		this.bullets.add(bullet);
-		const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
-		bulletBody.setVelocityY(-BULLET_SPEED);
-		bulletBody.setSize(4, 12);
+		const { projectileCount, spreadAngle, projectileSpeed, projectileHitbox } = this.weaponStats;
+		const startAngle = -90; // straight up
+		const halfSpread = spreadAngle / 2;
+
+		for (let i = 0; i < projectileCount; i++) {
+			let angle = startAngle;
+			if (projectileCount > 1) {
+				angle = startAngle - halfSpread + (spreadAngle * i) / (projectileCount - 1);
+			}
+
+			const rad = Phaser.Math.DegToRad(angle);
+			const vx = Math.cos(rad) * projectileSpeed;
+			const vy = Math.sin(rad) * projectileSpeed;
+
+			const w = projectileHitbox.width;
+			const h = projectileHitbox.height;
+			const bullet = this.add.rectangle(this.player.x, this.player.y - 20, w, h, 0x00ffff);
+			this.physics.add.existing(bullet);
+			this.bullets.add(bullet);
+			const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+			bulletBody.setVelocity(vx, vy);
+			bulletBody.setSize(w, h);
+			bullet.setData('damage', this.weaponStats.damage);
+		}
+
+		this.audioManager.playSfx('sfx-laser', 0.3);
 	}
 
 	private onBulletHitEnemy(
@@ -209,9 +268,12 @@ export class GameScene extends Phaser.Scene {
 		const bullet = bulletObj as Phaser.GameObjects.Rectangle;
 		const enemy = enemyObj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
 
+		const damage = (bullet.getData('damage') as number) || this.weaponStats.damage;
 		bullet.destroy();
 
-		const health = (enemy.getData('health') as number) - BULLET_DAMAGE;
+		this.audioManager.playSfx('sfx-hit', 0.2);
+
+		const health = (enemy.getData('health') as number) - damage;
 		enemy.setData('health', health);
 
 		if (health <= 0) {
@@ -219,8 +281,12 @@ export class GameScene extends Phaser.Scene {
 			this.score += scoreValue;
 			this.scoreText.setText(`SCORE: ${this.score}`);
 			this.eventBus.emit('score', this.score);
-			enemy.destroy();
+			this.audioManager.playSfx('sfx-enemy-death', 0.4);
+			hitStop(this, enemy);
 			this.waveManager.onEnemyDestroyed();
+			deathBurst(enemy);
+		} else {
+			flashOnHit(enemy);
 		}
 	}
 
@@ -237,9 +303,22 @@ export class GameScene extends Phaser.Scene {
 		this.takeDamage();
 	}
 
+	private onEnemyBulletHitPlayer(
+		_playerObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+		bulletObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+	): void {
+		if (this.invincible || this.gameOver) return;
+
+		const bullet = bulletObj as Phaser.GameObjects.Rectangle;
+		bullet.destroy();
+		this.takeDamage();
+	}
+
 	private takeDamage(): void {
 		this.lives--;
 		this.livesText.setText(`LIVES: ${this.lives}`);
+		this.audioManager.playSfx('sfx-hit', 0.5);
+		screenShake(this, 0.008, 150);
 
 		if (this.lives <= 0) {
 			this.triggerGameOver();
@@ -263,6 +342,8 @@ export class GameScene extends Phaser.Scene {
 	private triggerGameOver(): void {
 		this.gameOver = true;
 		this.waveManager.stop();
+		this.audioManager.playSfx('sfx-player-death', 0.6);
+		this.audioManager.stopMusic();
 		this.player.setAlpha(0.3);
 
 		const { width, height } = this.scale;
@@ -309,6 +390,7 @@ export class GameScene extends Phaser.Scene {
 
 	private handleStageClear(): void {
 		this.stageClear = true;
+		this.audioManager.stopMusic();
 		const { width, height } = this.scale;
 
 		this.add
@@ -350,14 +432,40 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private returnToMenu(): void {
+		this.audioManager.destroy();
 		this.scene.start(SCENE_KEYS.Menu);
 	}
 
+	private bgImage: Phaser.GameObjects.Image | null = null;
+
+	private setBackground(width: number, height: number): void {
+		const bgKey = this.waveManager?.currentLevel?.backgroundKey ?? 'bg-starfield-sparse';
+		if (this.textures.exists(bgKey)) {
+			if (this.bgImage) {
+				this.bgImage.setTexture(bgKey);
+			} else {
+				this.bgImage = this.add.image(width / 2, height / 2, bgKey);
+				this.bgImage.setDisplaySize(width, height);
+				this.bgImage.setDepth(-1);
+			}
+		} else {
+			this.cameras.main.setBackgroundColor('#0a0a1a');
+		}
+	}
+
 	private cleanupOffscreen(): void {
-		const { height } = this.scale;
+		const { width, height } = this.scale;
 
 		for (const bullet of this.bullets.getChildren()) {
 			if ((bullet as Phaser.GameObjects.Rectangle).y < -20) {
+				bullet.destroy();
+			}
+		}
+
+		// Enemy bullets that leave the screen
+		for (const bullet of this.enemyBullets.getChildren()) {
+			const b = bullet as Phaser.GameObjects.Rectangle;
+			if (b.y > height + 20 || b.y < -20 || b.x < -20 || b.x > width + 20) {
 				bullet.destroy();
 			}
 		}

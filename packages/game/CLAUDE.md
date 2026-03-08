@@ -19,3 +19,30 @@
   - `audio` → `this.load.audio(key, paths)`
 - Asset keys in game code must match content data keys exactly
 - No hardcoded file paths in scene code — always look up from manifest
+
+## Game systems (`src/systems/`)
+
+ECS-style systems called from GameScene each frame. All read data from game
+objects via `getData()` — values set by WaveManager from `@sg/content` definitions.
+
+| System | File | Purpose |
+|---|---|---|
+| EnemyMovement | `EnemyMovement.ts` | Per-frame movement: linear, sine-wave, zigzag, spiral, strafe-hover |
+| EnemyAttack | `EnemyAttack.ts` | Enemy ranged attacks: aimed-shot, spread-shot (reads attackType, fireInterval, projectileDamage) |
+| CombatFeedback | `CombatFeedback.ts` | Visual juice: hit flash, hit-stop, screen shake, death burst, spawn-in animation |
+| AudioManager | `AudioManager.ts` | SFX + music playback with graceful fallback for missing audio keys |
+| WaveManager | `WaveManager.ts` | Drives spawning from campaign data; sets all enemy data keys on spawn |
+
+### Data flow: content → game object → system
+
+1. `WaveManager.spawnSingleEnemy()` reads enemy definition from `@sg/content`
+2. Sets data keys on the Phaser game object: `health`, `speed`, `movementPattern`, `attackType`, `fireInterval`, `projectileDamage`, `combatFeedback`, etc.
+3. Systems read these keys each frame via `enemy.getData('key')`
+4. `CombatFeedback` falls back to `CombatFeedbackSchema` defaults when data is absent
+
+### Collision groups
+
+- `bullets` — player projectiles (cyan rectangles)
+- `enemyBullets` — enemy projectiles (red rectangles)
+- `enemies` — active enemy game objects
+- Overlaps: bullets↔enemies, player↔enemies, player↔enemyBullets

@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { DropTableSchema, EntityIdSchema, HitboxSchema, Vec2Schema } from '../common/base.schema';
+import {
+	CombatFeedbackSchema,
+	DropTableSchema,
+	EntityIdSchema,
+	HitboxSchema,
+	Vec2Schema,
+} from '../common/base.schema';
 import { WeaponTypeSchema } from '../weapon/weapon.schema';
 
 // ---------------------------------------------------------------------------
@@ -82,6 +88,10 @@ export const EnemySchema = z.object({
 	// --- Score ---
 	/** Base score value when killed */
 	scoreValue: z.number().int().nonnegative(),
+
+	// --- Feedback ---
+	/** Visual/audio feedback overrides (uses defaults if omitted) */
+	combatFeedback: CombatFeedbackSchema.optional(),
 });
 export type Enemy = z.infer<typeof EnemySchema>;
 
@@ -136,6 +146,9 @@ export const BossSchema = z.object({
 
 	drops: DropTableSchema,
 	scoreValue: z.number().int().nonnegative(),
+
+	/** Visual/audio feedback overrides (uses defaults if omitted) */
+	combatFeedback: CombatFeedbackSchema.optional(),
 
 	/** Entry animation: where the boss enters from */
 	entryPosition: Vec2Schema,

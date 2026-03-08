@@ -18,3 +18,11 @@ src/
   progression/progression.json # Experience table + endless mode config
   index.ts                     # Barrel export — typed content constants
 ```
+
+## Key content fields consumed by game systems
+
+- **movementPattern** → `EnemyMovement` system (linear, sine-wave, zigzag, spiral, strafe-hover)
+- **attackType, fireInterval, projectileDamage** → `EnemyAttack` system (aimed-shot, spread-shot, contact-only, ram)
+- **combatFeedback** → `CombatFeedback` system (optional — omit for schema defaults)
+  - Bruiser and Iron Sentinel have explicit overrides for heavier visual weight
+  - Other enemies use schema defaults (80ms flash, 30ms hit-stop, 150ms death burst, 200ms spawn-in)

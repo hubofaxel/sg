@@ -51,7 +51,15 @@
 			{ "type": "currency", "chance": 0.5, "quantity": 15 },
 			{ "type": "upgrade-token", "chance": 0.08, "quantity": 1 }
 		],
-		"scoreValue": 50
+		"scoreValue": 50,
+		"combatFeedback": {
+			"hitFlashMs": 100,
+			"hitPauseMs": 50,
+			"screenShake": 0.004,
+			"screenShakeMs": 120,
+			"deathBurstMs": 250,
+			"spawnInMs": 300
+		}
 	},
 	{
 		"id": "enemy-kamikaze",
