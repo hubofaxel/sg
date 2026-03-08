@@ -1,13 +1,20 @@
+import { starterShips } from '@sg/content';
 import Phaser from 'phaser';
 import type { GameEventBus } from '../events';
+import { WaveManager } from '../systems/WaveManager';
 import { SCENE_KEYS } from './index';
 
-const PLAYER_SPEED = 300;
+// Player constants from content data
+const SHIP = starterShips[0];
+const PLAYER_SPEED = SHIP.baseStats.speed;
+const PLAYER_HITBOX = SHIP.baseStats.hitbox;
+const PLAYER_MAX_LIVES = SHIP.baseStats.maxLives;
+
+// Weapon constants (level 1 basic laser from content)
 const BULLET_SPEED = 600;
-const FIRE_RATE = 250; // ms between shots
-const ENEMY_SPEED = 150;
-const SPAWN_INTERVAL = 1200; // ms between enemy spawns
-const PLAYER_MAX_LIVES = 3;
+const FIRE_RATE = 250; // ms
+const BULLET_DAMAGE = 10;
+
 const INVINCIBLE_DURATION = 1500; // ms after taking a hit
 
 export class GameScene extends Phaser.Scene {
@@ -25,11 +32,13 @@ export class GameScene extends Phaser.Scene {
 	private score = 0;
 	private lives = PLAYER_MAX_LIVES;
 	private lastFired = 0;
-	private spawnTimer!: Phaser.Time.TimerEvent;
 	private invincible = false;
 	private scoreText!: Phaser.GameObjects.Text;
 	private livesText!: Phaser.GameObjects.Text;
+	private waveText!: Phaser.GameObjects.Text;
 	private gameOver = false;
+	private waveManager!: WaveManager;
+	private stageClear = false;
 
 	constructor() {
 		super({ key: SCENE_KEYS.Game });
@@ -42,6 +51,7 @@ export class GameScene extends Phaser.Scene {
 		this.lastFired = 0;
 		this.invincible = false;
 		this.gameOver = false;
+		this.stageClear = false;
 	}
 
 	create(): void {
@@ -56,21 +66,20 @@ export class GameScene extends Phaser.Scene {
 		}
 
 		// Player
-		if (this.textures.exists('ship-viper')) {
-			this.player = this.add.sprite(width / 2, height - 80, 'ship-viper', 0);
+		if (this.textures.exists(SHIP.spriteKey)) {
+			this.player = this.add.sprite(width / 2, height - 80, SHIP.spriteKey, 0);
 		} else {
-			// Fallback rectangle if sprite missing
 			const gfx = this.add.graphics();
 			gfx.fillStyle(0x00ff88);
-			gfx.fillRect(-12, -12, 24, 24);
-			gfx.generateTexture('player-fallback', 24, 24);
+			gfx.fillRect(-12, -12, PLAYER_HITBOX.width, PLAYER_HITBOX.height);
+			gfx.generateTexture('player-fallback', PLAYER_HITBOX.width, PLAYER_HITBOX.height);
 			gfx.destroy();
 			this.player = this.add.sprite(width / 2, height - 80, 'player-fallback');
 		}
 		this.physics.add.existing(this.player);
 		const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
 		playerBody.setCollideWorldBounds(true);
-		playerBody.setSize(24, 24);
+		playerBody.setSize(PLAYER_HITBOX.width, PLAYER_HITBOX.height);
 
 		// Input
 		this.cursors = this.input.keyboard!.createCursorKeys();
@@ -93,7 +102,7 @@ export class GameScene extends Phaser.Scene {
 			runChildUpdate: false,
 		});
 
-		// Collisions: bullets vs enemies
+		// Collisions
 		this.physics.add.overlap(
 			this.bullets,
 			this.enemies,
@@ -101,8 +110,6 @@ export class GameScene extends Phaser.Scene {
 			undefined,
 			this,
 		);
-
-		// Collisions: player vs enemies
 		this.physics.add.overlap(
 			this.player,
 			this.enemies,
@@ -110,14 +117,6 @@ export class GameScene extends Phaser.Scene {
 			undefined,
 			this,
 		);
-
-		// Spawn timer
-		this.spawnTimer = this.time.addEvent({
-			delay: SPAWN_INTERVAL,
-			callback: this.spawnEnemy,
-			callbackScope: this,
-			loop: true,
-		});
 
 		// HUD
 		this.scoreText = this.add.text(10, 10, 'SCORE: 0', {
@@ -130,12 +129,41 @@ export class GameScene extends Phaser.Scene {
 			fontFamily: 'monospace',
 			color: '#ff6666',
 		});
+		this.waveText = this.add
+			.text(width / 2, 10, '', {
+				fontSize: '14px',
+				fontFamily: 'monospace',
+				color: '#888888',
+			})
+			.setOrigin(0.5, 0);
+
+		// Wave manager — drives gameplay from campaign data
+		this.waveManager = new WaveManager({
+			scene: this,
+			enemies: this.enemies,
+			screenWidth: width,
+			onEnemySpawned: () => {},
+			onWaveCleared: (waveIndex) => {
+				this.showWaveBanner(`WAVE ${waveIndex + 2}`);
+				this.updateWaveHud();
+			},
+			onLevelCleared: (levelIndex) => {
+				this.showWaveBanner(`LEVEL ${levelIndex + 2} — ${this.waveManager.levelName}`);
+			},
+			onStageClear: () => {
+				this.handleStageClear();
+			},
+		});
+
+		this.updateWaveHud();
+		this.showWaveBanner(`${this.waveManager.stageName} — ${this.waveManager.levelName}`);
+		this.waveManager.start();
 
 		this.eventBus.emit('scene-change', 'game');
 	}
 
 	update(time: number): void {
-		if (this.gameOver) return;
+		if (this.gameOver || this.stageClear) return;
 
 		this.handleMovement();
 		this.handleFiring(time);
@@ -157,7 +185,6 @@ export class GameScene extends Phaser.Scene {
 		if (up) body.setVelocityY(-PLAYER_SPEED);
 		else if (down) body.setVelocityY(PLAYER_SPEED);
 
-		// Normalize diagonal movement
 		if ((left || right) && (up || down)) {
 			body.velocity.normalize().scale(PLAYER_SPEED);
 		}
@@ -175,30 +202,6 @@ export class GameScene extends Phaser.Scene {
 		bulletBody.setSize(4, 12);
 	}
 
-	private spawnEnemy(): void {
-		if (this.gameOver) return;
-
-		const { width } = this.scale;
-		const x = Phaser.Math.Between(30, width - 30);
-
-		let enemy: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
-		if (this.textures.exists('enemy-drone')) {
-			enemy = this.add.sprite(x, -20, 'enemy-drone', 0);
-		} else {
-			enemy = this.add.rectangle(x, -20, 16, 16, 0xff4444);
-		}
-
-		this.physics.add.existing(enemy);
-		this.enemies.add(enemy);
-		const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
-		enemyBody.setVelocityY(ENEMY_SPEED);
-		enemyBody.setSize(16, 16);
-
-		// Store health on the game object
-		enemy.setData('health', 10);
-		enemy.setData('scoreValue', 10);
-	}
-
 	private onBulletHitEnemy(
 		bulletObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
 		enemyObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -208,7 +211,7 @@ export class GameScene extends Phaser.Scene {
 
 		bullet.destroy();
 
-		const health = (enemy.getData('health') as number) - 10;
+		const health = (enemy.getData('health') as number) - BULLET_DAMAGE;
 		enemy.setData('health', health);
 
 		if (health <= 0) {
@@ -217,6 +220,7 @@ export class GameScene extends Phaser.Scene {
 			this.scoreText.setText(`SCORE: ${this.score}`);
 			this.eventBus.emit('score', this.score);
 			enemy.destroy();
+			this.waveManager.onEnemyDestroyed();
 		}
 	}
 
@@ -228,7 +232,12 @@ export class GameScene extends Phaser.Scene {
 
 		const enemy = enemyObj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
 		enemy.destroy();
+		this.waveManager.onEnemyDestroyed();
 
+		this.takeDamage();
+	}
+
+	private takeDamage(): void {
 		this.lives--;
 		this.livesText.setText(`LIVES: ${this.lives}`);
 
@@ -237,7 +246,6 @@ export class GameScene extends Phaser.Scene {
 			return;
 		}
 
-		// Brief invincibility with flash
 		this.invincible = true;
 		this.tweens.add({
 			targets: this.player,
@@ -254,7 +262,7 @@ export class GameScene extends Phaser.Scene {
 
 	private triggerGameOver(): void {
 		this.gameOver = true;
-		this.spawnTimer.destroy();
+		this.waveManager.stop();
 		this.player.setAlpha(0.3);
 
 		const { width, height } = this.scale;
@@ -293,7 +301,48 @@ export class GameScene extends Phaser.Scene {
 
 		this.eventBus.emit('death');
 
-		// Delay input to prevent accidental restart
+		this.time.delayedCall(500, () => {
+			this.input.keyboard?.once('keydown-SPACE', () => this.returnToMenu());
+			this.input.once('pointerdown', () => this.returnToMenu());
+		});
+	}
+
+	private handleStageClear(): void {
+		this.stageClear = true;
+		const { width, height } = this.scale;
+
+		this.add
+			.text(width / 2, height * 0.3, 'STAGE CLEAR!', {
+				fontSize: '40px',
+				fontFamily: 'monospace',
+				color: '#00ff88',
+			})
+			.setOrigin(0.5);
+
+		this.add
+			.text(width / 2, height * 0.42, `SCORE: ${this.score}`, {
+				fontSize: '24px',
+				fontFamily: 'monospace',
+				color: '#ffffff',
+			})
+			.setOrigin(0.5);
+
+		const cont = this.add
+			.text(width / 2, height * 0.6, 'PRESS SPACE OR CLICK TO CONTINUE', {
+				fontSize: '16px',
+				fontFamily: 'monospace',
+				color: '#aaaaaa',
+			})
+			.setOrigin(0.5);
+
+		this.tweens.add({
+			targets: cont,
+			alpha: 0.3,
+			duration: 800,
+			yoyo: true,
+			repeat: -1,
+		});
+
 		this.time.delayedCall(500, () => {
 			this.input.keyboard?.once('keydown-SPACE', () => this.returnToMenu());
 			this.input.once('pointerdown', () => this.returnToMenu());
@@ -313,10 +362,41 @@ export class GameScene extends Phaser.Scene {
 			}
 		}
 
+		// Enemies that pass the bottom of the screen — penalty!
 		for (const enemy of this.enemies.getChildren()) {
-			if ((enemy as Phaser.GameObjects.Sprite).y > height + 40) {
+			if ((enemy as Phaser.GameObjects.Sprite).y > height + 20) {
 				enemy.destroy();
+				this.waveManager.onEnemyDestroyed();
+				this.takeDamage();
+				if (this.gameOver) return;
 			}
 		}
+	}
+
+	private updateWaveHud(): void {
+		this.waveText.setText(
+			`LVL ${this.waveManager.levelNumber}/${this.waveManager.totalLevels}  WAVE ${this.waveManager.waveNumber}/${this.waveManager.totalWavesInLevel}`,
+		);
+	}
+
+	private showWaveBanner(text: string): void {
+		const { width, height } = this.scale;
+		const banner = this.add
+			.text(width / 2, height * 0.2, text, {
+				fontSize: '22px',
+				fontFamily: 'monospace',
+				color: '#ffcc00',
+			})
+			.setOrigin(0.5)
+			.setAlpha(0);
+
+		this.tweens.add({
+			targets: banner,
+			alpha: 1,
+			duration: 300,
+			hold: 1500,
+			yoyo: true,
+			onComplete: () => banner.destroy(),
+		});
 	}
 }
