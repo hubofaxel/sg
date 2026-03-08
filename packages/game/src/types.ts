@@ -13,6 +13,10 @@ export interface GameMountOptions {
 		sfxVolume?: number;
 		musicVolume?: number;
 		showFps?: boolean;
+		/** Whether touch controls are enabled on capable devices */
+		touchControlsEnabled?: boolean;
+		/** Control scheme: 'wasd' | 'arrows' | 'touch' */
+		controlScheme?: string;
 	};
 }
 
