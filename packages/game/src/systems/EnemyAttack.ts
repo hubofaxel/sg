@@ -1,13 +1,15 @@
 import type Phaser from 'phaser';
+import type { BulletPool } from './ObjectPool';
 
 /**
  * EnemyAttack — handles enemy ranged attacks each frame.
  * Reads attackType, fireInterval, projectileDamage from enemy data.
+ * Uses BulletPool for projectile recycling instead of create/destroy.
  */
 
 export function updateEnemyAttack(
 	enemy: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
-	enemyBullets: Phaser.Physics.Arcade.Group,
+	bulletPool: BulletPool,
 	playerX: number,
 	playerY: number,
 	time: number,
@@ -26,10 +28,10 @@ export function updateEnemyAttack(
 
 	switch (attackType) {
 		case 'aimed-shot':
-			fireAimed(enemy, enemyBullets, playerX, playerY, damage);
+			fireAimed(enemy, bulletPool, playerX, playerY, damage);
 			break;
 		case 'spread-shot':
-			fireSpread(enemy, enemyBullets, damage);
+			fireSpread(enemy, bulletPool, damage);
 			break;
 		default:
 			break;
@@ -38,12 +40,11 @@ export function updateEnemyAttack(
 
 function fireAimed(
 	enemy: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
-	group: Phaser.Physics.Arcade.Group,
+	pool: BulletPool,
 	playerX: number,
 	playerY: number,
 	damage: number,
 ): void {
-	const scene = enemy.scene;
 	const speed = 200;
 
 	const dx = playerX - enemy.x;
@@ -54,15 +55,14 @@ function fireAimed(
 	const vx = (dx / len) * speed;
 	const vy = (dy / len) * speed;
 
-	spawnBullet(scene, group, enemy.x, enemy.y + 10, vx, vy, damage);
+	spawnBullet(pool, enemy.x, enemy.y + 10, vx, vy, damage);
 }
 
 function fireSpread(
 	enemy: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
-	group: Phaser.Physics.Arcade.Group,
+	pool: BulletPool,
 	damage: number,
 ): void {
-	const scene = enemy.scene;
 	const speed = 180;
 	const angles = [-20, 0, 20]; // degrees offset from straight down
 
@@ -70,24 +70,18 @@ function fireSpread(
 		const rad = ((90 + offset) * Math.PI) / 180;
 		const vx = Math.cos(rad) * speed;
 		const vy = Math.sin(rad) * speed;
-		spawnBullet(scene, group, enemy.x, enemy.y + 10, vx, vy, damage * 0.6);
+		spawnBullet(pool, enemy.x, enemy.y + 10, vx, vy, damage * 0.6);
 	}
 }
 
 function spawnBullet(
-	scene: Phaser.Scene,
-	group: Phaser.Physics.Arcade.Group,
+	pool: BulletPool,
 	x: number,
 	y: number,
 	vx: number,
 	vy: number,
 	damage: number,
 ): void {
-	const bullet = scene.add.rectangle(x, y, 4, 8, 0xff4444);
-	scene.physics.add.existing(bullet);
-	group.add(bullet);
-	const body = bullet.body as Phaser.Physics.Arcade.Body;
-	body.setVelocity(vx, vy);
-	body.setSize(4, 8);
+	const bullet = pool.acquire(x, y, vx, vy);
 	bullet.setData('damage', damage);
 }

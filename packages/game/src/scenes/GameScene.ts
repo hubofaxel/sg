@@ -5,8 +5,10 @@ import type { GameEventBus } from '../events';
 import { AudioManager } from '../systems/AudioManager';
 import { BossManager } from '../systems/BossManager';
 import { deathBurst, flashOnHit, hitStop, screenShake, spawnIn } from '../systems/CombatFeedback';
+import { DebugOverlay } from '../systems/DebugOverlay';
 import { updateEnemyAttack } from '../systems/EnemyAttack';
 import { updateEnemyMovement } from '../systems/EnemyMovement';
+import { BulletPool } from '../systems/ObjectPool';
 import { updateEnemyAnimation, updateShipBanking } from '../systems/SpriteFrames';
 import { WaveManager } from '../systems/WaveManager';
 import { SCENE_KEYS } from './index';
@@ -33,9 +35,10 @@ export class GameScene extends Phaser.Scene {
 		S: Phaser.Input.Keyboard.Key;
 		D: Phaser.Input.Keyboard.Key;
 	};
-	private bullets!: Phaser.Physics.Arcade.Group;
-	private enemyBullets!: Phaser.Physics.Arcade.Group;
+	private playerBulletPool!: BulletPool;
+	private enemyBulletPool!: BulletPool;
 	private enemies!: Phaser.Physics.Arcade.Group;
+	private debugOverlay!: DebugOverlay;
 	private score = 0;
 	private lives = PLAYER_MAX_LIVES;
 	private lastFired = 0;
@@ -100,28 +103,31 @@ export class GameScene extends Phaser.Scene {
 			D: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
 		};
 
-		// Bullet group
-		this.bullets = this.physics.add.group({
-			classType: Phaser.GameObjects.Rectangle,
-			runChildUpdate: false,
-			maxSize: 50,
+		// Bullet pools — recycle instead of create/destroy each frame
+		// Pool defaults match current weaponStats; if weapon-level-up changes
+		// projectile size at runtime, pass config override to acquire()
+		this.playerBulletPool = new BulletPool(this, {
+			defaultWidth: this.weaponStats.projectileHitbox.width,
+			defaultHeight: this.weaponStats.projectileHitbox.height,
+			defaultColor: 0x00ffff,
+			initialSize: 30,
 		});
 
-		// Enemy group
+		this.enemyBulletPool = new BulletPool(this, {
+			defaultWidth: 4,
+			defaultHeight: 8,
+			defaultColor: 0xff4444,
+			initialSize: 60, // boss spread-shot + concurrent minions can burst 40+
+		});
+
+		// Enemy group (not pooled — low spawn frequency, varied textures)
 		this.enemies = this.physics.add.group({
 			runChildUpdate: false,
 		});
 
-		// Enemy bullet group
-		this.enemyBullets = this.physics.add.group({
-			classType: Phaser.GameObjects.Rectangle,
-			runChildUpdate: false,
-			maxSize: 100,
-		});
-
-		// Collisions
+		// Collisions — use pool's underlying physics group for overlap detection
 		this.physics.add.overlap(
-			this.bullets,
+			this.playerBulletPool.physicsGroup,
 			this.enemies,
 			this.onBulletHitEnemy as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
 			undefined,
@@ -136,7 +142,7 @@ export class GameScene extends Phaser.Scene {
 		);
 		this.physics.add.overlap(
 			this.player,
-			this.enemyBullets,
+			this.enemyBulletPool.physicsGroup,
 			this.onEnemyBulletHitPlayer as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
 			undefined,
 			this,
@@ -194,6 +200,14 @@ export class GameScene extends Phaser.Scene {
 		const musicKey = this.waveManager.musicKey;
 		if (musicKey) this.audioManager.playMusic(musicKey);
 
+		// Debug overlay — toggle with backtick key
+		this.debugOverlay = new DebugOverlay({
+			scene: this,
+			playerBullets: this.playerBulletPool,
+			enemyBullets: this.enemyBulletPool,
+			enemies: this.enemies,
+		});
+
 		this.eventBus.emit('scene-change', 'game');
 	}
 
@@ -205,6 +219,7 @@ export class GameScene extends Phaser.Scene {
 		this.updateEnemies(time);
 		this.bossManager?.update(time);
 		this.cleanupOffscreen();
+		this.debugOverlay.update(time);
 	}
 
 	private updateEnemies(time: number): void {
@@ -212,7 +227,7 @@ export class GameScene extends Phaser.Scene {
 		for (const obj of this.enemies.getChildren()) {
 			const enemy = obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
 			updateEnemyMovement(enemy, width, this.player.x);
-			updateEnemyAttack(enemy, this.enemyBullets, this.player.x, this.player.y, time);
+			updateEnemyAttack(enemy, this.enemyBulletPool, this.player.x, this.player.y, time);
 			if (!enemy.getData('isBoss')) updateEnemyAnimation(enemy, time);
 		}
 	}
@@ -261,14 +276,7 @@ export class GameScene extends Phaser.Scene {
 			const vx = Math.cos(rad) * projectileSpeed;
 			const vy = Math.sin(rad) * projectileSpeed;
 
-			const w = projectileHitbox.width;
-			const h = projectileHitbox.height;
-			const bullet = this.add.rectangle(this.player.x, this.player.y - 20, w, h, 0x00ffff);
-			this.physics.add.existing(bullet);
-			this.bullets.add(bullet);
-			const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
-			bulletBody.setVelocity(vx, vy);
-			bulletBody.setSize(w, h);
+			const bullet = this.playerBulletPool.acquire(this.player.x, this.player.y - 20, vx, vy);
 			bullet.setData('damage', this.weaponStats.damage);
 		}
 
@@ -280,10 +288,11 @@ export class GameScene extends Phaser.Scene {
 		enemyObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
 	): void {
 		const bullet = bulletObj as Phaser.GameObjects.Rectangle;
+		if (!bullet.active) return; // already released this physics step
 		const enemy = enemyObj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
 
 		const damage = (bullet.getData('damage') as number) || this.weaponStats.damage;
-		bullet.destroy();
+		this.playerBulletPool.release(bullet);
 
 		this.audioManager.playSfx('sfx-hit', 0.2);
 
@@ -338,10 +347,10 @@ export class GameScene extends Phaser.Scene {
 		_playerObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
 		bulletObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
 	): void {
-		if (this.invincible || this.gameOver) return;
-
 		const bullet = bulletObj as Phaser.GameObjects.Rectangle;
-		bullet.destroy();
+		if (!bullet.active || this.invincible || this.gameOver) return;
+
+		this.enemyBulletPool.release(bullet);
 		this.takeDamage();
 	}
 
@@ -374,6 +383,8 @@ export class GameScene extends Phaser.Scene {
 		this.gameOver = true;
 		this.waveManager.stop();
 		this.bossManager?.stop();
+		this.playerBulletPool.releaseAll();
+		this.enemyBulletPool.releaseAll();
 		this.audioManager.playSfx('sfx-player-death', 0.6);
 		this.audioManager.stopMusic();
 		this.player.setAlpha(0.3);
@@ -438,10 +449,10 @@ export class GameScene extends Phaser.Scene {
 					deathBurst(bossObj);
 				}
 
-				// Destroy remaining minions
+				// Destroy remaining minions (skip already-dying ones)
 				for (const obj of this.enemies.getChildren()) {
 					const e = obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
-					if (!e.getData('isBoss')) {
+					if (e.active && !e.getData('isBoss')) {
 						deathBurst(e);
 					}
 				}
@@ -461,6 +472,8 @@ export class GameScene extends Phaser.Scene {
 
 	private handleStageClear(): void {
 		this.stageClear = true;
+		this.playerBulletPool.releaseAll();
+		this.enemyBulletPool.releaseAll();
 		this.audioManager.stopMusic();
 		const { width, height } = this.scale;
 
@@ -503,6 +516,9 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private returnToMenu(): void {
+		this.debugOverlay.destroy();
+		this.playerBulletPool.destroy();
+		this.enemyBulletPool.destroy();
 		this.audioManager.destroy();
 		this.scene.start(SCENE_KEYS.Menu);
 	}
@@ -527,17 +543,20 @@ export class GameScene extends Phaser.Scene {
 	private cleanupOffscreen(): void {
 		const { width, height } = this.scale;
 
-		for (const bullet of this.bullets.getChildren()) {
-			if ((bullet as Phaser.GameObjects.Rectangle).y < -20) {
-				bullet.destroy();
+		for (const obj of this.playerBulletPool.physicsGroup.getChildren()) {
+			if (!obj.active) continue;
+			const b = obj as Phaser.GameObjects.Rectangle;
+			if (b.y < -20 || b.y > height + 20 || b.x < -20 || b.x > width + 20) {
+				this.playerBulletPool.release(b);
 			}
 		}
 
 		// Enemy bullets that leave the screen
-		for (const bullet of this.enemyBullets.getChildren()) {
-			const b = bullet as Phaser.GameObjects.Rectangle;
+		for (const obj of this.enemyBulletPool.physicsGroup.getChildren()) {
+			if (!obj.active) continue;
+			const b = obj as Phaser.GameObjects.Rectangle;
 			if (b.y > height + 20 || b.y < -20 || b.x < -20 || b.x > width + 20) {
-				bullet.destroy();
+				this.enemyBulletPool.release(b);
 			}
 		}
 
