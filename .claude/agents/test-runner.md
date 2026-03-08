@@ -16,7 +16,7 @@ Test layers:
 
 When asked to add test coverage:
 1. Identify which layer the test belongs to
-2. Check existing tests with `grep -r "describe\|test(" packages/*/src/ apps/web/tests/`
+2. Check existing tests with the Grep tool: pattern `describe|test\(` in `packages/` and `apps/web/tests/`
 3. Write the test
 4. Run it: `pnpm test --run` or `pnpm test:e2e`
 5. Report pass/fail with output

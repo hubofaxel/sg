@@ -2,6 +2,22 @@
 // @sg/contracts — barrel export
 // ---------------------------------------------------------------------------
 
+// Assets
+export {
+	type AssetEntry,
+	AssetEntrySchema,
+	type AssetManifest,
+	AssetManifestSchema,
+	type AudioAsset,
+	AudioAssetSchema,
+	type FrameConfig,
+	FrameConfigSchema,
+	type ImageAsset,
+	ImageAssetSchema,
+	MANIFEST_VERSION,
+	type SpriteSheetAsset,
+	SpriteSheetAssetSchema,
+} from './asset/asset.schema';
 // Common primitives
 export {
 	type Cooldown,

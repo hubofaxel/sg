@@ -30,5 +30,9 @@ coverage/
 .turbo/
 .vite/
 
+# Asset generation working directory
+tools/asset-gen/.work/
+tools/asset-gen/.env
+
 # Claude Code local settings
 .claude/settings.local.json

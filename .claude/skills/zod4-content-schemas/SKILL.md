@@ -82,9 +82,10 @@ describe('WeaponSchema', () => {
 ### Barrel export pattern
 ```typescript
 // packages/contracts/src/index.ts
-export { WeaponSchema, type Weapon } from './weapon';
-export { EnemySchema, type Enemy } from './enemy';
-export { WaveSchema, type Wave } from './wave';
-export { SaveGameSchema, type SaveGame } from './saveGame';
-export { GameSettingsSchema, type GameSettings } from './gameSettings';
+// Each domain lives in its own subdirectory: domain/domain.schema.ts
+export { WeaponSchema, type Weapon } from './weapon/weapon.schema';
+export { EnemySchema, type Enemy } from './enemy/enemy.schema';
+export { WaveSchema, type Wave } from './wave/wave.schema';
+export { SaveGameSchema, type SaveGame } from './save/save.schema';
+export { GameSettingsSchema, type GameSettings } from './settings/settings.schema';
 ```

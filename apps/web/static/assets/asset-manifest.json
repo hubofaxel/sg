@@ -1,0 +1,150 @@
+{
+	"version": 1,
+	"generatedAt": "2026-03-08T06:16:56.481Z",
+	"assets": [
+		{
+			"type": "sprite-sheet",
+			"key": "ship-viper",
+			"path": "sprites/ships/ship-viper.png",
+			"frameConfig": {
+				"frameWidth": 64,
+				"frameHeight": 64,
+				"frameCount": 3,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "e5e3ef41f57642a8e9c19ede082e1cd27ca74394391bb4f788611a8dd86b0a0e",
+			"bytes": 589
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "enemy-drone",
+			"path": "sprites/enemies/enemy-drone.png",
+			"frameConfig": {
+				"frameWidth": 32,
+				"frameHeight": 32,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
+			"bytes": 289
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "enemy-weaver",
+			"path": "sprites/enemies/enemy-weaver.png",
+			"frameConfig": {
+				"frameWidth": 32,
+				"frameHeight": 32,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
+			"bytes": 289
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "enemy-bruiser",
+			"path": "sprites/enemies/enemy-bruiser.png",
+			"frameConfig": {
+				"frameWidth": 48,
+				"frameHeight": 48,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "8e8c72bef32e3f00a9c140f6b0bf7e09029fb549c9e37c4d78d5cbae2a00f04c",
+			"bytes": 379
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "enemy-kamikaze",
+			"path": "sprites/enemies/enemy-kamikaze.png",
+			"frameConfig": {
+				"frameWidth": 32,
+				"frameHeight": 32,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
+			"bytes": 289
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "enemy-zigzagger",
+			"path": "sprites/enemies/enemy-zigzagger.png",
+			"frameConfig": {
+				"frameWidth": 32,
+				"frameHeight": 32,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
+			"bytes": 289
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "boss-iron-sentinel",
+			"path": "sprites/bosses/boss-iron-sentinel.png",
+			"frameConfig": {
+				"frameWidth": 128,
+				"frameHeight": 128,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "b5350144d710a26d2284dc3c47b117b1382dec4a97277b173979bdad2f7bdf26",
+			"bytes": 1736
+		},
+		{
+			"type": "image",
+			"key": "bg-starfield-sparse",
+			"path": "backgrounds/bg-starfield-sparse.png",
+			"width": 1536,
+			"height": 1024,
+			"sha256": "e8e12ffae07966f6851be65c501f79a5a9e40345aa3c45ad0be0c51c28b5868d",
+			"bytes": 33699
+		},
+		{
+			"type": "image",
+			"key": "bg-starfield-dense",
+			"path": "backgrounds/bg-starfield-dense.png",
+			"width": 1536,
+			"height": 1024,
+			"sha256": "e8e12ffae07966f6851be65c501f79a5a9e40345aa3c45ad0be0c51c28b5868d",
+			"bytes": 33699
+		},
+		{
+			"type": "image",
+			"key": "bg-endless-void",
+			"path": "backgrounds/bg-endless-void.png",
+			"width": 1536,
+			"height": 1024,
+			"sha256": "e8e12ffae07966f6851be65c501f79a5a9e40345aa3c45ad0be0c51c28b5868d",
+			"bytes": 33699
+		},
+		{
+			"type": "audio",
+			"key": "music-outer-rim",
+			"paths": ["audio/music/music-outer-rim.ogg"]
+		},
+		{
+			"type": "image",
+			"key": "default-bg",
+			"path": "backgrounds/default-bg.png",
+			"width": 480,
+			"height": 320,
+			"sha256": "6c54b0e43a6dbc4333b5033ea492cd9a748a80dbdf57bf1434a910a1a4dd3001",
+			"bytes": 4306
+		},
+		{
+			"type": "audio",
+			"key": "default-music",
+			"paths": ["audio/music/default-music.ogg"]
+		}
+	]
+}
