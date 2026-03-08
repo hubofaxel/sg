@@ -9,6 +9,7 @@ export interface WaveManagerConfig {
 	scene: Phaser.Scene;
 	enemies: Phaser.Physics.Arcade.Group;
 	screenWidth: number;
+	stageIndex?: number;
 	onEnemySpawned: (
 		enemy: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
 		data: Enemy,
@@ -48,8 +49,8 @@ export class WaveManager {
 		this.onBossEncounter = config.onBossEncounter;
 		this.onStageClear = config.onStageClear;
 
-		// Use first stage from campaign
-		this.stage = campaign.stages[0];
+		const stageIdx = config.stageIndex ?? 0;
+		this.stage = campaign.stages[stageIdx];
 	}
 
 	get currentLevel(): Level {
@@ -82,6 +83,26 @@ export class WaveManager {
 
 	get totalLevels(): number {
 		return this.stage.levels.length;
+	}
+
+	get stageIndex(): number {
+		return campaign.stages.indexOf(this.stage);
+	}
+
+	get totalStages(): number {
+		return campaign.stages.length;
+	}
+
+	get hasNextStage(): boolean {
+		return this.stageIndex < campaign.stages.length - 1;
+	}
+
+	get clearReward(): number {
+		return this.stage.clearReward ?? 0;
+	}
+
+	get experienceReward(): number {
+		return this.stage.experienceReward ?? 0;
 	}
 
 	get musicKey(): string | undefined {

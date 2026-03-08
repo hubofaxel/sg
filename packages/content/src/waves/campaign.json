@@ -240,6 +240,260 @@
 					]
 				}
 			]
+		},
+		{
+			"id": "stage-2-deep-void",
+			"name": "Deep Void",
+			"description": "Push into hostile territory. Tougher enemies, faster spawns.",
+			"index": 1,
+			"bossId": "boss-void-reaper",
+			"musicKey": "default-music",
+			"clearReward": 400,
+			"experienceReward": 200,
+			"levels": [
+				{
+					"id": "s2-level-1",
+					"name": "Border Crossing",
+					"index": 0,
+					"backgroundKey": "bg-starfield-dense",
+					"scrollSpeed": 1.3,
+					"waves": [
+						{
+							"index": 0,
+							"predelaySeconds": 1.5,
+							"spawns": [
+								{
+									"enemyId": "enemy-weaver",
+									"count": 4,
+									"formation": "row",
+									"delaySeconds": 0,
+									"spawnInterval": 0.4
+								},
+								{
+									"enemyId": "enemy-drone",
+									"count": 4,
+									"formation": "scatter",
+									"delaySeconds": 1.5,
+									"spawnInterval": 0.3
+								}
+							]
+						},
+						{
+							"index": 1,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-zigzagger",
+									"count": 3,
+									"formation": "v-formation",
+									"delaySeconds": 0,
+									"spawnInterval": 0.6
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 3,
+									"formation": "scatter",
+									"delaySeconds": 2,
+									"spawnInterval": 0.5
+								}
+							]
+						},
+						{
+							"index": 2,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 2,
+									"formation": "row",
+									"delaySeconds": 0,
+									"spawnInterval": 1.0
+								},
+								{
+									"enemyId": "enemy-weaver",
+									"count": 4,
+									"formation": "scatter",
+									"delaySeconds": 1,
+									"spawnInterval": 0.4
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 2,
+									"formation": "scatter",
+									"delaySeconds": 2.5,
+									"spawnInterval": 0.6
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "s2-level-2",
+					"name": "Void Corridor",
+					"index": 1,
+					"backgroundKey": "bg-endless-void",
+					"scrollSpeed": 1.5,
+					"waves": [
+						{
+							"index": 0,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-zigzagger",
+									"count": 4,
+									"formation": "scatter",
+									"delaySeconds": 0,
+									"spawnInterval": 0.5
+								}
+							]
+						},
+						{
+							"index": 1,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 2,
+									"formation": "row",
+									"delaySeconds": 0,
+									"spawnInterval": 1.2
+								},
+								{
+									"enemyId": "enemy-drone",
+									"count": 6,
+									"formation": "grid",
+									"delaySeconds": 1,
+									"spawnInterval": 0.2
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 4,
+									"formation": "scatter",
+									"delaySeconds": 2.5,
+									"spawnInterval": 0.4
+								}
+							]
+						},
+						{
+							"index": 2,
+							"predelaySeconds": 0.5,
+							"spawns": [
+								{
+									"enemyId": "enemy-weaver",
+									"count": 5,
+									"formation": "v-formation",
+									"delaySeconds": 0,
+									"spawnInterval": 0.3
+								},
+								{
+									"enemyId": "enemy-zigzagger",
+									"count": 3,
+									"formation": "scatter",
+									"delaySeconds": 1.5,
+									"spawnInterval": 0.7
+								},
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 2,
+									"formation": "row",
+									"delaySeconds": 3,
+									"spawnInterval": 1.0
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "s2-level-3",
+					"name": "Reaper's Domain",
+					"index": 2,
+					"backgroundKey": "bg-endless-void",
+					"scrollSpeed": 1.6,
+					"waves": [
+						{
+							"index": 0,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 3,
+									"formation": "row",
+									"delaySeconds": 0,
+									"spawnInterval": 0.8
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 4,
+									"formation": "scatter",
+									"delaySeconds": 1.5,
+									"spawnInterval": 0.4
+								}
+							]
+						},
+						{
+							"index": 1,
+							"predelaySeconds": 0.5,
+							"spawns": [
+								{
+									"enemyId": "enemy-zigzagger",
+									"count": 4,
+									"formation": "scatter",
+									"delaySeconds": 0,
+									"spawnInterval": 0.5
+								},
+								{
+									"enemyId": "enemy-weaver",
+									"count": 4,
+									"formation": "v-formation",
+									"delaySeconds": 1,
+									"spawnInterval": 0.3
+								},
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 1,
+									"formation": "column",
+									"delaySeconds": 2.5,
+									"spawnInterval": 0.5
+								}
+							]
+						},
+						{
+							"index": 2,
+							"predelaySeconds": 0.5,
+							"spawns": [
+								{
+									"enemyId": "enemy-drone",
+									"count": 10,
+									"formation": "grid",
+									"delaySeconds": 0,
+									"spawnInterval": 0.15
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 5,
+									"formation": "scatter",
+									"delaySeconds": 1.5,
+									"spawnInterval": 0.3
+								},
+								{
+									"enemyId": "enemy-zigzagger",
+									"count": 3,
+									"formation": "scatter",
+									"delaySeconds": 3,
+									"spawnInterval": 0.6
+								},
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 2,
+									"formation": "row",
+									"delaySeconds": 4,
+									"spawnInterval": 1.0
+								}
+							]
+						}
+					]
+				}
+			]
 		}
 	]
 }

@@ -20,6 +20,7 @@ export interface GameMountOptions {
 export interface GameEventMap {
 	score: [score: number];
 	death: [];
+	'stage-clear': [stageIndex: number, score: number, currency: number];
 	'scene-change': [scene: string];
 	ready: [];
 	error: [error: Error];

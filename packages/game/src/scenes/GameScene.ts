@@ -55,12 +55,13 @@ export class GameScene extends Phaser.Scene {
 	private audioManager!: AudioManager;
 	private weaponStats!: WeaponLevelStats;
 	private stageClear = false;
+	private stageIndex = 0;
 
 	constructor() {
 		super({ key: SCENE_KEYS.Game });
 	}
 
-	init(): void {
+	init(data?: { stageIndex?: number }): void {
 		this.eventBus = this.registry.get('eventBus') as GameEventBus;
 		this.score = 0;
 		this.lives = PLAYER_MAX_LIVES;
@@ -70,6 +71,7 @@ export class GameScene extends Phaser.Scene {
 		this.stageClear = false;
 		this.bossManager = null;
 		this.weaponStats = DEFAULT_WEAPON.levels[WEAPON_LEVEL - 1];
+		this.stageIndex = data?.stageIndex ?? 0;
 	}
 
 	create(): void {
@@ -176,6 +178,7 @@ export class GameScene extends Phaser.Scene {
 			scene: this,
 			enemies: this.enemies,
 			screenWidth: width,
+			stageIndex: this.stageIndex,
 			onEnemySpawned: (enemy, _data) => {
 				spawnIn(enemy);
 			},
@@ -479,7 +482,28 @@ export class GameScene extends Phaser.Scene {
 		this.enemyBulletPool.releaseAll();
 		// Don't releaseAll drops on stage clear — let player collect remaining pickups
 		this.audioManager.stopMusic();
-		this.hud.showStageClear(this.score, this.dropManager.currency, () => this.returnToMenu());
+		this.audioManager.playSfx('sfx-stage-clear', 0.6);
+
+		// Award stage clear reward
+		const reward = this.waveManager.clearReward;
+		this.dropManager.addCurrency(reward);
+		this.hud.updateCurrency(this.dropManager.currency);
+
+		this.eventBus.emit('stage-clear', this.stageIndex, this.score, this.dropManager.currency);
+
+		const hasNext = this.waveManager.hasNextStage;
+		const onContinue = hasNext ? () => this.startNextStage() : () => this.returnToMenu();
+
+		this.hud.showStageClear(this.score, this.dropManager.currency, reward, hasNext, onContinue);
+	}
+
+	private startNextStage(): void {
+		this.debugOverlay.destroy();
+		this.playerBulletPool.destroy();
+		this.enemyBulletPool.destroy();
+		this.dropManager.destroy();
+		this.audioManager.destroy();
+		this.scene.restart({ stageIndex: this.stageIndex + 1 });
 	}
 
 	private returnToMenu(): void {

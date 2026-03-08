@@ -135,11 +135,17 @@ export class HudManager {
 		});
 	}
 
-	showStageClear(score: number, currency: number, onContinue: () => void): void {
+	showStageClear(
+		score: number,
+		currency: number,
+		reward: number,
+		hasNextStage: boolean,
+		onContinue: () => void,
+	): void {
 		const { width, height } = this.scene.scale;
 
 		this.scene.add
-			.text(width / 2, height * 0.3, 'STAGE CLEAR!', {
+			.text(width / 2, height * 0.28, 'STAGE CLEAR!', {
 				fontSize: '40px',
 				fontFamily: 'monospace',
 				color: '#00ff88',
@@ -147,7 +153,7 @@ export class HudManager {
 			.setOrigin(0.5);
 
 		this.scene.add
-			.text(width / 2, height * 0.42, `SCORE: ${score}`, {
+			.text(width / 2, height * 0.4, `SCORE: ${score}`, {
 				fontSize: '24px',
 				fontFamily: 'monospace',
 				color: '#ffffff',
@@ -155,15 +161,29 @@ export class HudManager {
 			.setOrigin(0.5);
 
 		this.scene.add
-			.text(width / 2, height * 0.5, `CREDITS: ${currency}`, {
+			.text(width / 2, height * 0.48, `CREDITS: ${currency}`, {
 				fontSize: '18px',
 				fontFamily: 'monospace',
 				color: '#ffdd00',
 			})
 			.setOrigin(0.5);
 
+		if (reward > 0) {
+			this.scene.add
+				.text(width / 2, height * 0.54, `BONUS: +${reward} CREDITS`, {
+					fontSize: '16px',
+					fontFamily: 'monospace',
+					color: '#88ff88',
+				})
+				.setOrigin(0.5);
+		}
+
+		const promptText = hasNextStage
+			? 'PRESS SPACE OR CLICK FOR NEXT STAGE'
+			: 'PRESS SPACE OR CLICK TO CONTINUE';
+
 		const cont = this.scene.add
-			.text(width / 2, height * 0.6, 'PRESS SPACE OR CLICK TO CONTINUE', {
+			.text(width / 2, height * 0.63, promptText, {
 				fontSize: '16px',
 				fontFamily: 'monospace',
 				color: '#aaaaaa',
