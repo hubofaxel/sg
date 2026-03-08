@@ -21,6 +21,7 @@
 				"projectileDamage": 8,
 				"fireInterval": 1.5,
 				"speedMultiplier": 1.0,
+				"spriteFrame": 0,
 				"minionSpawns": []
 			},
 			{
@@ -32,6 +33,7 @@
 				"projectileDamage": 6,
 				"fireInterval": 2.0,
 				"speedMultiplier": 1.3,
+				"spriteFrame": 0,
 				"minionSpawns": [{ "enemyId": "enemy-drone", "interval": 4.0, "maxConcurrent": 3 }]
 			},
 			{
@@ -43,6 +45,7 @@
 				"projectileDamage": 7,
 				"fireInterval": 1.5,
 				"speedMultiplier": 1.6,
+				"spriteFrame": 1,
 				"minionSpawns": [
 					{ "enemyId": "enemy-drone", "interval": 3.0, "maxConcurrent": 4 },
 					{ "enemyId": "enemy-kamikaze", "interval": 5.0, "maxConcurrent": 2 }

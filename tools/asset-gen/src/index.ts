@@ -48,6 +48,25 @@ async function main(): Promise<void> {
 			break;
 		}
 
+		case 'staging': {
+			const { listStaging } = await import('./commands/staging.js');
+			const key = parseFlag('--key');
+			listStaging(key ?? undefined);
+			break;
+		}
+
+		case 'promote': {
+			const { promoteKey } = await import('./commands/promote.js');
+			const key = parseFlag('--key');
+			if (!key) {
+				console.error('Usage: promote --key <asset-key> [--timestamp <ts>]');
+				process.exit(1);
+			}
+			const timestamp = parseFlag('--timestamp');
+			promoteKey(key, timestamp ?? undefined);
+			break;
+		}
+
 		case 'assemble': {
 			const { assembleAll, assembleKey } = await import('./commands/assemble.js');
 			const key = parseFlag('--key');
@@ -85,7 +104,9 @@ async function main(): Promise<void> {
 
 		default:
 			console.error(`Unknown command: ${command ?? '(none)'}`);
-			console.error('Available: generate, assemble, manifest, validate, placeholder');
+			console.error(
+				'Available: generate, staging, promote, assemble, manifest, validate, placeholder',
+			);
 			process.exit(1);
 	}
 }

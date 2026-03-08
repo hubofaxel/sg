@@ -7,24 +7,52 @@ description: AI asset generation patterns using OpenAI (images) and ElevenLabs (
 
 Generate pixel art game assets using OpenAI image models and audio using ElevenLabs.
 
+### Staging → Review → Promote
+
+**All generated assets go through staging. Never write directly to runtime.**
+
+1. `generate --key <key>` → `.work/staging/<key>/<timestamp>/` + `metadata.json`
+2. `staging --key <key>` → list candidates for review
+3. Review against acceptance criteria in `docs/asset-contracts.md`
+4. `promote --key <key>` → copy accepted candidate to `apps/web/static/assets/`
+5. `manifest` → rebuild manifest from runtime files
+
+### Source strategy classification
+
+Every asset is one of:
+- **wired-existing** — on disk, just needs code to use it
+- **generated-final** — AI output ships directly (after staging review)
+- **generated-source** — AI output needs manual cleanup before shipping
+- **code-drawn** — rendered at runtime via Phaser API
+- **deferred** — planned but not yet needed
+
+### The <32px rule
+Assets under ~32px shipped size default to **code-drawn**. AI micro-sprites lose quality at extreme reduction. Code-drawn effects are sharper at small scale.
+
+### Two-pass generation policy
+1. First pass: **medium** quality
+2. Review against acceptance criteria
+3. Only re-run failed candidates at **high** quality
+
 ### Image Generation — Three lanes
 
 #### Lane A — Single-image canonical assets
 For: ships, enemy base poses, bosses, backgrounds
 1. Generate one strong transparent PNG via `images.generate`
 2. Downscale / quantize / crop with Sharp
-3. Approve or reject
-4. If approved, treat as canonical parent for Lane B edits
+3. Stage and review
+4. If approved, promote and treat as canonical parent for Lane B edits
 
 #### Lane B — Edit-derived frame assets
 For: bank states, hover variants, phase variants
-1. Start from canonical parent image (Lane A output)
+1. Start from canonical parent image (Lane A output, must be promoted)
 2. Use `images.edit` to preserve silhouette, framing, palette
 3. Assemble resulting frames into sprite sheet
 
 #### Lane C — Direct sheet/effect generation
 For: explosions, beam strips, projectile trails
 Direct sprite sheet prompts — these assets tolerate inter-frame drift.
+See `docs/vfx-prompt-library.md` for curated VFX prompt templates (explosions, hits, shields, power-ups).
 
 ### Image model selection
 | Use case | Model | API |
@@ -46,15 +74,16 @@ Direct sprite sheet prompts — these assets tolerate inter-frame drift.
 - Uses `elevenlabs.music.compose()` in two modes:
   - **Prompt mode**: `{ prompt, musicLengthMs }` — simple text-based generation
   - **Composition plan mode**: `{ compositionPlan }` — structured multi-section generation
-- Composition plans have: `positiveGlobalStyles`, `negativeGlobalStyles`, `sections[]`
-- Each section has: `sectionName`, `positiveLocalStyles`, `negativeLocalStyles`, `durationMs`, `lines[]`
 - Output format: MP3
 
 ### Style bible
 All prompts compose with shared directives from `style-bible.ts`:
 - **Visual**: Pixel art, top-down shmup perspective, gameplay readability, crisp silhouettes, max 16 colors, no text/watermarks, transparent bg for sprites
+- **Effects/VFX**: Strong silhouette readability, crisp pixels, no anti-aliasing, clear ignition→peak→breakup→dissipation progression, damage=warm palette, energy=cool palette
 - **SFX**: Retro arcade, punchy transients, 8/16-bit inspired with modern clarity, short duration
 - **Music**: Electronic game soundtrack, space shooter theme, driving rhythm, loopable, not fatiguing
+
+Scale hints are auto-appended by `buildPrompt()` based on `frameWidth` — no manual scale modifiers needed.
 
 ### API Keys
 Keys loaded via **direnv + gopass** (not `.env` files):
@@ -66,7 +95,6 @@ Keys loaded via **direnv + gopass** (not `.env` files):
 The `generate` command auto-resizes OpenAI output (1024x1024) to correct sheet dimensions:
 - Sprite sheets: resized to `(frameWidth * frameCount) x frameHeight` via nearest-neighbor
 - Non-sprite images (backgrounds): saved at raw resolution
-- This ensures Phaser's frame slicer gets correctly-dimensioned sheets
 
 ### Art direction best practices
 - Each sprite prompt should specify: frame layout, pixel dimensions, animation delta between frames
@@ -76,11 +104,14 @@ The `generate` command auto-resizes OpenAI output (1024x1024) to correct sheet d
 - Frame size (visual) is independent of hitbox size (physics) in content JSON
 
 ### Adding a new asset
-1. Add catalog entry in `asset-catalog.ts` (set `sourceMode` to appropriate engine)
-2. Add prompt template in `prompt-templates.ts` (`TEMPLATES` for images, `AUDIO_TEMPLATES` for audio)
-3. If new asset type needed, update `packages/contracts/src/asset/asset.schema.ts` and barrel
-4. Run `pnpm asset:placeholder` to generate placeholder (images only)
-5. Generate: `pnpm --filter @sg/asset-gen cli generate --key <key>`
-6. Run `pnpm asset:manifest` to update manifest
-7. Run `pnpm lint:fix` to format manifest JSON
-8. Run `pnpm asset:validate` to verify
+1. Add contract entry in `docs/asset-contracts.md` with source strategy and acceptance criteria
+2. Add catalog entry in `asset-catalog.ts` (set `sourceMode` to appropriate engine)
+3. Add prompt template in `prompt-templates.ts` (`TEMPLATES` for images, `AUDIO_TEMPLATES` for audio)
+4. If new asset type needed, update `packages/contracts/src/asset/asset.schema.ts` and barrel
+5. Run `pnpm asset:placeholder` to generate placeholder (images only)
+6. Generate: `pnpm --filter @sg/asset-gen cli generate --key <key>`
+7. Review: `pnpm --filter @sg/asset-gen cli staging --key <key>`
+8. Promote: `pnpm --filter @sg/asset-gen cli promote --key <key>`
+9. Run `pnpm asset:manifest` to update manifest
+10. Run `pnpm lint:fix` to format manifest JSON
+11. Run `pnpm asset:validate` to verify

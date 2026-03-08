@@ -16,10 +16,14 @@ src/
   common/base.schema.ts        # EntityId, Vec2, Hitbox, StatRange, DropTable, Cooldown, CombatFeedback
   weapon/weapon.schema.ts      # Weapon, WeaponLevel, SecondaryWeapon, WeaponRecipe
   ship/ship.schema.ts          # Ship, ShipStats, ShipUpgrade, PlayerShipState
-  enemy/enemy.schema.ts        # Enemy, Boss, BossPhase, MovementPattern, AttackType
+  enemy/enemy.schema.ts        # Enemy, Boss, BossPhase (incl. spriteFrame), MovementPattern, AttackType
   wave/wave.schema.ts          # Wave, Level, Stage, Campaign, EndlessMode
   economy/economy.schema.ts    # ExperienceTable, ShopItem, PlayerEconomyState
   settings/settings.schema.ts  # GameSettings, ControlScheme
   save/save.schema.ts          # SaveGame, migrations, createNewSave
   index.ts                     # Barrel export — all schemas + types
 ```
+
+## Schema vs runtime gaps
+- `AttackTypeSchema` includes `'beam'` — not yet implemented in `EnemyAttack.ts` (falls through to no-op)
+- `BossPhaseSchema.spriteFrame` — implemented in `SpriteFrames.ts`, but weak-point damage multiplier logic not yet built

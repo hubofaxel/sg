@@ -21,8 +21,16 @@ src/
 
 ## Key content fields consumed by game systems
 
+### Enemy fields → game systems
 - **movementPattern** → `EnemyMovement` system (linear, sine-wave, zigzag, spiral, strafe-hover)
 - **attackType, fireInterval, projectileDamage** → `EnemyAttack` system (aimed-shot, spread-shot, contact-only, ram)
 - **combatFeedback** → `CombatFeedback` system (optional — omit for schema defaults)
   - Bruiser and Iron Sentinel have explicit overrides for heavier visual weight
   - Other enemies use schema defaults (80ms flash, 30ms hit-stop, 150ms death burst, 200ms spawn-in)
+
+### Boss fields → BossManager
+- **phases[].healthThreshold** → triggers phase transition when boss HP ratio drops below threshold
+- **phases[].movementPattern, attackType, speedMultiplier** → updates boss behavior per phase
+- **phases[].minionSpawns** → spawns minions with interval and maxConcurrent cap
+- **entryPosition, anchorPosition** → boss entry animation (tween from entry to anchor)
+- **Stage.bossId** → links stage to boss encounter after all waves clear
