@@ -77,8 +77,11 @@ export class GameScene extends Phaser.Scene {
 	create(): void {
 		const { width, height } = this.scale;
 
-		// Audio
-		this.audioManager = new AudioManager(this);
+		// Audio — read initial volume from registry (set by mountGame from options)
+		const volumes = this.registry.get('audioVolumes') as
+			| import('../systems/AudioManager').AudioVolumes
+			| undefined;
+		this.audioManager = new AudioManager(this, volumes);
 
 		// Background — use first level's background key from campaign
 		this.setBackground(width, height);

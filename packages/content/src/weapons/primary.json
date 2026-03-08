@@ -12,7 +12,7 @@
 				"cooldown": { "duration": 0.25, "startOn": "fire" },
 				"projectileCount": 1,
 				"spreadAngle": 0,
-				"projectileHitbox": { "width": 4, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 8, "height": 14, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 0
 			},
 			{
@@ -22,7 +22,7 @@
 				"cooldown": { "duration": 0.22, "startOn": "fire" },
 				"projectileCount": 1,
 				"spreadAngle": 0,
-				"projectileHitbox": { "width": 4, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 8, "height": 14, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 100
 			},
 			{
@@ -32,7 +32,7 @@
 				"cooldown": { "duration": 0.2, "startOn": "fire" },
 				"projectileCount": 2,
 				"spreadAngle": 5,
-				"projectileHitbox": { "width": 4, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 8, "height": 14, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 300
 			},
 			{
@@ -42,7 +42,7 @@
 				"cooldown": { "duration": 0.18, "startOn": "fire" },
 				"projectileCount": 2,
 				"spreadAngle": 5,
-				"projectileHitbox": { "width": 5, "height": 14, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 10, "height": 16, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 600
 			},
 			{
@@ -52,7 +52,7 @@
 				"cooldown": { "duration": 0.15, "startOn": "fire" },
 				"projectileCount": 3,
 				"spreadAngle": 8,
-				"projectileHitbox": { "width": 5, "height": 14, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 10, "height": 16, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 1200
 			}
 		]
@@ -70,7 +70,7 @@
 				"cooldown": { "duration": 0.4, "startOn": "fire" },
 				"projectileCount": 3,
 				"spreadAngle": 30,
-				"projectileHitbox": { "width": 4, "height": 8, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 8, "height": 10, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 0
 			},
 			{
@@ -80,7 +80,7 @@
 				"cooldown": { "duration": 0.38, "startOn": "fire" },
 				"projectileCount": 3,
 				"spreadAngle": 35,
-				"projectileHitbox": { "width": 4, "height": 8, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 8, "height": 10, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 150
 			},
 			{
@@ -90,7 +90,7 @@
 				"cooldown": { "duration": 0.35, "startOn": "fire" },
 				"projectileCount": 5,
 				"spreadAngle": 45,
-				"projectileHitbox": { "width": 4, "height": 8, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 8, "height": 10, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 400
 			},
 			{
@@ -100,7 +100,7 @@
 				"cooldown": { "duration": 0.32, "startOn": "fire" },
 				"projectileCount": 5,
 				"spreadAngle": 50,
-				"projectileHitbox": { "width": 5, "height": 10, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 10, "height": 12, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 800
 			},
 			{
@@ -110,7 +110,7 @@
 				"cooldown": { "duration": 0.28, "startOn": "fire" },
 				"projectileCount": 7,
 				"spreadAngle": 60,
-				"projectileHitbox": { "width": 5, "height": 10, "offset": { "x": 0, "y": 0 } },
+				"projectileHitbox": { "width": 10, "height": 12, "offset": { "x": 0, "y": 0 } },
 				"upgradeCost": 1500
 			}
 		]
