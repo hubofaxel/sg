@@ -14,7 +14,7 @@ src/
   weapons/primary.json         # 4 weapon definitions (laser, spread, missile, beam)
   ships/starter.json           # Starter ship (Viper) with upgrade paths
   enemies/v1-enemies.json      # 5 v1 enemy types
-  enemies/bosses.json          # Boss definitions (Iron Sentinel)
+  enemies/bosses.json          # Boss definitions (Iron Sentinel, Void Reaper)
   waves/campaign.json          # Campaign structure (stages, levels, waves)
   progression/progression.json # Experience table + endless mode config
   index.ts                     # Barrel export — typed content constants
