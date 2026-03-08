@@ -53,6 +53,19 @@ export const STYLE_BIBLE = {
 		'intimidating but still pixel-art readable',
 		'multiple visual details: turrets, vents, energy lines, rivets',
 	],
+
+	effects: [
+		'strong silhouette readability and clarity at small in-game scale',
+		'crisp pixel edges, no anti-aliasing, no soft glow, no blur, no painterly rendering',
+		'centered composition with consistent frame-to-frame alignment',
+		'clear progression from ignition to peak blast to breakup to dissipation',
+		'high contrast, sharp shock shapes, controlled color ramps',
+		'no oversized smoke clouds, no realistic volumetric simulation',
+		'damage effects: white core, yellow, orange, red, dark brown smoke',
+		'energy effects: white, cyan, electric blue, violet',
+		'isolated asset on transparent background, no shadows outside the effect',
+	],
+
 	sfx: [
 		'retro arcade sound effect',
 		'punchy and immediate, no long reverb tails',

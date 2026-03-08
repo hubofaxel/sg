@@ -52,6 +52,7 @@ For: bank states, hover variants, phase variants
 #### Lane C — Direct sheet/effect generation
 For: explosions, beam strips, projectile trails
 Direct sprite sheet prompts — these assets tolerate inter-frame drift.
+See `docs/vfx-prompt-library.md` for curated VFX prompt templates (explosions, hits, shields, power-ups).
 
 ### Image model selection
 | Use case | Model | API |
@@ -78,8 +79,11 @@ Direct sprite sheet prompts — these assets tolerate inter-frame drift.
 ### Style bible
 All prompts compose with shared directives from `style-bible.ts`:
 - **Visual**: Pixel art, top-down shmup perspective, gameplay readability, crisp silhouettes, max 16 colors, no text/watermarks, transparent bg for sprites
+- **Effects/VFX**: Strong silhouette readability, crisp pixels, no anti-aliasing, clear ignition→peak→breakup→dissipation progression, damage=warm palette, energy=cool palette
 - **SFX**: Retro arcade, punchy transients, 8/16-bit inspired with modern clarity, short duration
 - **Music**: Electronic game soundtrack, space shooter theme, driving rhythm, loopable, not fatiguing
+
+Scale hints are auto-appended by `buildPrompt()` based on `frameWidth` — no manual scale modifiers needed.
 
 ### API Keys
 Keys loaded via **direnv + gopass** (not `.env` files):

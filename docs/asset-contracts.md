@@ -135,6 +135,14 @@ AI image generation produces 1024x1024+ output that gets reduced to final size. 
 - No visual noise that obscures gameplay
 - Consistent with pixel art aesthetic (no smooth gradients)
 
+### VFX / Effects (generated, 32px+)
+- Strong silhouette readability at shipped scale
+- Clear frame-to-frame progression (ignition → peak → breakup → dissipation)
+- Consistent color language: damage=warm (white/yellow/orange/red), energy=cool (white/cyan/blue/violet)
+- Centered and aligned consistently across all frames in sheet
+- No anti-aliasing, no soft glow, no painterly rendering
+- See `docs/vfx-prompt-library.md` for full prompt templates and patterns
+
 ## Generation Policy
 
 ### Two-pass generation

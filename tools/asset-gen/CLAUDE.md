@@ -52,8 +52,9 @@ API keys are loaded via **direnv + gopass** (not `.env` files):
 
 ## Key paths
 - `src/config/asset-catalog.ts` — single source of truth for every asset key (dimensions, generation params)
-- `src/config/style-bible.ts` — shared visual + audio style directives for all prompts
-- `src/config/prompt-templates.ts` — per-key prompt builder (image + audio templates)
+- `src/config/style-bible.ts` — shared visual + audio style directives for all prompts (includes `effects` category for VFX)
+- `src/config/prompt-templates.ts` — per-key prompt builder (image + audio templates, auto-appends scale hints from frame dimensions)
+- `docs/vfx-prompt-library.md` — curated VFX prompt reference: explosion, hit, shield, power-up templates with color language, scale modifiers, and workflow prompts
 - `src/commands/generate.ts` — AI generation → staging directory
 - `src/commands/promote.ts` — promote staging candidate to runtime path
 - `src/commands/staging.ts` — list staging candidates for review

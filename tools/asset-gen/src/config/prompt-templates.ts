@@ -131,15 +131,7 @@ export function buildPrompt(entry: AssetCatalogEntry): string {
 		throw new Error(`No prompt template for promptId: ${entry.promptId ?? entry.key}`);
 	}
 
-	const styleCategories: (
-		| 'sprites'
-		| 'backgrounds'
-		| 'ships'
-		| 'enemies'
-		| 'bosses'
-		| 'sfx'
-		| 'music'
-	)[] = [];
+	const styleCategories: (keyof typeof import('./style-bible.js').STYLE_BIBLE)[] = [];
 
 	if (entry.kind === 'sprite-sheet' || entry.kind === 'image') {
 		if (entry.group === 'backgrounds') {
@@ -152,10 +144,26 @@ export function buildPrompt(entry: AssetCatalogEntry): string {
 	if (entry.group === 'ships') styleCategories.push('ships');
 	if (entry.group === 'enemies') styleCategories.push('enemies');
 	if (entry.group === 'bosses') styleCategories.push('bosses');
+	if (entry.group === 'effects' || entry.group === 'projectiles') styleCategories.push('effects');
 
 	const style = getStyleDirectives(...styleCategories);
 
-	return `${template.subject}\n\n${template.details}\n\nStyle requirements: ${style}`;
+	// Add scale-awareness for sprite sheets
+	let scaleHint = '';
+	if (entry.frameWidth) {
+		const size = Math.max(entry.frameWidth, entry.frameHeight ?? entry.frameWidth);
+		if (size <= 32) {
+			scaleHint =
+				' Design this to read clearly at approximately 32x32 in-game scale. Use strong silhouette first, then modest internal breakup.';
+		} else if (size <= 48) {
+			scaleHint =
+				' Design this to read clearly at approximately 48x48 in-game scale. Use strong silhouette with readable internal structure.';
+		} else if (size >= 64) {
+			scaleHint = ` Design this to read clearly at approximately ${size}x${size} in-game scale. Use layered shapes, secondary breakup, and richer internal pixel structure while keeping the silhouette strong.`;
+		}
+	}
+
+	return `${template.subject}\n\n${template.details}\n\nStyle requirements: ${style}${scaleHint}`;
 }
 
 /** Build an audio prompt for ElevenLabs SFX or music generation */
