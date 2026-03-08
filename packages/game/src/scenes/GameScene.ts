@@ -10,8 +10,11 @@ import { DropManager } from '../systems/DropManager';
 import { updateEnemyAttack } from '../systems/EnemyAttack';
 import { updateEnemyMovement } from '../systems/EnemyMovement';
 import { HudManager } from '../systems/HudManager';
+import type { InputAdapter } from '../systems/InputIntent';
+import { KeyboardInput } from '../systems/KeyboardInput';
 import { BulletPool } from '../systems/ObjectPool';
 import { updateEnemyAnimation, updateShipBanking } from '../systems/SpriteFrames';
+import { TouchInput } from '../systems/TouchInput';
 import { WaveManager } from '../systems/WaveManager';
 import { SCENE_KEYS } from './index';
 
@@ -32,13 +35,7 @@ const INVINCIBLE_DURATION = 1500; // ms after taking a hit
 export class GameScene extends Phaser.Scene {
 	private eventBus!: GameEventBus;
 	private player!: Phaser.GameObjects.Sprite;
-	private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-	private wasd!: {
-		W: Phaser.Input.Keyboard.Key;
-		A: Phaser.Input.Keyboard.Key;
-		S: Phaser.Input.Keyboard.Key;
-		D: Phaser.Input.Keyboard.Key;
-	};
+	private inputAdapter!: InputAdapter;
 	private playerBulletPool!: BulletPool;
 	private enemyBulletPool!: BulletPool;
 	private enemies!: Phaser.Physics.Arcade.Group;
@@ -102,16 +99,14 @@ export class GameScene extends Phaser.Scene {
 		playerBody.setCollideWorldBounds(true);
 		playerBody.setSize(PLAYER_HITBOX.width, PLAYER_HITBOX.height);
 
-		// Input
-		if (!this.input.keyboard) throw new Error('Keyboard input not available');
-		const keyboard = this.input.keyboard;
-		this.cursors = keyboard.createCursorKeys();
-		this.wasd = {
-			W: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-			A: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-			S: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-			D: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-		};
+		// Input adapter — select based on settings and device capability
+		this.inputAdapter = this.selectInputAdapter();
+		this.inputAdapter.create(this);
+
+		// Clear input state on scene pause (shell-authoritative pause)
+		this.events.on('pause', () => {
+			this.inputAdapter.clear();
+		});
 
 		// Bullet pools — recycle instead of create/destroy each frame
 		// Pool defaults match current weaponStats; if weapon-level-up changes
@@ -253,27 +248,37 @@ export class GameScene extends Phaser.Scene {
 
 	private handleMovement(): void {
 		const body = this.player.body as Phaser.Physics.Arcade.Body;
-		body.setVelocity(0);
+		const intent = this.inputAdapter.update();
 
-		const left = this.cursors.left.isDown || this.wasd.A.isDown;
-		const right = this.cursors.right.isDown || this.wasd.D.isDown;
-		const up = this.cursors.up.isDown || this.wasd.W.isDown;
-		const down = this.cursors.down.isDown || this.wasd.S.isDown;
-
-		if (left) body.setVelocityX(-PLAYER_SPEED);
-		else if (right) body.setVelocityX(PLAYER_SPEED);
-
-		if (up) body.setVelocityY(-PLAYER_SPEED);
-		else if (down) body.setVelocityY(PLAYER_SPEED);
-
-		if ((left || right) && (up || down)) {
-			body.velocity.normalize().scale(PLAYER_SPEED);
-		}
+		const vx = intent.moveVector.x * PLAYER_SPEED;
+		const vy = intent.moveVector.y * PLAYER_SPEED;
+		body.setVelocity(vx, vy);
 
 		// Update ship sprite frame for banking visual
 		if (this.player instanceof Phaser.GameObjects.Sprite && this.textures.exists(SHIP.spriteKey)) {
 			updateShipBanking(this.player);
 		}
+	}
+
+	private selectInputAdapter(): InputAdapter {
+		const controlScheme = this.registry.get('controlScheme') as string | undefined;
+		const touchEnabled = this.registry.get('touchControlsEnabled') as boolean | undefined;
+
+		// Explicit touch override
+		if (controlScheme === 'touch') {
+			return new TouchInput();
+		}
+
+		// Capability detection: use touch if device supports it and setting allows
+		if (touchEnabled !== false) {
+			const hasTouch =
+				typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+			if (hasTouch && controlScheme !== 'wasd' && controlScheme !== 'arrows') {
+				return new TouchInput();
+			}
+		}
+
+		return new KeyboardInput();
 	}
 
 	private handleFiring(time: number): void {
@@ -501,6 +506,7 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private startNextStage(): void {
+		this.inputAdapter.destroy();
 		this.debugOverlay.destroy();
 		this.playerBulletPool.destroy();
 		this.enemyBulletPool.destroy();
@@ -510,6 +516,7 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private returnToMenu(): void {
+		this.inputAdapter.destroy();
 		this.debugOverlay.destroy();
 		this.playerBulletPool.destroy();
 		this.enemyBulletPool.destroy();

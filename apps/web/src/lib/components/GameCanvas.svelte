@@ -26,6 +26,8 @@ onMount(() => {
 				sfxVolume: s.sfxVolume,
 				musicVolume: s.musicVolume,
 				showFps: s.showFps,
+				touchControlsEnabled: s.touchControlsEnabled,
+				controlScheme: s.controlScheme,
 			},
 		});
 
