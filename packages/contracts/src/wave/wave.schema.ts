@@ -136,7 +136,7 @@ export const EndlessModeConfigSchema = z.object({
 	/** Starting wave difficulty (maps to campaign-equivalent) */
 	startingDifficulty: z.number().int().positive().default(1),
 	/** Background key for endless mode */
-	backgroundKey: z.string().min(1).default('endless-bg'),
+	backgroundKey: z.string().min(1).default('bg-endless-void'),
 });
 export type EndlessModeConfig = z.infer<typeof EndlessModeConfigSchema>;
 

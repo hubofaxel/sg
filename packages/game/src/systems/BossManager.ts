@@ -191,6 +191,10 @@ export class BossManager {
 		this.bossSprite.setData('speed', def.speed);
 		this.bossSprite.setData('spawnTime', this.scene.time.now);
 
+		// Drop table — read by DropManager on boss kill
+		if (def.drops.length > 0) this.bossSprite.setData('drops', def.drops);
+		this.bossSprite.setData('guaranteedDropOnDeath', def.guaranteedDropOnDeath ?? false);
+
 		if (def.combatFeedback) {
 			this.bossSprite.setData('combatFeedback', def.combatFeedback);
 		}
@@ -376,6 +380,7 @@ export class BossManager {
 		minion.setData('attackType', def.attackType);
 		if (def.fireInterval != null) minion.setData('fireInterval', def.fireInterval);
 		if (def.projectileDamage != null) minion.setData('projectileDamage', def.projectileDamage);
+		if (def.drops.length > 0) minion.setData('drops', def.drops);
 		if (def.combatFeedback) minion.setData('combatFeedback', def.combatFeedback);
 
 		this.onMinionSpawned(minion, def);

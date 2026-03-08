@@ -186,6 +186,9 @@ export class WaveManager {
 		if (def.fireInterval != null) enemy.setData('fireInterval', def.fireInterval);
 		if (def.projectileDamage != null) enemy.setData('projectileDamage', def.projectileDamage);
 
+		// Drop table — read by DropManager on kill
+		if (def.drops.length > 0) enemy.setData('drops', def.drops);
+
 		// Combat feedback overrides — read by CombatFeedback system
 		if (def.combatFeedback) {
 			enemy.setData('combatFeedback', def.combatFeedback);

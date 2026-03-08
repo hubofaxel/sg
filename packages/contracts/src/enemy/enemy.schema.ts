@@ -147,6 +147,8 @@ export const BossSchema = z.object({
 	phases: z.array(BossPhaseSchema).min(1),
 
 	drops: DropTableSchema,
+	/** If true, at least one drop entry always fires on death (ignores chance for highest-value entry) */
+	guaranteedDropOnDeath: z.boolean().default(false),
 	scoreValue: z.number().int().nonnegative(),
 
 	/** Visual/audio feedback overrides (uses defaults if omitted) */
