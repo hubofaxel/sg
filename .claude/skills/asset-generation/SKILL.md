@@ -56,10 +56,31 @@ All prompts compose with shared directives from `style-bible.ts`:
 - **SFX**: Retro arcade, punchy transients, 8/16-bit inspired with modern clarity, short duration
 - **Music**: Electronic game soundtrack, space shooter theme, driving rhythm, loopable, not fatiguing
 
+### API Keys
+Keys loaded via **direnv + gopass** (not `.env` files):
+- `ship-game/openai-api-key` and `ship-game/elevenlabs-api-key` in gopass
+- Auto-loaded by `.envrc` at project root via `direnv`
+- For CLI without direnv: `eval "$(direnv export bash)"` before commands
+
+### Image post-processing
+The `generate` command auto-resizes OpenAI output (1024x1024) to correct sheet dimensions:
+- Sprite sheets: resized to `(frameWidth * frameCount) x frameHeight` via nearest-neighbor
+- Non-sprite images (backgrounds): saved at raw resolution
+- This ensures Phaser's frame slicer gets correctly-dimensioned sheets
+
+### Art direction best practices
+- Each sprite prompt should specify: frame layout, pixel dimensions, animation delta between frames
+- Give each enemy a distinct silhouette (round vs angular vs organic) and color palette
+- Add personality descriptors ("angry little robot", "flying tank", "nimble and tricky")
+- Style bible stacks: global + sprites + group-specific (ships/enemies/bosses)
+- Frame size (visual) is independent of hitbox size (physics) in content JSON
+
 ### Adding a new asset
 1. Add catalog entry in `asset-catalog.ts` (set `sourceMode` to appropriate engine)
 2. Add prompt template in `prompt-templates.ts` (`TEMPLATES` for images, `AUDIO_TEMPLATES` for audio)
 3. If new asset type needed, update `packages/contracts/src/asset/asset.schema.ts` and barrel
 4. Run `pnpm asset:placeholder` to generate placeholder (images only)
-5. Run `pnpm asset:manifest` to update manifest
-6. Run `pnpm asset:validate` to verify
+5. Generate: `pnpm --filter @sg/asset-gen cli generate --key <key>`
+6. Run `pnpm asset:manifest` to update manifest
+7. Run `pnpm lint:fix` to format manifest JSON
+8. Run `pnpm asset:validate` to verify

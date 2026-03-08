@@ -30,24 +30,28 @@ export const STYLE_BIBLE = {
 	],
 
 	ships: [
-		'sleek angular fighter silhouette',
-		'visible cockpit/canopy area',
-		'engine glow at rear',
+		'sleek angular fighter silhouette with personality',
+		'visible cockpit/canopy area with tinted visor',
+		'bright engine glow at rear (cyan or blue)',
 		'facing upward (ship nose points to top of image)',
+		'heroic and fun — arcade spaceship, not military sim',
+		'silver-white or light-colored hull to stand out against dark space',
 	],
 
 	enemies: [
-		'menacing but readable silhouette',
-		'distinct color palette from player ship (reds, purples, dark greens)',
+		'menacing but charming silhouette — each enemy type visually distinct',
+		'distinct color palette from player ship (reds, oranges, purples, dark greens)',
 		'facing downward (enemy nose points to bottom of image)',
-		'mechanical or alien aesthetic',
+		'mechanical or alien aesthetic with personality and character',
+		'variety in shape language: round vs angular vs organic across different types',
 	],
 
 	bosses: [
 		'large imposing silhouette, 2-4x enemy size',
 		'visible weak points or glowing elements',
-		'heavy armor plating or organic shell details',
+		'heavy armor plating with detailed surface work',
 		'intimidating but still pixel-art readable',
+		'multiple visual details: turrets, vents, energy lines, rivets',
 	],
 	sfx: [
 		'retro arcade sound effect',
