@@ -1,7 +1,7 @@
 ---
 name: schema-validator
 description: Validates content JSON against Zod 4 contracts and enforces schema-first development
-tools: Read, Glob, Grep, Bash
+tools: Read, Write, Edit, MultiEdit, Glob, Grep, Bash
 model: sonnet
 skills:
   - zod4-content-schemas

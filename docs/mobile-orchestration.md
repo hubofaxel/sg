@@ -274,7 +274,12 @@ Reference specific sections of mobile-adaptation.md by section number.]
 
 ### Done signal
 
-When complete, report: files changed, tests added/modified, any deviations from spec, any open questions.
+When complete, report:
+- Files changed (full paths)
+- Tests added/modified
+- Any deviations from spec
+- Any open questions
+- **If this task defines or changes a cross-package interface:** the exact type signature or contract that downstream agents must consume
 ```
 
 ---
@@ -418,6 +423,7 @@ Include in task prompts when the agent should load a specific skill:
 | `schema-validator` | Schema changes | `zod4-content-schemas` |
 | `test-runner` | E2e tests | `browser-debugging` (for diagnosing failures) |
 | `pr-shipper` | Any merge | `trunk-based-dev` |
+| Any agent | Mobile adaptation work | `mobile-adaptation` |
 | Any agent | PWA work (Phase C) | `pwa-delivery` |
 
 ---

@@ -36,3 +36,7 @@ Phaser 4 is RC — check the phaser4-rc skill for known API quirks before using 
 - If a new asset is needed, document it in `docs/asset-contracts.md` and defer to the asset-pipeline agent
 
 Package scope is `@sg/` — not `@ship-game/`.
+
+## Maintenance
+
+When shipping work that changes GameHandle methods, scene inventory, or system APIs, update this file to reflect the new state. Stale agent definitions cause agents to work against outdated assumptions.

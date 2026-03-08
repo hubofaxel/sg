@@ -50,3 +50,89 @@ bash tools/scripts/dev-stop.sh
 - `onMount` cannot be async if it returns a cleanup function — use `.then()` for async work inside sync `onMount`
 - Asset manifest paths are relative — PreloadScene prepends `/assets/` for SvelteKit's static serving
 - HMR can leak WebGL contexts — always `handle.destroy()` in `onDestroy`
+
+## Playwright Mobile Emulation
+
+### Mobile viewport and touch context
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+// Create a mobile browser context with touch support
+test('mobile touch test', async ({ browser }) => {
+  const context = await browser.newContext({
+    viewport: { width: 844, height: 390 },  // iPhone 15 landscape
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto('/play');
+
+  // Verify touch-action is set on game container
+  const container = page.locator('.game-container');
+  await expect(container).toHaveCSS('touch-action', 'none');
+});
+```
+
+### Orientation simulation via viewport resize
+
+Playwright does not have a native orientation API. Simulate orientation change by swapping viewport dimensions:
+
+```typescript
+// Landscape
+await page.setViewportSize({ width: 844, height: 390 });
+
+// Portrait (swap dimensions)
+await page.setViewportSize({ width: 390, height: 844 });
+
+// Verify rotate overlay appears in portrait
+await expect(page.locator('[data-testid="rotate-overlay"]')).toBeVisible();
+
+// Back to landscape — overlay should disappear
+await page.setViewportSize({ width: 844, height: 390 });
+await expect(page.locator('[data-testid="rotate-overlay"]')).not.toBeVisible();
+```
+
+### Touch interaction
+
+```typescript
+// Simulate touch on left half of screen (joystick area)
+await page.touchscreen.tap(200, 300);
+
+// Simulate touch drag (joystick movement)
+// Note: Playwright touchscreen API is limited — for complex multi-touch,
+// use CDP session:
+const cdp = await page.context().newCDPSession(page);
+await cdp.send('Input.dispatchTouchEvent', {
+  type: 'touchStart',
+  touchPoints: [{ x: 200, y: 300 }],
+});
+await cdp.send('Input.dispatchTouchEvent', {
+  type: 'touchMove',
+  touchPoints: [{ x: 250, y: 300 }],
+});
+await cdp.send('Input.dispatchTouchEvent', {
+  type: 'touchEnd',
+  touchPoints: [],
+});
+```
+
+### Visibility change simulation
+
+```typescript
+// Simulate tab backgrounding
+await page.evaluate(() => {
+  document.dispatchEvent(new Event('visibilitychange'));
+  Object.defineProperty(document, 'hidden', { value: true, writable: true });
+  document.dispatchEvent(new Event('visibilitychange'));
+});
+```
+
+### Standard mobile device presets for this project
+
+| Device | Viewport (landscape) | Scale factor | Use for |
+|---|---|---|---|
+| iPhone SE | 568x320 | 0.533 | Smallest target — readability, touch targets |
+| iPhone 15 | 844x390 | 0.65 | Mid-range phone baseline |
+| iPad mini | 1024x683 | 1.0 | Tablet baseline |
+| iPad Air | 1366x1024 | 1.28 | Large tablet — oversized text check |

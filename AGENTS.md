@@ -23,6 +23,7 @@
 | browser-debugging | 500 errors, blank pages, UI issues |
 | monorepo-conventions | Scaffolding packages, workspace config |
 | trunk-based-dev | Committing, branching, shipping |
+| mobile-adaptation | Mobile adaptation work (any agent) |
 | pwa-delivery | Service worker, manifest, install UX |
 
 ## Hooks
