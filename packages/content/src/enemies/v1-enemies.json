@@ -1,0 +1,92 @@
+[
+	{
+		"id": "enemy-drone",
+		"name": "Drone",
+		"description": "Basic cannon fodder. Flies straight down, no weapons.",
+		"size": "small",
+		"health": 10,
+		"speed": 150,
+		"contactDamage": 1,
+		"movementPattern": "linear",
+		"attackType": "contact-only",
+		"hitbox": { "width": 16, "height": 16, "offset": { "x": 0, "y": 0 } },
+		"spriteKey": "enemy-drone",
+		"drops": [{ "type": "currency", "chance": 0.3, "quantity": 5 }],
+		"scoreValue": 10
+	},
+	{
+		"id": "enemy-weaver",
+		"name": "Weaver",
+		"description": "Nimble sine-wave flyer that fires aimed shots.",
+		"size": "small",
+		"health": 15,
+		"speed": 120,
+		"contactDamage": 1,
+		"movementPattern": "sine-wave",
+		"attackType": "aimed-shot",
+		"weaponType": "basic-laser",
+		"projectileDamage": 5,
+		"fireInterval": 2.0,
+		"hitbox": { "width": 18, "height": 18, "offset": { "x": 0, "y": 0 } },
+		"spriteKey": "enemy-weaver",
+		"drops": [{ "type": "currency", "chance": 0.35, "quantity": 8 }],
+		"scoreValue": 25
+	},
+	{
+		"id": "enemy-bruiser",
+		"name": "Bruiser",
+		"description": "Slow, tanky ship that absorbs punishment. Spread-shot turret.",
+		"size": "medium",
+		"health": 50,
+		"speed": 60,
+		"contactDamage": 2,
+		"movementPattern": "strafe-hover",
+		"attackType": "spread-shot",
+		"weaponType": "spread-shot",
+		"projectileDamage": 4,
+		"fireInterval": 3.0,
+		"hitbox": { "width": 28, "height": 28, "offset": { "x": 0, "y": 0 } },
+		"spriteKey": "enemy-bruiser",
+		"drops": [
+			{ "type": "currency", "chance": 0.5, "quantity": 15 },
+			{ "type": "upgrade-token", "chance": 0.08, "quantity": 1 }
+		],
+		"scoreValue": 50
+	},
+	{
+		"id": "enemy-kamikaze",
+		"name": "Kamikaze",
+		"description": "Spirals toward the player at high speed. Contact kills it too.",
+		"size": "small",
+		"health": 8,
+		"speed": 250,
+		"contactDamage": 2,
+		"movementPattern": "spiral",
+		"attackType": "ram",
+		"hitbox": { "width": 14, "height": 14, "offset": { "x": 0, "y": 0 } },
+		"spriteKey": "enemy-kamikaze",
+		"drops": [{ "type": "currency", "chance": 0.2, "quantity": 3 }],
+		"scoreValue": 15
+	},
+	{
+		"id": "enemy-zigzagger",
+		"name": "Zigzagger",
+		"description": "Unpredictable diagonal bouncer with aimed shots. Hard to hit.",
+		"size": "medium",
+		"health": 30,
+		"speed": 180,
+		"contactDamage": 1,
+		"movementPattern": "zigzag",
+		"attackType": "aimed-shot",
+		"weaponType": "basic-laser",
+		"projectileDamage": 6,
+		"fireInterval": 1.5,
+		"hitbox": { "width": 22, "height": 22, "offset": { "x": 0, "y": 0 } },
+		"spriteKey": "enemy-zigzagger",
+		"drops": [
+			{ "type": "currency", "chance": 0.4, "quantity": 12 },
+			{ "type": "weapon-recipe", "chance": 0.03, "quantity": 1, "itemId": "recipe-spread-shot" }
+		],
+		"scoreValue": 40
+	}
+]

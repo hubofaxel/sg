@@ -1,0 +1,32 @@
+{
+	"name": "sg",
+	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@10.31.0+sha512.e3927388bfaa8078ceb79b748ffc1e8274e84d75163e67bc22e06c0d3aed43dd153151cbf11d7f8301ff4acb98c68bdc5cadf6989532801ffafe3b3e4a63c268",
+	"engines": {
+		"node": ">=24"
+	},
+	"scripts": {
+		"dev": "pnpm --filter @sg/web dev",
+		"build": "pnpm --filter @sg/web build",
+		"preview": "pnpm --filter @sg/web preview",
+		"check": "pnpm -r check",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:e2e": "pnpm --filter @sg/web exec playwright test",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"format": "biome format --write .",
+		"validate": "pnpm check && pnpm lint && pnpm test"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.0",
+		"vitest": "^4.0.0",
+		"typescript": "^5.9.3"
+	}
+}

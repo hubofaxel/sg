@@ -1,0 +1,245 @@
+{
+	"id": "campaign-main",
+	"name": "Main Campaign",
+	"stages": [
+		{
+			"id": "stage-1-outer-rim",
+			"name": "Outer Rim",
+			"description": "Patrol the outer rim. Drone swarms and a few surprises.",
+			"index": 0,
+			"bossId": "boss-iron-sentinel",
+			"musicKey": "music-outer-rim",
+			"clearReward": 200,
+			"experienceReward": 100,
+			"levels": [
+				{
+					"id": "s1-level-1",
+					"name": "First Contact",
+					"index": 0,
+					"backgroundKey": "bg-starfield-sparse",
+					"scrollSpeed": 1.0,
+					"waves": [
+						{
+							"index": 0,
+							"predelaySeconds": 2,
+							"spawns": [
+								{
+									"enemyId": "enemy-drone",
+									"count": 4,
+									"formation": "row",
+									"delaySeconds": 0,
+									"spawnInterval": 0.5
+								}
+							]
+						},
+						{
+							"index": 1,
+							"predelaySeconds": 1.5,
+							"spawns": [
+								{
+									"enemyId": "enemy-drone",
+									"count": 3,
+									"formation": "v-formation",
+									"delaySeconds": 0,
+									"spawnInterval": 0.4
+								},
+								{
+									"enemyId": "enemy-drone",
+									"count": 3,
+									"formation": "v-formation",
+									"delaySeconds": 2,
+									"spawnInterval": 0.4
+								}
+							]
+						},
+						{
+							"index": 2,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-drone",
+									"count": 6,
+									"formation": "scatter",
+									"delaySeconds": 0,
+									"spawnInterval": 0.3
+								},
+								{
+									"enemyId": "enemy-weaver",
+									"count": 1,
+									"formation": "column",
+									"delaySeconds": 1.5,
+									"spawnInterval": 0.5
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "s1-level-2",
+					"name": "Thickening Skies",
+					"index": 1,
+					"backgroundKey": "bg-starfield-dense",
+					"scrollSpeed": 1.2,
+					"waves": [
+						{
+							"index": 0,
+							"predelaySeconds": 1.5,
+							"spawns": [
+								{
+									"enemyId": "enemy-weaver",
+									"count": 3,
+									"formation": "row",
+									"delaySeconds": 0,
+									"spawnInterval": 0.6
+								}
+							]
+						},
+						{
+							"index": 1,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-drone",
+									"count": 5,
+									"formation": "grid",
+									"delaySeconds": 0,
+									"spawnInterval": 0.3
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 2,
+									"formation": "scatter",
+									"delaySeconds": 2,
+									"spawnInterval": 1.0
+								}
+							]
+						},
+						{
+							"index": 2,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-weaver",
+									"count": 4,
+									"formation": "v-formation",
+									"delaySeconds": 0,
+									"spawnInterval": 0.5
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 3,
+									"formation": "scatter",
+									"delaySeconds": 1.5,
+									"spawnInterval": 0.8
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "s1-level-3",
+					"name": "Gauntlet",
+					"index": 2,
+					"backgroundKey": "bg-starfield-dense",
+					"scrollSpeed": 1.4,
+					"waves": [
+						{
+							"index": 0,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 1,
+									"formation": "column",
+									"delaySeconds": 0,
+									"spawnInterval": 0.5
+								},
+								{
+									"enemyId": "enemy-drone",
+									"count": 4,
+									"formation": "row",
+									"delaySeconds": 1,
+									"spawnInterval": 0.4
+								}
+							]
+						},
+						{
+							"index": 1,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-zigzagger",
+									"count": 2,
+									"formation": "scatter",
+									"delaySeconds": 0,
+									"spawnInterval": 1.0
+								},
+								{
+									"enemyId": "enemy-weaver",
+									"count": 3,
+									"formation": "v-formation",
+									"delaySeconds": 1,
+									"spawnInterval": 0.5
+								}
+							]
+						},
+						{
+							"index": 2,
+							"predelaySeconds": 1,
+							"spawns": [
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 2,
+									"formation": "row",
+									"delaySeconds": 0,
+									"spawnInterval": 1.5
+								},
+								{
+									"enemyId": "enemy-kamikaze",
+									"count": 4,
+									"formation": "scatter",
+									"delaySeconds": 1,
+									"spawnInterval": 0.6
+								},
+								{
+									"enemyId": "enemy-zigzagger",
+									"count": 2,
+									"formation": "scatter",
+									"delaySeconds": 3,
+									"spawnInterval": 0.8
+								}
+							]
+						},
+						{
+							"index": 3,
+							"predelaySeconds": 0.5,
+							"spawns": [
+								{
+									"enemyId": "enemy-drone",
+									"count": 8,
+									"formation": "grid",
+									"delaySeconds": 0,
+									"spawnInterval": 0.2
+								},
+								{
+									"enemyId": "enemy-weaver",
+									"count": 3,
+									"formation": "row",
+									"delaySeconds": 1.5,
+									"spawnInterval": 0.5
+								},
+								{
+									"enemyId": "enemy-bruiser",
+									"count": 1,
+									"formation": "column",
+									"delaySeconds": 3,
+									"spawnInterval": 0.5
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,86 @@
+{
+	"experienceTable": {
+		"levels": [
+			{ "level": 1, "xpRequired": 0, "unlocks": [] },
+			{ "level": 2, "xpRequired": 100, "unlocks": [] },
+			{
+				"level": 3,
+				"xpRequired": 250,
+				"unlocks": [
+					{
+						"type": "upgrade-slot",
+						"itemId": "viper-shields",
+						"description": "Shield Generator upgrade path unlocked"
+					}
+				]
+			},
+			{ "level": 4, "xpRequired": 500, "unlocks": [] },
+			{
+				"level": 5,
+				"xpRequired": 800,
+				"unlocks": [
+					{
+						"type": "weapon-recipe",
+						"itemId": "recipe-spread-shot",
+						"description": "Scatter Cannon recipe can now drop"
+					}
+				]
+			},
+			{ "level": 6, "xpRequired": 1200, "unlocks": [] },
+			{
+				"level": 7,
+				"xpRequired": 1700,
+				"unlocks": [
+					{
+						"type": "upgrade-slot",
+						"itemId": "viper-lives",
+						"description": "Reinforced Hull upgrade path unlocked"
+					}
+				]
+			},
+			{ "level": 8, "xpRequired": 2400, "unlocks": [] },
+			{
+				"level": 9,
+				"xpRequired": 3200,
+				"unlocks": [
+					{
+						"type": "weapon-recipe",
+						"itemId": "recipe-missile",
+						"description": "Seeker Missile recipe can now drop"
+					}
+				]
+			},
+			{
+				"level": 10,
+				"xpRequired": 4200,
+				"unlocks": [
+					{
+						"type": "ship",
+						"itemId": "ship-phantom",
+						"description": "Phantom interceptor unlocked for purchase"
+					}
+				]
+			}
+		]
+	},
+	"endlessModeConfig": {
+		"enemyPool": [
+			"enemy-drone",
+			"enemy-weaver",
+			"enemy-bruiser",
+			"enemy-kamikaze",
+			"enemy-zigzagger"
+		],
+		"miniBossPool": ["boss-iron-sentinel"],
+		"scaling": {
+			"healthMultiplier": 1.05,
+			"speedMultiplier": 1.02,
+			"speedCap": 2.0,
+			"newTypeEveryNWaves": 5,
+			"densityIncreaseEveryNWaves": 3,
+			"miniBossEveryNWaves": 10
+		},
+		"startingDifficulty": 1,
+		"backgroundKey": "bg-endless-void"
+	}
+}

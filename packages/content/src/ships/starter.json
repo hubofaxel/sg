@@ -1,0 +1,63 @@
+[
+	{
+		"id": "ship-viper",
+		"name": "Viper",
+		"description": "Standard-issue patrol fighter. Fast, fragile, and familiar.",
+		"starterShip": true,
+		"unlockCost": 0,
+		"spriteKey": "ship-viper",
+		"baseStats": {
+			"speed": 300,
+			"maxLives": 3,
+			"shields": 0,
+			"fireRateMultiplier": 1.0,
+			"hitbox": { "width": 24, "height": 24, "offset": { "x": 0, "y": 0 } },
+			"defaultWeaponType": "basic-laser"
+		},
+		"upgrades": [
+			{
+				"id": "viper-speed",
+				"name": "Engine Boost",
+				"stat": "speed",
+				"description": "Overclocked thrusters.",
+				"levels": [
+					{ "level": 1, "stat": "speed", "delta": 30, "cost": 100 },
+					{ "level": 2, "stat": "speed", "delta": 30, "cost": 250 },
+					{ "level": 3, "stat": "speed", "delta": 40, "cost": 500 }
+				]
+			},
+			{
+				"id": "viper-shields",
+				"name": "Shield Generator",
+				"stat": "shields",
+				"description": "Absorbs one hit per shield point before losing a life.",
+				"levels": [
+					{ "level": 1, "stat": "shields", "delta": 1, "cost": 200 },
+					{ "level": 2, "stat": "shields", "delta": 1, "cost": 500 },
+					{ "level": 3, "stat": "shields", "delta": 1, "cost": 1000 }
+				]
+			},
+			{
+				"id": "viper-firerate",
+				"name": "Rapid Cycling",
+				"stat": "fireRateMultiplier",
+				"description": "Faster weapon cycling.",
+				"levels": [
+					{ "level": 1, "stat": "fireRateMultiplier", "delta": 0.15, "cost": 150 },
+					{ "level": 2, "stat": "fireRateMultiplier", "delta": 0.15, "cost": 400 },
+					{ "level": 3, "stat": "fireRateMultiplier", "delta": 0.2, "cost": 800 }
+				]
+			},
+			{
+				"id": "viper-lives",
+				"name": "Reinforced Hull",
+				"stat": "maxLives",
+				"description": "Extra life.",
+				"levels": [
+					{ "level": 1, "stat": "maxLives", "delta": 1, "cost": 500 },
+					{ "level": 2, "stat": "maxLives", "delta": 1, "cost": 1500 }
+				]
+			}
+		]
+	}
+]

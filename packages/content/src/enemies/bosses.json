@@ -1,0 +1,58 @@
+[
+	{
+		"id": "boss-iron-sentinel",
+		"name": "Iron Sentinel",
+		"description": "Stage 1 boss. Slow-moving fortress with phased attack patterns.",
+		"size": "boss",
+		"health": 300,
+		"speed": 40,
+		"contactDamage": 3,
+		"hitbox": { "width": 64, "height": 48, "offset": { "x": 0, "y": 0 } },
+		"spriteKey": "boss-iron-sentinel",
+		"entryPosition": { "x": 0, "y": -100 },
+		"anchorPosition": { "x": 0, "y": 80 },
+		"phases": [
+			{
+				"phase": 0,
+				"healthThreshold": 1.0,
+				"movementPattern": "strafe-hover",
+				"attackType": "aimed-shot",
+				"weaponType": "basic-laser",
+				"projectileDamage": 8,
+				"fireInterval": 1.5,
+				"speedMultiplier": 1.0,
+				"minionSpawns": []
+			},
+			{
+				"phase": 1,
+				"healthThreshold": 0.6,
+				"movementPattern": "strafe-hover",
+				"attackType": "spread-shot",
+				"weaponType": "spread-shot",
+				"projectileDamage": 6,
+				"fireInterval": 2.0,
+				"speedMultiplier": 1.3,
+				"minionSpawns": [{ "enemyId": "enemy-drone", "interval": 4.0, "maxConcurrent": 3 }]
+			},
+			{
+				"phase": 2,
+				"healthThreshold": 0.25,
+				"movementPattern": "sine-wave",
+				"attackType": "spread-shot",
+				"weaponType": "spread-shot",
+				"projectileDamage": 7,
+				"fireInterval": 1.5,
+				"speedMultiplier": 1.6,
+				"minionSpawns": [
+					{ "enemyId": "enemy-drone", "interval": 3.0, "maxConcurrent": 4 },
+					{ "enemyId": "enemy-kamikaze", "interval": 5.0, "maxConcurrent": 2 }
+				]
+			}
+		],
+		"drops": [
+			{ "type": "currency", "chance": 1.0, "quantity": 100 },
+			{ "type": "weapon-recipe", "chance": 0.5, "quantity": 1, "itemId": "recipe-missile" }
+		],
+		"scoreValue": 500
+	}
+]

@@ -1,5 +1,34 @@
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
+build/
+.svelte-kit/
+
+# Environment
 .env
+.env.*
+!.env.example
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+.idea/
+
+# Logs
 *.log
+
+# Test
+coverage/
+
+# Caches
+.turbo/
+.vite/
+
+# Claude Code local settings
+.claude/settings.local.json

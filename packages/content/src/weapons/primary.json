@@ -1,0 +1,249 @@
+[
+	{
+		"id": "wpn-basic-laser",
+		"name": "Pulse Laser",
+		"type": "basic-laser",
+		"description": "Reliable single-shot energy weapon. The bread and butter.",
+		"levels": [
+			{
+				"level": 1,
+				"damage": 10,
+				"projectileSpeed": 600,
+				"cooldown": { "duration": 0.25, "startOn": "fire" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"projectileHitbox": { "width": 4, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 0
+			},
+			{
+				"level": 2,
+				"damage": 14,
+				"projectileSpeed": 650,
+				"cooldown": { "duration": 0.22, "startOn": "fire" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"projectileHitbox": { "width": 4, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 100
+			},
+			{
+				"level": 3,
+				"damage": 18,
+				"projectileSpeed": 700,
+				"cooldown": { "duration": 0.2, "startOn": "fire" },
+				"projectileCount": 2,
+				"spreadAngle": 5,
+				"projectileHitbox": { "width": 4, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 300
+			},
+			{
+				"level": 4,
+				"damage": 24,
+				"projectileSpeed": 750,
+				"cooldown": { "duration": 0.18, "startOn": "fire" },
+				"projectileCount": 2,
+				"spreadAngle": 5,
+				"projectileHitbox": { "width": 5, "height": 14, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 600
+			},
+			{
+				"level": 5,
+				"damage": 32,
+				"projectileSpeed": 800,
+				"cooldown": { "duration": 0.15, "startOn": "fire" },
+				"projectileCount": 3,
+				"spreadAngle": 8,
+				"projectileHitbox": { "width": 5, "height": 14, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 1200
+			}
+		]
+	},
+	{
+		"id": "wpn-spread-shot",
+		"name": "Scatter Cannon",
+		"type": "spread-shot",
+		"description": "Wide-angle projectile fan. Low per-hit damage, excellent coverage.",
+		"levels": [
+			{
+				"level": 1,
+				"damage": 6,
+				"projectileSpeed": 500,
+				"cooldown": { "duration": 0.4, "startOn": "fire" },
+				"projectileCount": 3,
+				"spreadAngle": 30,
+				"projectileHitbox": { "width": 4, "height": 8, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 0
+			},
+			{
+				"level": 2,
+				"damage": 7,
+				"projectileSpeed": 520,
+				"cooldown": { "duration": 0.38, "startOn": "fire" },
+				"projectileCount": 3,
+				"spreadAngle": 35,
+				"projectileHitbox": { "width": 4, "height": 8, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 150
+			},
+			{
+				"level": 3,
+				"damage": 8,
+				"projectileSpeed": 540,
+				"cooldown": { "duration": 0.35, "startOn": "fire" },
+				"projectileCount": 5,
+				"spreadAngle": 45,
+				"projectileHitbox": { "width": 4, "height": 8, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 400
+			},
+			{
+				"level": 4,
+				"damage": 10,
+				"projectileSpeed": 560,
+				"cooldown": { "duration": 0.32, "startOn": "fire" },
+				"projectileCount": 5,
+				"spreadAngle": 50,
+				"projectileHitbox": { "width": 5, "height": 10, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 800
+			},
+			{
+				"level": 5,
+				"damage": 12,
+				"projectileSpeed": 580,
+				"cooldown": { "duration": 0.28, "startOn": "fire" },
+				"projectileCount": 7,
+				"spreadAngle": 60,
+				"projectileHitbox": { "width": 5, "height": 10, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 1500
+			}
+		]
+	},
+	{
+		"id": "wpn-missile",
+		"name": "Seeker Missile",
+		"type": "missile",
+		"description": "Slow-firing homing ordnance. High damage, tracks targets.",
+		"levels": [
+			{
+				"level": 1,
+				"damage": 30,
+				"projectileSpeed": 350,
+				"cooldown": { "duration": 1.2, "startOn": "fire" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"homingStrength": 0.4,
+				"projectileHitbox": { "width": 6, "height": 10, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 0
+			},
+			{
+				"level": 2,
+				"damage": 38,
+				"projectileSpeed": 370,
+				"cooldown": { "duration": 1.1, "startOn": "fire" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"homingStrength": 0.5,
+				"projectileHitbox": { "width": 6, "height": 10, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 200
+			},
+			{
+				"level": 3,
+				"damage": 48,
+				"projectileSpeed": 400,
+				"cooldown": { "duration": 1.0, "startOn": "fire" },
+				"projectileCount": 2,
+				"spreadAngle": 15,
+				"homingStrength": 0.55,
+				"projectileHitbox": { "width": 6, "height": 10, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 500
+			},
+			{
+				"level": 4,
+				"damage": 60,
+				"projectileSpeed": 420,
+				"cooldown": { "duration": 0.9, "startOn": "fire" },
+				"projectileCount": 2,
+				"spreadAngle": 15,
+				"homingStrength": 0.65,
+				"projectileHitbox": { "width": 7, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 1000
+			},
+			{
+				"level": 5,
+				"damage": 80,
+				"projectileSpeed": 450,
+				"cooldown": { "duration": 0.8, "startOn": "fire" },
+				"projectileCount": 3,
+				"spreadAngle": 20,
+				"homingStrength": 0.75,
+				"projectileHitbox": { "width": 7, "height": 12, "offset": { "x": 0, "y": 0 } },
+				"upgradeCost": 2000
+			}
+		]
+	},
+	{
+		"id": "wpn-beam",
+		"name": "Plasma Beam",
+		"type": "beam",
+		"description": "Continuous damage beam. Devastating but requires aim discipline.",
+		"levels": [
+			{
+				"level": 1,
+				"damage": 5,
+				"projectileSpeed": 9999,
+				"cooldown": { "duration": 2.0, "startOn": "expiry" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"beamWidth": 8,
+				"beamDuration": 0.8,
+				"projectileHitbox": { "width": 8, "height": 400, "offset": { "x": 0, "y": -200 } },
+				"upgradeCost": 0
+			},
+			{
+				"level": 2,
+				"damage": 7,
+				"projectileSpeed": 9999,
+				"cooldown": { "duration": 1.8, "startOn": "expiry" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"beamWidth": 10,
+				"beamDuration": 1.0,
+				"projectileHitbox": { "width": 10, "height": 400, "offset": { "x": 0, "y": -200 } },
+				"upgradeCost": 200
+			},
+			{
+				"level": 3,
+				"damage": 10,
+				"projectileSpeed": 9999,
+				"cooldown": { "duration": 1.6, "startOn": "expiry" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"beamWidth": 12,
+				"beamDuration": 1.2,
+				"projectileHitbox": { "width": 12, "height": 400, "offset": { "x": 0, "y": -200 } },
+				"upgradeCost": 500
+			},
+			{
+				"level": 4,
+				"damage": 14,
+				"projectileSpeed": 9999,
+				"cooldown": { "duration": 1.4, "startOn": "expiry" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"beamWidth": 16,
+				"beamDuration": 1.5,
+				"projectileHitbox": { "width": 16, "height": 400, "offset": { "x": 0, "y": -200 } },
+				"upgradeCost": 1000
+			},
+			{
+				"level": 5,
+				"damage": 20,
+				"projectileSpeed": 9999,
+				"cooldown": { "duration": 1.2, "startOn": "expiry" },
+				"projectileCount": 1,
+				"spreadAngle": 0,
+				"beamWidth": 20,
+				"beamDuration": 2.0,
+				"projectileHitbox": { "width": 20, "height": 400, "offset": { "x": 0, "y": -200 } },
+				"upgradeCost": 2000
+			}
+		]
+	}
+]

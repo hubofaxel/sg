@@ -1,0 +1,249 @@
+---
+title: ship-game contracts — entity relationships
+---
+erDiagram
+    SaveGame {
+        int version
+        string savedAt
+        string playerName
+        string checkpointStageId
+        string lastGameMode
+    }
+
+    PlayerEconomyState {
+        int currency
+        int lifetimeCurrencyEarned
+        int experience
+        int playerLevel
+        int bombCount
+    }
+
+    PlayerShipState {
+        string shipId
+        map upgradeLevels
+    }
+
+    PlayerWeaponState {
+        string weaponId
+        int currentLevel
+    }
+
+    UnlockEntry {
+        string type
+        string itemId
+        string unlockedAt
+    }
+
+    StageProgress {
+        string stageId
+        bool cleared
+        int highestLevelReached
+        int clearCount
+    }
+
+    EndlessProgress {
+        int highestWave
+        int totalKills
+    }
+
+    LifetimeStats {
+        int totalKills
+        int totalDeaths
+        int totalRuns
+        float totalPlayTimeSeconds
+        int bestRunScore
+    }
+
+    GameSettings {
+        float masterVolume
+        float sfxVolume
+        float musicVolume
+        string controlScheme
+        bool touchControlsEnabled
+        float zoom
+        float screenShake
+    }
+
+    Ship {
+        string id
+        string name
+        bool starterShip
+        int unlockCost
+        string spriteKey
+    }
+
+    ShipStats {
+        float speed
+        int maxLives
+        int shields
+        float fireRateMultiplier
+        string defaultWeaponType
+    }
+
+    ShipUpgradePath {
+        string id
+        string name
+        string stat
+    }
+
+    ShipUpgradeLevel {
+        int level
+        string stat
+        float delta
+        int cost
+    }
+
+    Weapon {
+        string id
+        string name
+        string type
+    }
+
+    WeaponLevelStats {
+        int level
+        float damage
+        float projectileSpeed
+        int projectileCount
+        float spreadAngle
+        int upgradeCost
+    }
+
+    WeaponRecipe {
+        string id
+        string weaponId
+        string name
+        int craftCost
+    }
+
+    SecondaryWeapon {
+        string id
+        string name
+        string type
+        float damage
+        float effectRadius
+    }
+
+    Enemy {
+        string id
+        string name
+        string size
+        float health
+        float speed
+        string movementPattern
+        string attackType
+        int scoreValue
+    }
+
+    Boss {
+        string id
+        string name
+        float health
+        float speed
+        int scoreValue
+    }
+
+    BossPhase {
+        int phase
+        float healthThreshold
+        string movementPattern
+        string attackType
+        float speedMultiplier
+    }
+
+    DropEntry {
+        string type
+        float chance
+        int quantity
+        string itemId
+    }
+
+    Campaign {
+        string id
+        string name
+    }
+
+    Stage {
+        string id
+        string name
+        int index
+        string bossId
+        int clearReward
+        int experienceReward
+    }
+
+    Level {
+        string id
+        string name
+        int index
+        string backgroundKey
+    }
+
+    Wave {
+        int index
+        float predelaySeconds
+    }
+
+    SpawnEntry {
+        string enemyId
+        int count
+        string formation
+        float delaySeconds
+    }
+
+    EndlessModeConfig {
+        string backgroundKey
+        int startingDifficulty
+    }
+
+    EndlessScaling {
+        float healthMultiplier
+        float speedMultiplier
+        float speedCap
+        int newTypeEveryNWaves
+    }
+
+    ExperienceTable ||--o{ ExperienceLevel : contains
+    ExperienceLevel {
+        int level
+        int xpRequired
+    }
+
+    ShopItem {
+        string id
+        string category
+        string name
+        int cost
+        string targetId
+    }
+
+    SaveGame ||--|| PlayerEconomyState : economy
+    SaveGame ||--o| PlayerShipState : activeShip
+    SaveGame ||--o| PlayerWeaponState : activeWeapon
+    SaveGame ||--o{ UnlockEntry : unlocks
+    SaveGame ||--o{ StageProgress : stageProgress
+    SaveGame ||--|| EndlessProgress : endlessProgress
+    SaveGame ||--|| LifetimeStats : lifetimeStats
+    SaveGame ||--|| GameSettings : settings
+
+    Ship ||--|| ShipStats : baseStats
+    Ship ||--o{ ShipUpgradePath : upgrades
+    ShipUpgradePath ||--|{ ShipUpgradeLevel : levels
+    PlayerShipState }o--|| Ship : references
+
+    Weapon ||--|{ WeaponLevelStats : levels
+    WeaponRecipe }o--|| Weapon : unlocks
+    PlayerWeaponState }o--|| Weapon : references
+
+    Enemy ||--o{ DropEntry : drops
+    Boss ||--o{ DropEntry : drops
+    Boss ||--|{ BossPhase : phases
+    BossPhase ||--o{ SpawnEntry : minionSpawns
+
+    Campaign ||--|{ Stage : stages
+    Stage ||--|{ Level : levels
+    Stage }o--|| Boss : bossId
+    Level ||--|{ Wave : waves
+    Wave ||--|{ SpawnEntry : spawns
+    SpawnEntry }o--|| Enemy : enemyId
+
+    EndlessModeConfig ||--|| EndlessScaling : scaling

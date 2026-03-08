@@ -1,0 +1,67 @@
+{
+	"permissions": {
+		"allow": [
+			"Read",
+			"Write",
+			"Edit",
+			"MultiEdit",
+			"Glob",
+			"Grep",
+			"Bash(pnpm *)",
+			"Bash(node *)",
+			"Bash(npx *)",
+			"Bash(git status*)",
+			"Bash(git diff*)",
+			"Bash(git log*)",
+			"Bash(git branch*)",
+			"Bash(git checkout*)",
+			"Bash(git add*)",
+			"Bash(git commit*)",
+			"Bash(git merge*)",
+			"Bash(git rebase*)",
+			"Bash(git stash*)",
+			"Bash(biome *)",
+			"Bash(ls *)",
+			"Bash(mkdir *)",
+			"Bash(cp *)",
+			"Bash(mv *)",
+			"Bash(wc *)",
+			"Bash(head *)",
+			"Bash(tail *)",
+			"Bash(sort *)",
+			"Bash(echo *)",
+			"Bash(cat *)"
+		],
+		"deny": [
+			"Bash(git push *)",
+			"Bash(git push)",
+			"Bash(pnpm publish *)"
+		]
+	},
+	"hooks": {
+		"PreToolUse": [
+			{
+				"matcher": "Edit|MultiEdit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "[ \"$(git branch --show-current)\" != \"main\" ] || echo '{\"decision\": \"block\", \"reason\": \"Cannot edit files on main. Create a feature branch first: git checkout -b feat/<slug>\"}'",
+						"timeout": 5000
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"matcher": "Edit|MultiEdit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "fp=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .path // empty' 2>/dev/null); [ -z \"$fp\" ] && exit 0; case \"$fp\" in *.ts|*.tsx|*.svelte|*.js|*.jsx|*.json|*.css) npx @biomejs/biome check --write \"$fp\" 2>/dev/null || true;; esac",
+						"timeout": 15000
+					}
+				]
+			}
+		]
+	}
+}
