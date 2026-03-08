@@ -1,7 +1,7 @@
 # Mobile Adaptation — Orchestration State
 
 ## Current phase: A (Input-valid)
-## Current PR: PR-2
+## Current PR: PR-2 (Input Intent Backbone)
 ## Branch: feat/mobile-input-intent
 
 ## Completed
@@ -13,19 +13,21 @@
 | PR-1 | rotate-overlay | svelte-shell | ✅ | Commit 1f285e2 |
 | PR-1 | e2e-verification | test-runner | ✅ | 6 new tests, commit b1f12d1 |
 | PR-1 | land | pr-shipper | ✅ | FF-merged to main at 6e46104 |
+| PR-2 | schema-extension | schema-validator | ✅ | ControlScheme += 'touch', 15 tests, commit 85e4681 |
+| PR-2 | input-intent-system | phaser-integrator | ✅ | InputIntent, KeyboardInput, TouchInput, GameScene refactor, commits 83b72b9 + 73ff41e |
+| PR-2 | adapter-and-schema-tests | test-runner | ✅ | 23 adapter tests (11 keyboard + 12 touch), commit 38821ee |
 
 ## In Progress
 
 | PR | Task | Agent | Status | Blocker |
 |---|---|---|---|---|
-| PR-2 | schema-extension | schema-validator | 🔄 | — |
-| PR-2 | input-intent-system | phaser-integrator | 🔄 | — |
+| — | — | — | — | — |
 
 ## Blocked
 
 | PR | Task | Agent | Blocker |
 |---|---|---|---|
-| PR-2 | adapter-and-schema-tests | test-runner | Depends on Task 2.1 + 2.2 |
+| — | — | — | — |
 
 ## Decisions Resolved
 
@@ -42,6 +44,20 @@
 ## Decisions Pending
 
 None — all seven resolved.
+
+## Type Contract Handoff
+
+`GameMountOptions.settings` expanded type (for svelte-shell in PR-3):
+```typescript
+settings?: {
+  masterVolume?: number;
+  sfxVolume?: number;
+  musicVolume?: number;
+  showFps?: boolean;
+  touchControlsEnabled?: boolean;
+  controlScheme?: string; // 'wasd' | 'arrows' | 'touch'
+}
+```
 
 ## Rollback Log
 
