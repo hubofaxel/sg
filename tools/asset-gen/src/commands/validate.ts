@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { type AssetManifest, AssetManifestSchema } from '@sg/contracts';
 import sharp from 'sharp';
-import { ASSET_CATALOG } from '../config/asset-catalog.js';
+import { ASSET_CATALOG, CURRENT_PHASE } from '../config/asset-catalog.js';
 import { verifySheetDimensions } from '../lib/image-processing.js';
 import { ASSETS_ROOT, MANIFEST_PATH } from '../lib/manifest-builder.js';
 
@@ -36,8 +36,9 @@ export async function validateAssets(): Promise<ValidationResult> {
 	const manifestKeys = new Set(manifest.assets.map((a) => a.key));
 	const catalogKeys = new Set(ASSET_CATALOG.map((e) => e.key));
 
-	// 2. Every catalog key resolves to a manifest entry
+	// 2. Every catalog key resolves to a manifest entry (skip future-phase entries)
 	for (const entry of ASSET_CATALOG) {
+		if (entry.phase && entry.phase > CURRENT_PHASE) continue;
 		if (!manifestKeys.has(entry.key)) {
 			result.errors.push(`Catalog key "${entry.key}" missing from manifest`);
 		}

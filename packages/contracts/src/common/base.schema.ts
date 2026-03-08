@@ -66,6 +66,8 @@ export const DropEntrySchema = z.object({
 	quantity: z.number().int().positive().default(1),
 	/** Optional: specific item ID (e.g., which recipe) */
 	itemId: EntityIdSchema.optional(),
+	/** How much this drop type contributes to the pity bucket (0–1). Default 1 = full contribution. */
+	pityBucketContribution: z.number().min(0).max(1).default(1),
 });
 export type DropEntry = z.infer<typeof DropEntrySchema>;
 

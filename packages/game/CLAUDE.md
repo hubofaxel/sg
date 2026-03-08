@@ -36,6 +36,7 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 | CombatFeedback | `CombatFeedback.ts` | Visual juice: hit flash, hit-stop, screen shake, death burst, spawn-in animation |
 | SpriteFrames | `SpriteFrames.ts` | Ship banking (3 frames by velocity), enemy idle animation (2-frame oscillation), boss phase frame switching |
 | AudioManager | `AudioManager.ts` | SFX + music playback with graceful fallback for missing audio keys |
+| DropManager | `DropManager.ts` | Drop spawning from enemy data, pity timer, magnetism, code-drawn pickups (currency/token/recipe), `sfx-pickup` on collect |
 
 ### Data flow: content → game object → system
 
@@ -76,7 +77,7 @@ Bullet pools eliminate per-frame allocation/GC pressure from rapid-fire projecti
 - Pools and debug overlay destroyed on scene exit via `returnToMenu()`
 - Enemies are NOT pooled (low spawn frequency, varied textures/sizes)
 - Future: if bullet visuals need animation, migrate from Rectangle to Arcade.Image (Phaser docs warn about geometry in physics groups)
-- Future: generic `ObjectPool<T>` base when Phase 7 adds drop pickup pool
+- DropManager uses its own pickup pool (code-drawn rectangles, separate from BulletPool)
 
 ### Debug overlay
 
@@ -87,5 +88,5 @@ Toggle with backtick key. Samples at ~4Hz when visible (not every frame). Shows:
 - `playerBulletPool.physicsGroup` — player projectiles (cyan rectangles, pooled)
 - `enemyBulletPool.physicsGroup` — enemy projectiles (red rectangles, pooled)
 - `enemies` — active enemy game objects (regular enemies + boss + minions)
-- Overlaps: playerBullets↔enemies, player↔enemies, player↔enemyBullets
+- Overlaps: playerBullets↔enemies, player↔enemies, player↔enemyBullets, player↔dropPickups
 - Boss-specific: survives player contact (player takes damage, boss stays), excluded from offscreen cleanup

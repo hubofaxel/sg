@@ -13,7 +13,7 @@
 ```
 src/
   asset/asset.schema.ts        # AssetManifest, AssetEntry (sprite-sheet/image/audio), FrameConfig
-  common/base.schema.ts        # EntityId, Vec2, Hitbox, StatRange, DropTable, Cooldown, CombatFeedback
+  common/base.schema.ts        # EntityId, Vec2, Hitbox, StatRange, DropType, DropEntry, DropTable, Cooldown, CombatFeedback
   weapon/weapon.schema.ts      # Weapon, WeaponLevel, SecondaryWeapon, WeaponRecipe
   ship/ship.schema.ts          # Ship, ShipStats, ShipUpgrade, PlayerShipState
   enemy/enemy.schema.ts        # Enemy, Boss, BossPhase (incl. spriteFrame), MovementPattern, AttackType
@@ -23,6 +23,13 @@ src/
   save/save.schema.ts          # SaveGame, migrations, createNewSave
   index.ts                     # Barrel export — all schemas + types
 ```
+
+## Drop system schemas (Phase 7)
+- `DropTypeSchema` — enum: `'currency'`, `'upgrade-token'`, `'weapon-recipe'`
+- `DropEntrySchema` — `{ type, chance, amount, pityBucketContribution? }`
+- `DropTableSchema` — array of DropEntry, defaults to `[]`
+- `EnemySchema.drops` — DropTable on each enemy (all 5 v1 enemies have drop tables)
+- `BossSchema.guaranteedDropOnDeath` — boolean, Iron Sentinel has guaranteed drops
 
 ## Schema vs runtime gaps
 - `AttackTypeSchema` includes `'beam'` — not yet implemented in `EnemyAttack.ts` (falls through to no-op)

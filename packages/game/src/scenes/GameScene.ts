@@ -6,6 +6,7 @@ import { AudioManager } from '../systems/AudioManager';
 import { BossManager } from '../systems/BossManager';
 import { deathBurst, flashOnHit, hitStop, screenShake, spawnIn } from '../systems/CombatFeedback';
 import { DebugOverlay } from '../systems/DebugOverlay';
+import { DropManager } from '../systems/DropManager';
 import { updateEnemyAttack } from '../systems/EnemyAttack';
 import { updateEnemyMovement } from '../systems/EnemyMovement';
 import { BulletPool } from '../systems/ObjectPool';
@@ -39,12 +40,14 @@ export class GameScene extends Phaser.Scene {
 	private enemyBulletPool!: BulletPool;
 	private enemies!: Phaser.Physics.Arcade.Group;
 	private debugOverlay!: DebugOverlay;
+	private dropManager!: DropManager;
 	private score = 0;
 	private lives = PLAYER_MAX_LIVES;
 	private lastFired = 0;
 	private invincible = false;
 	private scoreText!: Phaser.GameObjects.Text;
 	private livesText!: Phaser.GameObjects.Text;
+	private currencyText!: Phaser.GameObjects.Text;
 	private waveText!: Phaser.GameObjects.Text;
 	private gameOver = false;
 	private waveManager!: WaveManager;
@@ -148,6 +151,21 @@ export class GameScene extends Phaser.Scene {
 			this,
 		);
 
+		// Drop manager — spawns pickups on enemy kill, drifts toward player
+		this.dropManager = new DropManager({
+			scene: this,
+			audioManager: this.audioManager,
+		});
+
+		// Player ↔ drop pickup collision
+		this.physics.add.overlap(
+			this.player,
+			this.dropManager.physicsGroup,
+			this.onPlayerCollectDrop as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+			undefined,
+			this,
+		);
+
 		// HUD
 		this.scoreText = this.add.text(10, 10, 'SCORE: 0', {
 			fontSize: '16px',
@@ -159,8 +177,13 @@ export class GameScene extends Phaser.Scene {
 			fontFamily: 'monospace',
 			color: '#ff6666',
 		});
+		this.currencyText = this.add.text(10, 50, 'CREDITS: 0', {
+			fontSize: '16px',
+			fontFamily: 'monospace',
+			color: '#ffdd00',
+		});
 		this.waveText = this.add
-			.text(width / 2, 10, '', {
+			.text(width / 2, 12, '', {
 				fontSize: '14px',
 				fontFamily: 'monospace',
 				color: '#888888',
@@ -212,14 +235,23 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	update(time: number): void {
-		if (this.gameOver || this.stageClear) return;
+		// Drops keep drifting/expiring even after stage-clear so player can collect them
+		this.dropManager.update(time, this.player.x, this.player.y);
+		this.debugOverlay.update(time);
+
+		if (this.gameOver) return;
+
+		// Allow movement during stage-clear so player can grab remaining drops
+		if (this.stageClear) {
+			this.handleMovement();
+			return;
+		}
 
 		this.handleMovement();
 		this.handleFiring(time);
 		this.updateEnemies(time);
 		this.bossManager?.update(time);
 		this.cleanupOffscreen();
-		this.debugOverlay.update(time);
 	}
 
 	private updateEnemies(time: number): void {
@@ -315,6 +347,13 @@ export class GameScene extends Phaser.Scene {
 				this.audioManager.playSfx('sfx-enemy-death', 0.4);
 				hitStop(this, enemy);
 				this.waveManager.onEnemyDestroyed();
+
+				// Roll drops at death location before deathBurst moves/destroys the enemy
+				const drops = enemy.getData('drops') as import('@sg/contracts').DropTable | undefined;
+				if (drops) {
+					this.dropManager.rollDrops(drops, enemy.x, enemy.y, false);
+				}
+
 				deathBurst(enemy);
 			}
 		} else {
@@ -354,6 +393,17 @@ export class GameScene extends Phaser.Scene {
 		this.takeDamage();
 	}
 
+	private onPlayerCollectDrop(
+		_playerObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+		dropObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+	): void {
+		const pickup = dropObj as Phaser.GameObjects.Rectangle;
+		const result = this.dropManager.collectPickup(pickup);
+		if (result) {
+			this.currencyText.setText(`CREDITS: ${this.dropManager.currency}`);
+		}
+	}
+
 	private takeDamage(): void {
 		this.lives--;
 		this.livesText.setText(`LIVES: ${this.lives}`);
@@ -385,6 +435,7 @@ export class GameScene extends Phaser.Scene {
 		this.bossManager?.stop();
 		this.playerBulletPool.releaseAll();
 		this.enemyBulletPool.releaseAll();
+		this.dropManager.releaseAll();
 		this.audioManager.playSfx('sfx-player-death', 0.6);
 		this.audioManager.stopMusic();
 		this.player.setAlpha(0.3);
@@ -404,6 +455,14 @@ export class GameScene extends Phaser.Scene {
 				fontSize: '24px',
 				fontFamily: 'monospace',
 				color: '#ffffff',
+			})
+			.setOrigin(0.5);
+
+		this.add
+			.text(width / 2, height * 0.52, `CREDITS: ${this.dropManager.currency}`, {
+				fontSize: '18px',
+				fontFamily: 'monospace',
+				color: '#ffdd00',
 			})
 			.setOrigin(0.5);
 
@@ -443,8 +502,17 @@ export class GameScene extends Phaser.Scene {
 			screenWidth: width,
 			screenHeight: height,
 			onBossDefeated: () => {
-				// Final death burst on boss sprite
+				// Boss drops — guaranteed per content data
 				const bossObj = this.bossManager?.bossGameObject;
+				if (bossObj) {
+					const drops = bossObj.getData('drops') as import('@sg/contracts').DropTable | undefined;
+					const guaranteed = (bossObj.getData('guaranteedDropOnDeath') as boolean) ?? false;
+					if (drops) {
+						this.dropManager.rollDrops(drops, bossObj.x, bossObj.y, guaranteed);
+					}
+				}
+
+				// Final death burst on boss sprite
 				if (bossObj?.active) {
 					deathBurst(bossObj);
 				}
@@ -474,6 +542,7 @@ export class GameScene extends Phaser.Scene {
 		this.stageClear = true;
 		this.playerBulletPool.releaseAll();
 		this.enemyBulletPool.releaseAll();
+		// Don't releaseAll drops on stage clear — let player collect remaining pickups
 		this.audioManager.stopMusic();
 		const { width, height } = this.scale;
 
@@ -490,6 +559,14 @@ export class GameScene extends Phaser.Scene {
 				fontSize: '24px',
 				fontFamily: 'monospace',
 				color: '#ffffff',
+			})
+			.setOrigin(0.5);
+
+		this.add
+			.text(width / 2, height * 0.5, `CREDITS: ${this.dropManager.currency}`, {
+				fontSize: '18px',
+				fontFamily: 'monospace',
+				color: '#ffdd00',
 			})
 			.setOrigin(0.5);
 
@@ -519,6 +596,7 @@ export class GameScene extends Phaser.Scene {
 		this.debugOverlay.destroy();
 		this.playerBulletPool.destroy();
 		this.enemyBulletPool.destroy();
+		this.dropManager.destroy();
 		this.audioManager.destroy();
 		this.scene.start(SCENE_KEYS.Menu);
 	}

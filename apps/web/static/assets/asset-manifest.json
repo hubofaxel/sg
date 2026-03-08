@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-03-08T07:55:09.354Z",
+	"generatedAt": "2026-03-08T20:48:45.459Z",
 	"assets": [
 		{
 			"type": "sprite-sheet",
@@ -106,8 +106,8 @@
 			"path": "backgrounds/bg-starfield-sparse.png",
 			"width": 1536,
 			"height": 1024,
-			"sha256": "e8e12ffae07966f6851be65c501f79a5a9e40345aa3c45ad0be0c51c28b5868d",
-			"bytes": 33699
+			"sha256": "f490aab615b96f9d1b08a072dd10c1d873ab3a436c845baab1bc0a9ddb403b08",
+			"bytes": 405554
 		},
 		{
 			"type": "image",
@@ -115,8 +115,8 @@
 			"path": "backgrounds/bg-starfield-dense.png",
 			"width": 1536,
 			"height": 1024,
-			"sha256": "e8e12ffae07966f6851be65c501f79a5a9e40345aa3c45ad0be0c51c28b5868d",
-			"bytes": 33699
+			"sha256": "d96afcb0d93520c109e074a4470270440458c696cd63c81f653362294237b577",
+			"bytes": 2804982
 		},
 		{
 			"type": "image",
@@ -124,8 +124,8 @@
 			"path": "backgrounds/bg-endless-void.png",
 			"width": 1536,
 			"height": 1024,
-			"sha256": "e8e12ffae07966f6851be65c501f79a5a9e40345aa3c45ad0be0c51c28b5868d",
-			"bytes": 33699
+			"sha256": "e9aaf391c276fcea9c5bb5e98b789fc61f055c805171de5b274ecc3b1edf5e05",
+			"bytes": 361293
 		},
 		{
 			"type": "audio",
@@ -181,6 +181,67 @@
 			"type": "audio",
 			"key": "sfx-menu-confirm",
 			"paths": ["audio/sfx/sfx-menu-confirm.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-stage-clear",
+			"paths": ["audio/sfx/sfx-stage-clear.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "music-boss",
+			"paths": ["audio/music/music-boss.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-low-health",
+			"paths": ["audio/sfx/sfx-low-health.mp3"]
+		},
+		{
+			"type": "audio",
+			"key": "sfx-telegraph",
+			"paths": ["audio/sfx/sfx-telegraph.mp3"]
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "sprite-telegraph",
+			"path": "sprites/effects/sprite-telegraph.png",
+			"frameConfig": {
+				"frameWidth": 32,
+				"frameHeight": 32,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "e07561a721e1c4b1063aafef1aa43d64d4d62953155dd8a3dbea84b914412bdd",
+			"bytes": 1390
+		},
+		{
+			"type": "image",
+			"key": "logo-mark",
+			"path": "branding/logo-mark.png",
+			"width": 1024,
+			"height": 1024,
+			"sha256": "e447a8b93bd297c696f57697d518f64b2bf0972308b7164d930a46c24e6db9df",
+			"bytes": 1433402
+		},
+		{
+			"type": "image",
+			"key": "logo-wordmark",
+			"path": "branding/logo-wordmark.png",
+			"width": 1536,
+			"height": 1024,
+			"sha256": "660a4c66a9896a19252cac7f9d438838a3f95bcaa7c60697ef9cd00235ffdb03",
+			"bytes": 2103009
+		},
+		{
+			"type": "image",
+			"key": "og-image",
+			"path": "branding/og-image.png",
+			"width": 1536,
+			"height": 1024,
+			"sha256": "cefc4ece778926d9f02706185e006609a672efd5093c673d66d434b86f301630",
+			"bytes": 497584
 		},
 		{
 			"type": "image",

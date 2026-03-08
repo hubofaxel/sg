@@ -89,7 +89,7 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 ### Pooling ✓
 - Projectile pool (player bullets + enemy bullets) — `BulletPool` in `ObjectPool.ts`
-- Pre-allocated: 30 player bullets, 40 enemy bullets, grows on demand
+- Pre-allocated: 30 player bullets, 60 enemy bullets, grows on demand
 - `acquire/release` instead of `create/destroy` — zero GC pressure from projectiles
 - Hit effect pool (sparks, flashes) — deferred: current effects reuse dying game object (no separate sprites yet)
 - Death effect pool (explosions) — deferred: same reason, `deathBurst` animates the dying enemy directly
@@ -106,23 +106,36 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 **Goal**: Enemies drop things. Player accumulates currency.
 
-### Drop logic
-- `DropManager` reads `drops` array from enemy content data
-- Currency drops: floating number sprites that drift toward player
-- Pity timer: after N kills with no drop, increase chance
-- Boss guaranteed drops
-- Currency HUD counter
+### Drop logic ✓
+- `DropManager` system: reads `drops` array from enemy content data
+- Code-drawn pickups (16×16): currency (gold), upgrade-token (cyan), weapon-recipe (green)
+- Sine-wave bob animation + pop-out tween on spawn
+- Magnetism: pickups drift toward player, accelerate within 80px
+- Pity timer: accumulates kills without drops; forces best drop after threshold
+- Boss guaranteed drops on death
+- 8-second lifetime with fade during last second
+- `sfx-pickup` plays on collection
+- Currency + score HUD counter in GameScene
 - Run-total tracking in GameScene state
 
-### Contracts changes
-- Add `pityBucketContribution` to `DropEntrySchema`
-- Add `guaranteedDropOnDeath` boolean to `BossSchema`
+### Contracts changes ✓
+- `DropTypeSchema`, `DropEntrySchema`, `DropTableSchema` added to `common/base.schema.ts`
+- `pityBucketContribution` on `DropEntrySchema`
+- `guaranteedDropOnDeath` boolean on `BossSchema`
+- `drops` array on `EnemySchema` (all 5 enemies have drop tables)
+
+### Assets
+- Pickup visuals are code-drawn (follows <32px rule) — no generated sprites needed
+- `sfx-pickup` wired and working
 
 ---
 
 ## Phase 8 — Stage Presentation
 
 **Goal**: Levels feel authored, not procedural.
+
+### Assets (pre-generated)
+- `sfx-stage-clear` — 2s victory stinger (on disk, ready to wire)
 
 ### Stage intro card
 - Brief title card: stage name + level name, fade in/out
@@ -162,6 +175,10 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 ## Phase 10 — Audio Polish
 
 **Goal**: Audio feels responsive, not repetitive.
+
+### Assets (pre-generated)
+- `music-boss` — 75s synthwave boss track via composition plan (on disk, loop point is editorial)
+- `sfx-low-health` — 0.5s warning pulse designed for loop playback (on disk, ready to wire)
 
 ### Variation system
 - Pitch variation on SFX (random +/- 5%)
@@ -203,6 +220,10 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 ## Phase 12 — Encounter Director
 
 **Goal**: Spawning feels paced, not dumped.
+
+### Assets (pre-generated)
+- `sfx-telegraph` — 0.5s warning chirp, trim to ~0.3s in post (on disk)
+- `sprite-telegraph` — 32×32 diamond warning marker, 2 frames bright/dim (on disk)
 
 ### Director concepts
 - Threat budget per wave: limits simultaneous danger
