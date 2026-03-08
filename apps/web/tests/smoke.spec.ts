@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('home page', () => {
 	test('loads at root URL', async ({ page }) => {

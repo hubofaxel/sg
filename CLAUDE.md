@@ -18,7 +18,7 @@ Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorep
 - `pnpm format` — Biome format
 - `pnpm lint` — Biome check
 - `pnpm lint:fix` — Biome check --write
-- `pnpm validate` — check + lint + test + asset:validate
+- `pnpm validate` — check + lint + build + test + asset:validate + boundary checks
 - `pnpm asset:gen` — generate all assets to staging (OpenAI + ElevenLabs, requires API keys via direnv)
 - `pnpm asset:placeholder` — generate placeholder PNGs for all visual assets (bypasses staging)
 - `pnpm asset:manifest` — rebuild asset-manifest.json from runtime files
@@ -49,3 +49,5 @@ Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorep
 - Biome for formatting/linting (NOT Prettier, NOT ESLint) — tabs, single quotes, 100 char width
 - Asset generation writes to staging, not runtime — see `docs/asset-contracts.md` for full policy
 - Assets <32px shipped size default to code-drawn (Phaser drawing API), not AI-generated
+- CI runs the same gate chain as local `pnpm validate` — see `.github/workflows/ci.yml`
+- Architecture boundaries enforced: no Phaser outside `packages/game/`, no `@sg/game` internal imports
