@@ -73,6 +73,8 @@ export function hitStop(
 
 /** Enemy death burst: quick scale-up + fade-out, then destroy */
 export function deathBurst(target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle): void {
+	if (!target.active) return; // already dying or destroyed
+
 	const scene = target.scene;
 	if (!scene) {
 		target.destroy();
@@ -84,6 +86,9 @@ export function deathBurst(target: Phaser.GameObjects.Sprite | Phaser.GameObject
 		target.destroy();
 		return;
 	}
+
+	// Mark inactive so systems (movement, attack) skip this object during the animation
+	target.setActive(false);
 
 	// Detach from physics so it doesn't collide during the effect
 	const body = target.body as Phaser.Physics.Arcade.Body | null;

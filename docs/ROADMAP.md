@@ -1,6 +1,6 @@
 # Ship Game — Development Roadmap
 
-**Current phase: Phase 6 — Object Pooling + Performance**
+**Current phase: Phase 7 — Drop System + Currency**
 
 Phases are ordered by dependency and leverage. Each phase ships as one PR.
 
@@ -26,6 +26,9 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 ### Phase 5+ — Sprite Frame Support
 `SpriteFrames` system: ship banking (3 frames), enemy idle animation (2-frame oscillation), boss phase frame switching via `spriteFrame` on `BossPhaseSchema`.
+
+### Phase 6 — Object Pooling + Performance
+`BulletPool` for player+enemy projectiles (30+60 pre-allocated), debug overlay (backtick toggle), `deathBurst` active-state guards, `releaseAll` on game-over/stage-clear.
 
 ---
 
@@ -84,16 +87,18 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 **Goal**: Stable frame rate as content grows.
 
-### Pooling
-- Projectile pool (player bullets + enemy bullets)
-- Hit effect pool (sparks, flashes)
-- Death effect pool (explosions)
-- Drop pickup pool (currency, tokens)
+### Pooling ✓
+- Projectile pool (player bullets + enemy bullets) — `BulletPool` in `ObjectPool.ts`
+- Pre-allocated: 30 player bullets, 40 enemy bullets, grows on demand
+- `acquire/release` instead of `create/destroy` — zero GC pressure from projectiles
+- Hit effect pool (sparks, flashes) — deferred: current effects reuse dying game object (no separate sprites yet)
+- Death effect pool (explosions) — deferred: same reason, `deathBurst` animates the dying enemy directly
+- Drop pickup pool (currency, tokens) — deferred to Phase 7 when drops exist
 
-### Debug overlay
+### Debug overlay ✓
 - Toggle with backtick key
-- Active: projectiles, enemies, pooled objects, FPS
-- Current level/wave, audio instances
+- Shows: FPS, player/enemy bullet pool stats, enemy count, active tweens
+- Zero overhead when hidden
 
 ---
 

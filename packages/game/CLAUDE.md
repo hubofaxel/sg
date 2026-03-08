@@ -27,6 +27,8 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 
 | System | File | Purpose |
 |---|---|---|
+| BulletPool | `ObjectPool.ts` | Recycles Rectangle projectiles instead of create/destroy (player + enemy pools) |
+| DebugOverlay | `DebugOverlay.ts` | Backtick-toggled HUD: FPS, pool stats, enemy count, tween count |
 | WaveManager | `WaveManager.ts` | Drives spawning from campaign data; sets all enemy data keys on spawn |
 | BossManager | `BossManager.ts` | Boss encounter lifecycle: intro → phases → minions → death sequence |
 | EnemyMovement | `EnemyMovement.ts` | Per-frame movement: linear, sine-wave, zigzag, spiral, strafe-hover |
@@ -56,10 +58,34 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 7. Boss death: chain explosions → `deathBurst` → minion cleanup → stage clear
 8. Health bar renders at screen top with color-coded fill (green→yellow→red)
 
+### Object pooling
+
+Bullet pools eliminate per-frame allocation/GC pressure from rapid-fire projectiles.
+
+- `playerBulletPool` — pre-creates 30 cyan rectangles, grows on demand
+- `enemyBulletPool` — pre-creates 60 red rectangles, grows on demand
+- `acquire(x, y, vx, vy)` resets to canonical state: position, velocity, alpha=1, scale=1, rotation=0, body enabled
+- `release(bullet)` resets to canonical inactive state: invisible, body disabled, zero velocity/acceleration, neutral transform, stale data cleared, parked at (-200,-200)
+- Release is idempotent — double-release logs warning but does not corrupt
+- Pool tracks: high-water mark, growth events (acquire misses that forced new allocation)
+- Collision overlaps use `pool.physicsGroup` — Phaser skips disabled bodies automatically
+- All iteration over pooled groups must check `if (!obj.active) continue`
+- `deathBurst()` sets `target.setActive(false)` immediately — systems skip dying enemies during animation
+- Collision callbacks guard with `if (!bullet.active) return` to prevent double-release in same physics step
+- `releaseAll()` called on game-over and stage-clear to flush in-flight bullets
+- Pools and debug overlay destroyed on scene exit via `returnToMenu()`
+- Enemies are NOT pooled (low spawn frequency, varied textures/sizes)
+- Future: if bullet visuals need animation, migrate from Rectangle to Arcade.Image (Phaser docs warn about geometry in physics groups)
+- Future: generic `ObjectPool<T>` base when Phase 7 adds drop pickup pool
+
+### Debug overlay
+
+Toggle with backtick key. Samples at ~4Hz when visible (not every frame). Shows: FPS + frame time, pool stats (active/created, high-water mark, growth events), enemy count, active tweens. When hidden, `update()` is a single boolean check.
+
 ### Collision groups
 
-- `bullets` — player projectiles (cyan rectangles)
-- `enemyBullets` — enemy projectiles (red rectangles)
+- `playerBulletPool.physicsGroup` — player projectiles (cyan rectangles, pooled)
+- `enemyBulletPool.physicsGroup` — enemy projectiles (red rectangles, pooled)
 - `enemies` — active enemy game objects (regular enemies + boss + minions)
-- Overlaps: bullets↔enemies, player↔enemies, player↔enemyBullets
+- Overlaps: playerBullets↔enemies, player↔enemies, player↔enemyBullets
 - Boss-specific: survives player contact (player takes damage, boss stays), excluded from offscreen cleanup
