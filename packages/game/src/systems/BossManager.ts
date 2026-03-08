@@ -1,6 +1,6 @@
 import { bosses, v1Enemies } from '@sg/content';
 import type { Boss, BossPhase, Enemy } from '@sg/contracts';
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { screenShake } from './CombatFeedback';
 import { applyBossPhaseFrame } from './SpriteFrames';
 

@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 
 /**
  * SpriteFrames — manages sprite frame switching for ships, enemies, and bosses.

@@ -1,6 +1,6 @@
 import { primaryWeapons, starterShips } from '@sg/content';
 import type { WeaponLevelStats } from '@sg/contracts';
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import type { GameEventBus } from '../events';
 import { AudioManager } from '../systems/AudioManager';
 import { BossManager } from '../systems/BossManager';
@@ -21,7 +21,9 @@ const PLAYER_HITBOX = SHIP.baseStats.hitbox;
 const PLAYER_MAX_LIVES = SHIP.baseStats.maxLives;
 
 // Weapon — read level 1 stats from content
-const DEFAULT_WEAPON = primaryWeapons.find((w) => w.type === SHIP.baseStats.defaultWeaponType)!;
+const maybeWeapon = primaryWeapons.find((w) => w.type === SHIP.baseStats.defaultWeaponType);
+if (!maybeWeapon) throw new Error(`Default weapon "${SHIP.baseStats.defaultWeaponType}" not found`);
+const DEFAULT_WEAPON = maybeWeapon;
 const WEAPON_LEVEL = 1;
 
 const INVINCIBLE_DURATION = 1500; // ms after taking a hit
@@ -98,12 +100,14 @@ export class GameScene extends Phaser.Scene {
 		playerBody.setSize(PLAYER_HITBOX.width, PLAYER_HITBOX.height);
 
 		// Input
-		this.cursors = this.input.keyboard!.createCursorKeys();
+		if (!this.input.keyboard) throw new Error('Keyboard input not available');
+		const keyboard = this.input.keyboard;
+		this.cursors = keyboard.createCursorKeys();
 		this.wasd = {
-			W: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-			A: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-			S: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-			D: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+			W: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+			A: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+			S: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+			D: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
 		};
 
 		// Bullet pools — recycle instead of create/destroy each frame
@@ -294,7 +298,7 @@ export class GameScene extends Phaser.Scene {
 		if (time - this.lastFired < cooldownMs) return;
 		this.lastFired = time;
 
-		const { projectileCount, spreadAngle, projectileSpeed, projectileHitbox } = this.weaponStats;
+		const { projectileCount, spreadAngle, projectileSpeed } = this.weaponStats;
 		const startAngle = -90; // straight up
 		const halfSpread = spreadAngle / 2;
 

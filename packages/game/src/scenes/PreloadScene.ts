@@ -1,5 +1,5 @@
 import { type AssetEntry, AssetManifestSchema } from '@sg/contracts';
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import type { GameEventBus } from '../events';
 import { SCENE_KEYS } from './index';
 

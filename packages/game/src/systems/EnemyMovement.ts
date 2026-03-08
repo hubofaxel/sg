@@ -1,4 +1,4 @@
-import type Phaser from 'phaser';
+import type * as Phaser from 'phaser';
 
 /**
  * EnemyMovement — applies movement patterns to enemies each frame.
@@ -66,7 +66,6 @@ export function updateEnemyMovement(
 			break;
 		}
 
-		case 'linear':
 		default: {
 			body.setVelocityY(baseSpeed);
 			body.setVelocityX(0);

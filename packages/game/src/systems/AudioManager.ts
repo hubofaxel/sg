@@ -1,4 +1,4 @@
-import type Phaser from 'phaser';
+import type * as Phaser from 'phaser';
 
 /**
  * AudioManager — thin wrapper for Phaser sound with volume control.
