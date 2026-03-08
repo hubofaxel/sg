@@ -3,6 +3,8 @@ import type { WeaponLevelStats } from '@sg/contracts';
 import Phaser from 'phaser';
 import type { GameEventBus } from '../events';
 import { AudioManager } from '../systems/AudioManager';
+import { deathBurst, flashOnHit, hitStop, screenShake, spawnIn } from '../systems/CombatFeedback';
+import { updateEnemyAttack } from '../systems/EnemyAttack';
 import { updateEnemyMovement } from '../systems/EnemyMovement';
 import { WaveManager } from '../systems/WaveManager';
 import { SCENE_KEYS } from './index';
@@ -30,6 +32,7 @@ export class GameScene extends Phaser.Scene {
 		D: Phaser.Input.Keyboard.Key;
 	};
 	private bullets!: Phaser.Physics.Arcade.Group;
+	private enemyBullets!: Phaser.Physics.Arcade.Group;
 	private enemies!: Phaser.Physics.Arcade.Group;
 	private score = 0;
 	private lives = PLAYER_MAX_LIVES;
@@ -105,6 +108,13 @@ export class GameScene extends Phaser.Scene {
 			runChildUpdate: false,
 		});
 
+		// Enemy bullet group
+		this.enemyBullets = this.physics.add.group({
+			classType: Phaser.GameObjects.Rectangle,
+			runChildUpdate: false,
+			maxSize: 100,
+		});
+
 		// Collisions
 		this.physics.add.overlap(
 			this.bullets,
@@ -117,6 +127,13 @@ export class GameScene extends Phaser.Scene {
 			this.player,
 			this.enemies,
 			this.onPlayerHitEnemy as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+			undefined,
+			this,
+		);
+		this.physics.add.overlap(
+			this.player,
+			this.enemyBullets,
+			this.onEnemyBulletHitPlayer as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
 			undefined,
 			this,
 		);
@@ -145,7 +162,9 @@ export class GameScene extends Phaser.Scene {
 			scene: this,
 			enemies: this.enemies,
 			screenWidth: width,
-			onEnemySpawned: (_enemy, _data) => {},
+			onEnemySpawned: (enemy, _data) => {
+				spawnIn(enemy);
+			},
 			onWaveCleared: (waveIndex) => {
 				this.showWaveBanner(`WAVE ${waveIndex + 2}`);
 				this.updateWaveHud();
@@ -176,15 +195,16 @@ export class GameScene extends Phaser.Scene {
 
 		this.handleMovement();
 		this.handleFiring(time);
-		this.updateEnemies();
+		this.updateEnemies(time);
 		this.cleanupOffscreen();
 	}
 
-	private updateEnemies(): void {
+	private updateEnemies(time: number): void {
 		const { width } = this.scale;
 		for (const obj of this.enemies.getChildren()) {
 			const enemy = obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
 			updateEnemyMovement(enemy, width, this.player.x);
+			updateEnemyAttack(enemy, this.enemyBullets, this.player.x, this.player.y, time);
 		}
 	}
 
@@ -262,8 +282,11 @@ export class GameScene extends Phaser.Scene {
 			this.scoreText.setText(`SCORE: ${this.score}`);
 			this.eventBus.emit('score', this.score);
 			this.audioManager.playSfx('sfx-enemy-death', 0.4);
-			enemy.destroy();
+			hitStop(this, 30);
 			this.waveManager.onEnemyDestroyed();
+			deathBurst(enemy);
+		} else {
+			flashOnHit(enemy);
 		}
 	}
 
@@ -280,10 +303,22 @@ export class GameScene extends Phaser.Scene {
 		this.takeDamage();
 	}
 
+	private onEnemyBulletHitPlayer(
+		_playerObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+		bulletObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+	): void {
+		if (this.invincible || this.gameOver) return;
+
+		const bullet = bulletObj as Phaser.GameObjects.Rectangle;
+		bullet.destroy();
+		this.takeDamage();
+	}
+
 	private takeDamage(): void {
 		this.lives--;
 		this.livesText.setText(`LIVES: ${this.lives}`);
 		this.audioManager.playSfx('sfx-hit', 0.5);
+		screenShake(this, 0.008, 150);
 
 		if (this.lives <= 0) {
 			this.triggerGameOver();
@@ -419,10 +454,18 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private cleanupOffscreen(): void {
-		const { height } = this.scale;
+		const { width, height } = this.scale;
 
 		for (const bullet of this.bullets.getChildren()) {
 			if ((bullet as Phaser.GameObjects.Rectangle).y < -20) {
+				bullet.destroy();
+			}
+		}
+
+		// Enemy bullets that leave the screen
+		for (const bullet of this.enemyBullets.getChildren()) {
+			const b = bullet as Phaser.GameObjects.Rectangle;
+			if (b.y > height + 20 || b.y < -20 || b.x < -20 || b.x > width + 20) {
 				bullet.destroy();
 			}
 		}
