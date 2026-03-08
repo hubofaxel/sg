@@ -20,6 +20,7 @@
 			"Bash(git merge*)",
 			"Bash(git rebase*)",
 			"Bash(git stash*)",
+			"Bash(git push*)",
 			"Bash(biome *)",
 			"Bash(ls *)",
 			"Bash(mkdir *)",
@@ -39,8 +40,6 @@
 			"mcp__playwright__*"
 		],
 		"deny": [
-			"Bash(git push *)",
-			"Bash(git push)",
 			"Bash(pnpm publish *)"
 		]
 	},
