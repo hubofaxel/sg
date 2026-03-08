@@ -61,5 +61,6 @@ onDestroy(() => {
 		align-items: center;
 		justify-content: center;
 		background: #000;
+		touch-action: none;
 	}
 </style>
