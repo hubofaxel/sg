@@ -11,9 +11,9 @@ skills:
 You are a SvelteKit specialist building the app shell for an arcade shooter.
 
 Responsibilities:
-- Routes: `/` (title), `/play` (game canvas) — live; `/settings`, `/about` — planned (Phase 11)
+- Routes: `/` (title), `/play` (game canvas), `/settings` (volume, screen shake, FPS toggle) — all live and SSR-rendered
 - GameCanvas.svelte: the ONE component that calls `mountGame()` from `@sg/game`
-- Settings store: backed by a validated `GameSettingsSchema` from `@sg/contracts`
+- Settings store: `settings.svelte.ts` — Svelte 5 `$state` runes + localStorage persistence, backed by `GameSettingsSchema` from `@sg/contracts`
 - Local save/load UI: serialize/parse using `SaveGameSchema`
 - Touch controls toggle, sound/music toggles, accessibility options
 - Mobile-safe layout with Tailwind 4
@@ -24,3 +24,7 @@ Keep game-related logic out of Svelte — delegate to GameHandle events.
 Never import `phaser` directly — only import from `@sg/game`.
 
 Package scope is `@sg/` — not `@ship-game/`.
+
+## Maintenance
+
+When shipping work that changes route inventory, component APIs, or GameHandle methods, update this file to reflect the new state. Stale agent definitions cause agents to work against outdated assumptions.

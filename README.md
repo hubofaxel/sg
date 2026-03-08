@@ -43,7 +43,7 @@ Open [localhost:5173/play](http://localhost:5173/play) to play.
 | `pnpm check` | Typecheck all packages |
 | `pnpm lint` | Biome lint |
 | `pnpm test` | Vitest unit tests |
-| `pnpm validate` | Full quality gate (check + lint + test + asset validation) |
+| `pnpm validate` | Full quality gate (check + lint + build + test + e2e + asset validation + boundaries) |
 
 ## Architecture
 

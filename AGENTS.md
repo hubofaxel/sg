@@ -23,6 +23,7 @@
 | browser-debugging | 500 errors, blank pages, UI issues |
 | monorepo-conventions | Scaffolding packages, workspace config |
 | trunk-based-dev | Committing, branching, shipping |
+| mobile-adaptation | Mobile adaptation work (any agent) |
 | pwa-delivery | Service worker, manifest, install UX |
 
 ## Hooks
@@ -35,7 +36,7 @@
 | PostToolUse | Edit/Write | Auto-format with Biome |
 | PostToolUse | Edit/Write | Check vite dev log for errors after .svelte/.ts/.js/.css edits |
 
-## Commands
+## Commands (`.claude/commands/`)
 
 | Command | Purpose |
 |---|---|
@@ -46,4 +47,5 @@
 | /vertical-slice | Stage 3 full gameplay loop buildout |
 | /land | Trunk-based merge to main |
 | /check | Full quality gate sweep with diagnostics |
-| /commit | Conventional commit from staged changes |
+
+Note: `/commit` is a built-in skill, not a custom command file.

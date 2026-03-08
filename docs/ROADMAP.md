@@ -240,6 +240,21 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 ---
 
+## Mobile Adaptation
+
+**Goal**: Game is playable and comfortable on phones and tablets.
+
+See [mobile-adaptation.md](mobile-adaptation.md) for full analysis, architectural decisions, and acceptance criteria.
+
+Key architectural decision: **fixed 800x600 world, Phaser FIT scaling, Svelte owns the shell.** Phaser's Scale Manager handles display scaling — the game world size never changes. Shell pages and DOM overlays adapt via CSS. HUD and input systems adapt via Phaser's `displaySize` and `parentSize` APIs.
+
+Three implementation phases:
+- **Phase A — Input-valid**: touch intent system (floating joystick + auto-fire), landscape shell + safe area, rotate-device overlay, `touch-action: none`, Scale Manager event subscriptions
+- **Phase B — Physically usable**: runtime settings bridge (`GameHandle.updateSettings()`), clamped HUD scaling, 44pt tap regions, mobile DOM overlay (pause/mute), responsive shell pages
+- **Phase C — Product polish**: service worker/offline, haptics, PWA install flow, low-end perf profiling
+
+---
+
 ## Future (post-launch polish)
 
 ### Expanded weapon behavior

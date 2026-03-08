@@ -1,42 +1,31 @@
-# sv
+# @sg/web — SvelteKit App Shell
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+SvelteKit application shell for Ship Game. Owns routes, menus, settings, persistence UI.
 
-## Creating a project
+## Routes
 
-If you're seeing this, you've probably already done this step. Congrats!
+| Route | Purpose |
+|---|---|
+| `/` | Home — title screen with play/settings navigation |
+| `/play` | Fullscreen game canvas (mounts Phaser via `@sg/game`) |
+| `/settings` | Volume, screen shake, FPS toggle — persisted to localStorage |
 
-```sh
-# create a new project
-npx sv create my-app
+## Key Components
+
+- `GameCanvas.svelte` — mounts Phaser game engine via dynamic import (SSR-safe)
+- `settings.svelte.ts` — reactive settings store using Svelte 5 runes + localStorage
+
+## Development
+
+```bash
+# From workspace root
+pnpm dev          # Start SvelteKit dev server
+pnpm build        # Production build
+pnpm test:e2e     # Playwright smoke tests
 ```
 
-To recreate this project with the same configuration:
+## Boundaries
 
-```sh
-# recreate this project
-npx sv@0.12.5 create --template minimal --types ts --no-install apps/web
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- Imports `@sg/game` barrel only — never imports `phaser` directly
+- All settings validate against `GameSettingsSchema` from `@sg/contracts`
+- Phaser is dynamically imported inside `onMount` to avoid SSR failures

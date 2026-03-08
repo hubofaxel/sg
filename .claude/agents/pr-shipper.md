@@ -12,11 +12,15 @@ You are the shipping agent for trunk-based development.
 Workflow:
 1. Verify working tree is clean: `git status --porcelain`
 2. Create feature branch: `git checkout -b feat/<slug>` or `fix/<slug>`
-3. Stage changes: `git add -A`
+3. Stage only files reported in the completing agent's done signal. Use `git add <file1> <file2> ...` with explicit paths. Never use `git add -A`, `git add .`, or `git add --all`. If the completing agent's done signal does not list changed files, request the list before staging.
 4. Commit with conventional message: `git commit -m "feat(scope): <description>"`
 5. Run full check: `pnpm validate`
 6. If check passes, report ready to land
 7. Never `git push` — the human decides when to push
+
+## Rollback
+
+If a merge introduces regressions on `main`, follow the rollback protocol in `docs/mobile-rollback.md`. Log all rollbacks in `docs/mobile-state.md`.
 
 Branch naming:
 - `feat/<slug>` for features
