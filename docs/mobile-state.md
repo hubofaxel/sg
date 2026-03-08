@@ -1,20 +1,23 @@
 # Mobile Adaptation — Orchestration State
 
 ## Current phase: A (Input-valid)
-## Current PR: Pre-implementation (readiness fixes)
-## Branch: chore/cleanup-adjustments
+## Current PR: PR-1 (Shell Foundation)
+## Branch: feat/mobile-shell-foundation
 
 ## Completed
 
 | PR | Task | Agent | Status | Notes |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| readiness | Pre-implementation fixes | planning-agent | ✅ | Merged to main |
+| PR-1 | viewport-and-layout | svelte-shell | ✅ | viewport-fit=cover, dvh/dvw, safe-area, touch-action, manifest orientation |
+| PR-1 | rotate-overlay | svelte-shell | ✅ | RotateOverlay.svelte — Svelte 5, Tailwind 4, ARIA accessible |
+| PR-1 | e2e-verification | test-runner | ✅ | 6 new tests in mobile-shell.spec.ts, all passing |
 
 ## In Progress
 
 | PR | Task | Agent | Status | Blocker |
 |---|---|---|---|---|
-| readiness | Pre-implementation fixes | planning-agent | 🔄 | — |
+| — | — | — | — | — |
 
 ## Blocked
 
