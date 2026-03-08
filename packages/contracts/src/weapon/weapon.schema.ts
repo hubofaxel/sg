@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { CombatFeedbackSchema, CooldownSchema, EntityIdSchema, HitboxSchema } from '../common/base.schema';
+import {
+	CombatFeedbackSchema,
+	CooldownSchema,
+	EntityIdSchema,
+	HitboxSchema,
+} from '../common/base.schema';
 
 // ---------------------------------------------------------------------------
 // Weapon classification

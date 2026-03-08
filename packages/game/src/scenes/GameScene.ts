@@ -3,6 +3,7 @@ import type { WeaponLevelStats } from '@sg/contracts';
 import Phaser from 'phaser';
 import type { GameEventBus } from '../events';
 import { AudioManager } from '../systems/AudioManager';
+import { BossManager } from '../systems/BossManager';
 import { deathBurst, flashOnHit, hitStop, screenShake, spawnIn } from '../systems/CombatFeedback';
 import { updateEnemyAttack } from '../systems/EnemyAttack';
 import { updateEnemyMovement } from '../systems/EnemyMovement';
@@ -43,6 +44,7 @@ export class GameScene extends Phaser.Scene {
 	private waveText!: Phaser.GameObjects.Text;
 	private gameOver = false;
 	private waveManager!: WaveManager;
+	private bossManager: BossManager | null = null;
 	private audioManager!: AudioManager;
 	private weaponStats!: WeaponLevelStats;
 	private stageClear = false;
@@ -59,6 +61,7 @@ export class GameScene extends Phaser.Scene {
 		this.invincible = false;
 		this.gameOver = false;
 		this.stageClear = false;
+		this.bossManager = null;
 		this.weaponStats = DEFAULT_WEAPON.levels[WEAPON_LEVEL - 1];
 	}
 
@@ -174,6 +177,9 @@ export class GameScene extends Phaser.Scene {
 				// Switch background for new level
 				this.setBackground(width, height);
 			},
+			onBossEncounter: (bossId) => {
+				this.startBossEncounter(bossId);
+			},
 			onStageClear: () => {
 				this.handleStageClear();
 			},
@@ -196,6 +202,7 @@ export class GameScene extends Phaser.Scene {
 		this.handleMovement();
 		this.handleFiring(time);
 		this.updateEnemies(time);
+		this.bossManager?.update(time);
 		this.cleanupOffscreen();
 	}
 
@@ -281,12 +288,25 @@ export class GameScene extends Phaser.Scene {
 			this.score += scoreValue;
 			this.scoreText.setText(`SCORE: ${this.score}`);
 			this.eventBus.emit('score', this.score);
-			this.audioManager.playSfx('sfx-enemy-death', 0.4);
-			hitStop(this, enemy);
-			this.waveManager.onEnemyDestroyed();
-			deathBurst(enemy);
+
+			const isBoss = enemy.getData('isBoss') as boolean;
+			if (isBoss && this.bossManager) {
+				// Boss kill — let BossManager handle death sequence
+				this.audioManager.playSfx('sfx-enemy-death', 0.8);
+				this.bossManager.onBossHit(health);
+			} else {
+				// Regular enemy kill
+				this.audioManager.playSfx('sfx-enemy-death', 0.4);
+				hitStop(this, enemy);
+				this.waveManager.onEnemyDestroyed();
+				deathBurst(enemy);
+			}
 		} else {
 			flashOnHit(enemy);
+			// Notify boss manager of damage for health bar
+			if (enemy.getData('isBoss') && this.bossManager) {
+				this.bossManager.onBossHit(health);
+			}
 		}
 	}
 
@@ -297,8 +317,12 @@ export class GameScene extends Phaser.Scene {
 		if (this.invincible || this.gameOver) return;
 
 		const enemy = enemyObj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
-		enemy.destroy();
-		this.waveManager.onEnemyDestroyed();
+
+		// Bosses don't die on contact — player takes damage, boss stays
+		if (!enemy.getData('isBoss')) {
+			enemy.destroy();
+			this.waveManager.onEnemyDestroyed();
+		}
 
 		this.takeDamage();
 	}
@@ -342,6 +366,7 @@ export class GameScene extends Phaser.Scene {
 	private triggerGameOver(): void {
 		this.gameOver = true;
 		this.waveManager.stop();
+		this.bossManager?.stop();
 		this.audioManager.playSfx('sfx-player-death', 0.6);
 		this.audioManager.stopMusic();
 		this.player.setAlpha(0.3);
@@ -386,6 +411,45 @@ export class GameScene extends Phaser.Scene {
 			this.input.keyboard?.once('keydown-SPACE', () => this.returnToMenu());
 			this.input.once('pointerdown', () => this.returnToMenu());
 		});
+	}
+
+	private startBossEncounter(bossId: string): void {
+		const { width, height } = this.scale;
+
+		this.waveText.setText('BOSS');
+
+		this.bossManager = new BossManager({
+			scene: this,
+			bossId,
+			enemies: this.enemies,
+			screenWidth: width,
+			screenHeight: height,
+			onBossDefeated: () => {
+				// Final death burst on boss sprite
+				const bossObj = this.bossManager?.bossGameObject;
+				if (bossObj?.active) {
+					deathBurst(bossObj);
+				}
+
+				// Destroy remaining minions
+				for (const obj of this.enemies.getChildren()) {
+					const e = obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
+					if (!e.getData('isBoss')) {
+						deathBurst(e);
+					}
+				}
+
+				// Brief delay then stage clear
+				this.time.delayedCall(1000, () => {
+					this.handleStageClear();
+				});
+			},
+			onMinionSpawned: (enemy, _data) => {
+				spawnIn(enemy);
+			},
+		});
+
+		this.bossManager.start();
 	}
 
 	private handleStageClear(): void {
@@ -472,7 +536,9 @@ export class GameScene extends Phaser.Scene {
 
 		// Enemies that pass the bottom of the screen — penalty!
 		for (const enemy of this.enemies.getChildren()) {
-			if ((enemy as Phaser.GameObjects.Sprite).y > height + 20) {
+			const e = enemy as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
+			if (e.getData('isBoss')) continue; // Boss managed by BossManager
+			if (e.y > height + 20) {
 				enemy.destroy();
 				this.waveManager.onEnemyDestroyed();
 				this.takeDamage();

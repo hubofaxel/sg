@@ -29,9 +29,7 @@ function getFeedback(
 }
 
 /** Flash an enemy white on hit, then restore original tint */
-export function flashOnHit(
-	target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
-): void {
+export function flashOnHit(target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle): void {
 	const scene = target.scene;
 	if (!scene) return;
 
@@ -74,9 +72,7 @@ export function hitStop(
 }
 
 /** Enemy death burst: quick scale-up + fade-out, then destroy */
-export function deathBurst(
-	target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
-): void {
+export function deathBurst(target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle): void {
 	const scene = target.scene;
 	if (!scene) {
 		target.destroy();
@@ -107,9 +103,7 @@ export function deathBurst(
 }
 
 /** Spawn-in: enemies fade and scale in instead of popping */
-export function spawnIn(
-	target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
-): void {
+export function spawnIn(target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle): void {
 	const scene = target.scene;
 	if (!scene) return;
 

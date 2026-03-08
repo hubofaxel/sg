@@ -15,6 +15,7 @@ export interface WaveManagerConfig {
 	) => void;
 	onWaveCleared: (waveIndex: number) => void;
 	onLevelCleared: (levelIndex: number) => void;
+	onBossEncounter: (bossId: string) => void;
 	onStageClear: () => void;
 }
 
@@ -25,6 +26,7 @@ export class WaveManager {
 	private onEnemySpawned: WaveManagerConfig['onEnemySpawned'];
 	private onWaveCleared: WaveManagerConfig['onWaveCleared'];
 	private onLevelCleared: WaveManagerConfig['onLevelCleared'];
+	private onBossEncounter: WaveManagerConfig['onBossEncounter'];
 	private onStageClear: WaveManagerConfig['onStageClear'];
 
 	private stage: Stage;
@@ -43,6 +45,7 @@ export class WaveManager {
 		this.onEnemySpawned = config.onEnemySpawned;
 		this.onWaveCleared = config.onWaveCleared;
 		this.onLevelCleared = config.onLevelCleared;
+		this.onBossEncounter = config.onBossEncounter;
 		this.onStageClear = config.onStageClear;
 
 		// Use first stage from campaign
@@ -83,6 +86,10 @@ export class WaveManager {
 
 	get musicKey(): string | undefined {
 		return this.stage.musicKey;
+	}
+
+	get bossId(): string {
+		return this.stage.bossId;
 	}
 
 	start(): void {
@@ -257,7 +264,7 @@ export class WaveManager {
 			return;
 		}
 
-		// Stage complete
-		this.onStageClear();
+		// All waves cleared — trigger boss encounter
+		this.onBossEncounter(this.stage.bossId);
 	}
 }
