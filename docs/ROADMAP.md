@@ -18,7 +18,7 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 ---
 
-## Phase 4b — Enemy Attack Patterns + Combat Feedback
+## Phase 4b — Enemy Attack Patterns + Combat Feedback ✓
 
 **Goal**: Enemies shoot back. Hits feel impactful.
 
