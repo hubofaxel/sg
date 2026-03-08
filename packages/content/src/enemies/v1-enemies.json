@@ -9,7 +9,7 @@
 		"contactDamage": 1,
 		"movementPattern": "linear",
 		"attackType": "contact-only",
-		"hitbox": { "width": 16, "height": 16, "offset": { "x": 0, "y": 0 } },
+		"hitbox": { "width": 20, "height": 20, "offset": { "x": 0, "y": 0 } },
 		"spriteKey": "enemy-drone",
 		"drops": [{ "type": "currency", "chance": 0.3, "quantity": 5 }],
 		"scoreValue": 10
@@ -27,7 +27,7 @@
 		"weaponType": "basic-laser",
 		"projectileDamage": 5,
 		"fireInterval": 2.0,
-		"hitbox": { "width": 18, "height": 18, "offset": { "x": 0, "y": 0 } },
+		"hitbox": { "width": 22, "height": 22, "offset": { "x": 0, "y": 0 } },
 		"spriteKey": "enemy-weaver",
 		"drops": [{ "type": "currency", "chance": 0.35, "quantity": 8 }],
 		"scoreValue": 25
@@ -71,7 +71,7 @@
 		"contactDamage": 2,
 		"movementPattern": "spiral",
 		"attackType": "ram",
-		"hitbox": { "width": 14, "height": 14, "offset": { "x": 0, "y": 0 } },
+		"hitbox": { "width": 18, "height": 18, "offset": { "x": 0, "y": 0 } },
 		"spriteKey": "enemy-kamikaze",
 		"drops": [{ "type": "currency", "chance": 0.2, "quantity": 3 }],
 		"scoreValue": 15

@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { GameHandle } from '@sg/game';
 import { onDestroy, onMount } from 'svelte';
+import { settings } from '../stores/settings';
 
 let container: HTMLDivElement;
 let handle: GameHandle | null = $state(null);
@@ -18,7 +19,15 @@ onMount(() => {
 	// Dynamic import — Phaser accesses `window` at module scope,
 	// so it must never be imported during SSR.
 	import('@sg/game').then(({ mountGame }) => {
-		handle = mountGame(container, {});
+		const s = settings.value;
+		handle = mountGame(container, {
+			settings: {
+				masterVolume: s.masterVolume,
+				sfxVolume: s.sfxVolume,
+				musicVolume: s.musicVolume,
+				showFps: s.showFps,
+			},
+		});
 
 		handle.on('ready', () => {
 			console.log('[GameCanvas] game ready');

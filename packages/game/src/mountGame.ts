@@ -38,6 +38,15 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 	// Stash the event bus in the registry so scenes can access it
 	game.registry.set('eventBus', eventBus);
 
+	// Stash audio volumes from settings so scenes can read them
+	if (options.settings) {
+		game.registry.set('audioVolumes', {
+			master: options.settings.masterVolume ?? 0.8,
+			sfx: options.settings.sfxVolume ?? 1.0,
+			music: options.settings.musicVolume ?? 0.7,
+		});
+	}
+
 	const handle: GameHandle = {
 		destroy() {
 			eventBus.removeAll();
