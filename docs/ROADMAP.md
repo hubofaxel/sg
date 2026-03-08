@@ -43,21 +43,26 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 
 ---
 
-## Phase 5 — Boss Framework
+## Phase 5 — Boss Framework ✓
 
 **Goal**: Iron Sentinel boss fight at end of Stage 1.
 
-### Boss encounter system
+### Boss encounter system ✓
 - `BossManager` system: phase transitions, health thresholds, attack rotation
 - Boss intro sequence: warning banner, alarm SFX, boss entry animation
 - Per-phase behavior: movement pattern, attack pattern, speed multiplier
-- Weak point system: damage multiplier on exposed core (phase 2)
 - Minion spawns during boss phases (from `minionSpawns` in BossPhaseSchema)
-- Boss death sequence: explosion chain, score burst, clear reward
-- Music override: boss alarm stinger, then existing stage music intensifies
+- Boss death sequence: chain explosions, score burst, stage clear
+- Boss health bar with color-coded fill (green→yellow→red)
+- WaveManager fires `onBossEncounter` after all waves cleared
+- Boss survives player contact (doesn't die on collision), excluded from offscreen cleanup
+
+### Not yet implemented (future polish)
+- Weak point system: damage multiplier on exposed core (needs sprite frame support)
+- Music override: boss alarm stinger plays, but no crossfade to boss-specific music track
 
 ### Content already exists
-- `bosses.json` has Iron Sentinel with phases
+- `bosses.json` has Iron Sentinel with 3 phases and combatFeedback overrides
 - `boss-iron-sentinel` sprite has shields-up / core-exposed frames
 - `sfx-boss-alarm` audio exists
 
@@ -114,7 +119,7 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 ### Boss arena
 - Darker background variant or tint overlay
 - Reduced visual clutter during boss fight
-- Boss health bar at top of screen
+- ~~Boss health bar at top of screen~~ ✓ (shipped in Phase 5)
 
 ---
 
