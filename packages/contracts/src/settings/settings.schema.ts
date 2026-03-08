@@ -4,7 +4,7 @@ import { z } from 'zod';
 // Control scheme
 // ---------------------------------------------------------------------------
 
-export const ControlSchemeSchema = z.enum(['wasd', 'arrows']);
+export const ControlSchemeSchema = z.enum(['wasd', 'arrows', 'touch']);
 export type ControlScheme = z.infer<typeof ControlSchemeSchema>;
 
 // ---------------------------------------------------------------------------
