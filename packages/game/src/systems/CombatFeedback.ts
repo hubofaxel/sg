@@ -1,5 +1,5 @@
 import type { CombatFeedback } from '@sg/contracts';
-import type Phaser from 'phaser';
+import type * as Phaser from 'phaser';
 
 /**
  * CombatFeedback — visual juice for hits, deaths, and spawns.

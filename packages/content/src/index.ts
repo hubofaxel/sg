@@ -1,39 +1,37 @@
 // ---------------------------------------------------------------------------
-// @sg/content — barrel export
+// @sg/content — barrel export (parse-validated)
 // ---------------------------------------------------------------------------
 
-import type {
-	Boss,
-	Campaign,
-	EndlessModeConfig,
-	Enemy,
-	ExperienceTable,
-	Ship,
-	Weapon,
+import {
+	BossSchema,
+	CampaignSchema,
+	EndlessModeConfigSchema,
+	EnemySchema,
+	ExperienceTableSchema,
+	ShipSchema,
+	WeaponSchema,
 } from '@sg/contracts';
+import { z } from 'zod';
+import bossesRaw from './enemies/bosses.json';
+import v1EnemiesRaw from './enemies/v1-enemies.json';
+import progressionRaw from './progression/progression.json';
+import starterShipsRaw from './ships/starter.json';
+import campaignRaw from './waves/campaign.json';
+import primaryWeaponsRaw from './weapons/primary.json';
 
 // Weapons
-import primaryWeaponsRaw from './weapons/primary.json';
-export const primaryWeapons: Weapon[] = primaryWeaponsRaw as unknown as Weapon[];
+export const primaryWeapons = z.array(WeaponSchema).parse(primaryWeaponsRaw);
 
 // Ships
-import starterShipsRaw from './ships/starter.json';
-export const starterShips: Ship[] = starterShipsRaw as unknown as Ship[];
+export const starterShips = z.array(ShipSchema).parse(starterShipsRaw);
 
 // Enemies
-import v1EnemiesRaw from './enemies/v1-enemies.json';
-export const v1Enemies: Enemy[] = v1EnemiesRaw as unknown as Enemy[];
-
-import bossesRaw from './enemies/bosses.json';
-export const bosses: Boss[] = bossesRaw as unknown as Boss[];
+export const v1Enemies = z.array(EnemySchema).parse(v1EnemiesRaw);
+export const bosses = z.array(BossSchema).parse(bossesRaw);
 
 // Waves / Campaign
-import campaignRaw from './waves/campaign.json';
-export const campaign: Campaign = campaignRaw as unknown as Campaign;
+export const campaign = CampaignSchema.parse(campaignRaw);
 
 // Progression
-import progressionRaw from './progression/progression.json';
-export const experienceTable: ExperienceTable =
-	progressionRaw.experienceTable as unknown as ExperienceTable;
-export const endlessModeConfig: EndlessModeConfig =
-	progressionRaw.endlessModeConfig as unknown as EndlessModeConfig;
+export const experienceTable = ExperienceTableSchema.parse(progressionRaw.experienceTable);
+export const endlessModeConfig = EndlessModeConfigSchema.parse(progressionRaw.endlessModeConfig);

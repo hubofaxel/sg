@@ -1,5 +1,5 @@
 import type { DropEntry, DropTable } from '@sg/contracts';
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import type { AudioManager } from './AudioManager';
 
 /**

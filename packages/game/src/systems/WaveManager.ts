@@ -1,6 +1,6 @@
 import { campaign, v1Enemies } from '@sg/content';
 import type { Enemy, Level, SpawnEntry, Stage, Wave } from '@sg/contracts';
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 
 /** Lookup enemy definitions by id */
 const enemyById = new Map<string, Enemy>(v1Enemies.map((e) => [e.id, e]));

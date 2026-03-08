@@ -2,7 +2,7 @@
 // mountGame — the ONE public entry point for the Phaser runtime
 // ---------------------------------------------------------------------------
 
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { GameEventBus } from './events';
 import { BootScene, GameScene, MenuScene, PreloadScene } from './scenes/index';
 import type { GameHandle, GameMountOptions } from './types';
