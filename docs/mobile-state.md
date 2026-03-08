@@ -1,29 +1,31 @@
 # Mobile Adaptation — Orchestration State
 
 ## Current phase: A (Input-valid)
-## Current PR: PR-1 (Shell Foundation)
-## Branch: feat/mobile-shell-foundation
+## Current PR: PR-2
+## Branch: feat/mobile-input-intent
 
 ## Completed
 
 | PR | Task | Agent | Status | Notes |
 |---|---|---|---|---|
-| readiness | Pre-implementation fixes | planning-agent | ✅ | Merged to main |
-| PR-1 | viewport-and-layout | svelte-shell | ✅ | viewport-fit=cover, dvh/dvw, safe-area, touch-action, manifest orientation |
-| PR-1 | rotate-overlay | svelte-shell | ✅ | RotateOverlay.svelte — Svelte 5, Tailwind 4, ARIA accessible |
-| PR-1 | e2e-verification | test-runner | ✅ | 6 new tests in mobile-shell.spec.ts, all passing |
+| readiness | Pre-implementation fixes | planning-agent | ✅ | All 10 fixes applied |
+| PR-1 | viewport-and-layout | svelte-shell | ✅ | Commit 9073d44 |
+| PR-1 | rotate-overlay | svelte-shell | ✅ | Commit 1f285e2 |
+| PR-1 | e2e-verification | test-runner | ✅ | 6 new tests, commit b1f12d1 |
+| PR-1 | land | pr-shipper | ✅ | FF-merged to main at 6e46104 |
 
 ## In Progress
 
 | PR | Task | Agent | Status | Blocker |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| PR-2 | schema-extension | schema-validator | 🔄 | — |
+| PR-2 | input-intent-system | phaser-integrator | 🔄 | — |
 
 ## Blocked
 
 | PR | Task | Agent | Blocker |
 |---|---|---|---|
-| — | — | — | — |
+| PR-2 | adapter-and-schema-tests | test-runner | Depends on Task 2.1 + 2.2 |
 
 ## Decisions Resolved
 
