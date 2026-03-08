@@ -39,7 +39,7 @@ Respect the existing specialization. Every task prompt must name exactly one own
 |---|---|---|
 | `phaser-integrator` | `packages/game/` | InputIntent type, KeyboardInput adapter, TouchInput adapter, GameScene integration, HUD scaling, BossManager scaling, Scale Manager subscriptions, adapter lifecycle, combat feedback scaling |
 | `svelte-shell` | `apps/web/`, `packages/ui/` | Viewport meta, dvh/dvw, safe area padding, touch-action, rotate overlay, GameOverlay component, settings page responsive CSS, Button/Modal touch targets, play page layout |
-| `schema-validator` | `packages/contracts/` | ControlScheme extension (`'touch'`), `autoFire` field, Phase B touch tuning fields, schema + default + test for every new field |
+| `schema-validator` | `packages/contracts/` | ControlScheme extension (`'touch'`), Phase B touch tuning fields, schema + default + test for every new field |
 | `test-runner` | Cross-package tests | Vitest unit tests for adapters, schema round-trip tests, Playwright e2e for lifecycle/orientation/route stability |
 | `pr-shipper` | Git workflow | Branch creation, conventional commit, PR open, merge to main via `/land` |
 | `diagnostician` | Runtime triage | Dev server log tailing, browser error correlation, SSR failure diagnosis |
@@ -98,7 +98,7 @@ Dependency graph:
 ```
 Dependency graph:
 
-  schema-validator: extend ControlScheme, add autoFire
+  schema-validator: extend ControlScheme with 'touch'
          |
   phaser-integrator: InputIntent type, KeyboardInput adapter, TouchInput adapter, GameScene refactor
          |
@@ -111,33 +111,33 @@ Dependency graph:
 
 1. **`schema-validator` — settings schema extension**
    - In `packages/contracts/src/settings/settings.schema.ts`:
-     - Extend `ControlSchemeSchema` to include `'touch'` as a valid option.
-     - Add `autoFire: z.boolean().default(false)` to `GameSettingsSchema`.
-   - Add/update unit test: verify `ControlSchemeSchema` accepts `'touch'`, verify `autoFire` defaults to `false`, verify parse round-trip.
+     - Extend `ControlSchemeSchema` to include `'touch'` as a valid option. Default remains `'wasd'` (existing persisted data must still parse).
+   - Add/update unit test: verify `ControlSchemeSchema` accepts all three values (`'wasd'`, `'arrows'`, `'touch'`), rejects invalid strings, verify parse round-trip.
    - Run `pnpm validate` from repo root to confirm no type errors propagate.
+   - Note: `autoFire` is NOT added — firing is already unconditional in the game loop (see `mobile-decisions.md` Decision 1).
 
 2. **`phaser-integrator` — input intent system**
    - Create `packages/game/src/systems/InputIntent.ts`: export the `InputIntent` interface (`moveVector: { x: number, y: number }`, `fireHeld: boolean`, `secondaryHeld: boolean`, `pausePressed: boolean`). This is a pure type/interface file.
    - Create `packages/game/src/systems/KeyboardInput.ts`: adapter class that wraps the existing `cursors`/`wasd` logic from `GameScene.ts:105-114` and `handleMovement()` logic from `GameScene.ts:254-277`. Must implement lifecycle methods: `create(scene)`, `update(): InputIntent`, `clear()`, `destroy()`. The `update()` method returns a normalized `InputIntent` each frame. `clear()` resets all state. This is a **refactor** — keyboard behavior must be identical to current behavior.
-   - Create `packages/game/src/systems/TouchInput.ts`: adapter class implementing the same lifecycle interface. Implements floating virtual joystick (appears at pointer-down position on left half of screen), dead zone, max radius, pointer capture via Pointer Events API. Auto-fire is default-on (emit `fireHeld: true` while joystick is active). Handles `pointercancel` by calling `clear()`. Right-side touch zone reserved for future secondary ability.
+   - Create `packages/game/src/systems/TouchInput.ts`: adapter class implementing the same lifecycle interface. Implements floating virtual joystick (appears at pointer-down position on left half of screen), dead zone, max radius, pointer capture via Pointer Events API. Emits `fireHeld: true` unconditionally (firing is already automatic in the game loop — see `mobile-decisions.md` Decision 1). Handles `pointercancel` by calling `clear()`. Right-side touch zone reserved for future secondary ability.
    - Refactor `packages/game/src/scenes/GameScene.ts`:
      - Remove inline keyboard reading from `handleMovement()`.
-     - Instantiate the appropriate adapter based on `touchControlsEnabled` setting (from `GameMountOptions`).
+     - Instantiate the appropriate adapter: if `controlScheme === 'touch'`, use `TouchInput`; if `controlScheme` is `'wasd'`/`'arrows'` but touch capability detected (`'ontouchstart' in window || navigator.maxTouchPoints > 0`) and `touchControlsEnabled` is true, use `TouchInput`; otherwise use `KeyboardInput`. No runtime hot-swap in Phase A.
      - Each frame, call `adapter.update()` and consume the returned `InputIntent`.
      - On scene pause/resume: call `adapter.clear()`.
      - Subscribe to `scale.on('resize')` and `scale.on(Phaser.Scale.Events.ORIENTATION_CHANGE)`.
      - On orientation change to portrait: pause scene, call `adapter.clear()`, emit event for shell overlay.
-   - Expand `GameMountOptions.settings` in `packages/game/src/types.ts` to include `touchControlsEnabled` and `autoFire`.
+   - Expand `GameMountOptions.settings` in `packages/game/src/types.ts` to include `touchControlsEnabled` and `controlScheme`.
 
 3. **`test-runner` — adapter and schema tests**
    - Unit tests for `KeyboardInput`: verify `update()` returns correct intent for key combinations, verify `clear()` zeroes all fields, verify diagonal normalization.
    - Unit tests for `TouchInput`: verify dead zone (small movements produce zero vector), verify max radius clamping, verify `clear()` resets pointer state, verify `pointercancel` triggers clear.
-   - Schema tests: `ControlSchemeSchema` accepts all three values, rejects invalid. `autoFire` default.
+   - Schema tests: `ControlSchemeSchema` accepts all three values (`'wasd'`, `'arrows'`, `'touch'`), rejects invalid strings.
    - Run full gate.
 
 4. **`pr-shipper` — land PR-2**
    - Branch: `feat/mobile-input-intent`
-   - Commits scoped: `feat(contracts): add touch control scheme and autoFire setting`, `feat(game): add InputIntent system with keyboard and touch adapters`, `refactor(game): consume InputIntent in GameScene`, `test(game): add input adapter unit tests`
+   - Commits scoped: `feat(contracts): add touch control scheme option`, `feat(game): add InputIntent system with keyboard and touch adapters`, `refactor(game): consume InputIntent in GameScene`, `test(game): add input adapter unit tests`
    - Gate: `pnpm validate` + `pnpm test:e2e` + route probe
 
 ### PR-3: Runtime Settings Bridge
@@ -161,15 +161,15 @@ Dependency graph:
    - Implement in `packages/game/src/mountGame.ts`: write partial settings to Phaser registry, fire a registry change event.
    - In `GameScene.ts`: subscribe to registry change event, propagate to relevant systems.
    - In `AudioManager.ts`: subscribe to volume changes via the registry event (connect the existing `setVolumes()` method).
-   - In `TouchInput.ts`: subscribe to settings changes for dead zone, handedness (Phase B fields — subscribe to the keys but only act on them when the fields exist).
+   - In `TouchInput.ts`: subscribe to `game.registry.events.on('changedata-touchDeadZone')` etc. for dead zone, handedness (Phase B fields — subscribe defensively, no-op if values absent).
 
 2. **`svelte-shell` — settings store bridge**
    - In `apps/web/src/lib/components/GameCanvas.svelte` (or the play page): when the settings store changes, call `handle.updateSettings()` with the delta.
    - Ensure the flow is: user changes setting → Svelte store updates → `updateSettings()` called → Phaser registry fires → system reacts. No remount.
 
 3. **`test-runner` — bridge verification**
-   - Test that calling `updateSettings({ masterVolume: 0.5 })` after mount correctly propagates to AudioManager.
-   - Test that `updateSettings({ touchControlsEnabled: false })` swaps the active adapter (or gates touch input).
+   - Test that calling `updateSettings({ masterVolume: 0.5 })` after mount fires `changedata-masterVolume` on registry and AudioManager receives the update.
+   - Test that `updateSettings()` writes each key to registry via `game.registry.set()`. No adapter hot-swap — control scheme changes take effect on next mount (Phase A).
    - Run full gate.
 
 4. **`pr-shipper` — land PR-3**
@@ -189,13 +189,14 @@ Dependency graph:
 **Tasks:**
 
 1. **`phaser-integrator` — HUD scaling**
-   - In `HudManager.ts`: compute `scaleFactor = Math.min(displayWidth / 800, displayHeight / 600)`. Apply to all font sizes (multiply base size by factor). Clamp to prevent extremes: `Math.max(0.5, Math.min(scaleFactor, 2.0))` (tune clamp values based on iPhone SE → iPad range). Recompute on Scale Manager `resize` event.
-   - In `BossManager.ts`: apply same scale factor to warning banner text (36px base) and boss name text (20px base).
+   - In `HudManager.ts`: compute `scaleFactor = Math.min(displayWidth / 800, displayHeight / 600)`, clamped to `[0.6, 1.5]`. Each text element stores its base font size. On scale update: `fontSize = Math.max(baseSize * clampedFactor, minPixels)`. Per-element pixel floors: 10px for persistent HUD (score, lives, currency, wave indicator), 9px for boss health bar label. Titles/banners (40px game over, 36px boss warning, 22px wave banner) use clamped factor with no floor. Debug overlay (11px) is not scaled. Store scale factor and min-pixel constants as named constants, not magic numbers. Recompute on Scale Manager `resize` event.
+   - In `BossManager.ts`: receive the same clamped scale factor (shared utility or resize event). Apply to warning banner text (36px base) and boss name text (20px base) with no pixel floor needed.
    - In `CombatFeedback` (if it exists as a system): honor `prefers-reduced-motion` by checking `window.matchMedia('(prefers-reduced-motion: reduce)')` — reduce or disable screen shake intensity. Scale shake magnitude by inverse of display scale factor for physical consistency.
 
 2. **`test-runner` — scaling tests**
-   - Unit test: verify scale factor computation at known display sizes (375×667 landscape → expected factor, 1024×768 → expected factor).
-   - Verify clamp bounds are respected.
+   - Unit test: verify scale factor computation at five device sizes: iPhone SE (568×320, raw 0.533 → clamped 0.6), iPhone 15 (raw 0.65), Pixel 8 (raw 0.72), iPad mini (raw 1.0), iPad Air (raw 1.28 → clamped 1.28).
+   - Verify clamp bounds `[0.6, 1.5]` are respected.
+   - Verify per-element pixel floors (16px HUD at 0.6x → 10px not 9.6px; 12px boss label at 0.6x → 9px not 7.2px).
    - Run full gate.
 
 3. **`pr-shipper` — land PR-4**
@@ -213,7 +214,7 @@ Dependency graph:
 **Tasks:**
 
 1. **`svelte-shell` — GameOverlay**
-   - Create `apps/web/src/lib/components/GameOverlay.svelte`: absolutely positioned over the game canvas. Contains: pause button (top-right, respects safe area insets), mute toggle. Communicates with game via `GameHandle` events. Thin and event-driven — no per-frame polling.
+   - Create `apps/web/src/lib/components/GameOverlay.svelte`: absolutely positioned over the game canvas. Contains: pause button (top-right, respects safe area insets), mute toggle. Pause button calls `handle.pause()` / `handle.resume()` directly (shell-authoritative — see Decision 4). No new `GameEventMap` entries needed. Thin and event-driven — no per-frame polling.
    - Wire into `apps/web/src/routes/play/+page.svelte`.
 
 2. **`svelte-shell` — responsive shell pages**
@@ -304,26 +305,21 @@ After each agent reports "done," you must verify before advancing.
 
 ---
 
-## 6. Open Decision Handling
+## 6. Resolved Decisions
 
-The plan lists seven open decisions (§16). You must not silently resolve these. Protocol:
+All seven open decisions from the plan (§16) have been resolved. See [mobile-decisions.md](mobile-decisions.md) for full evidence, rationale, and downstream impact on task prompts.
 
-1. When a task requires a decision from the open list, **stop dispatching** that task.
-2. Surface the decision to the human operator with: the decision text, the options, your recommendation with rationale, and the downstream impact on the task sequence.
-3. Record the decision outcome in the state log.
-4. Resume dispatching.
+| # | Decision | Outcome |
+|---|---|---|
+| 1 | Touch auto-fire policy | No decision needed — firing is already unconditional. No `autoFire` field. |
+| 2 | Input adapter activation | Capability detection at mount + `controlScheme: 'touch'` override. No UA sniffing. |
+| 3 | Runtime settings transport | Phaser registry `changedata-<key>` events. No custom bus. |
+| 4 | Pause ownership | Shell-authoritative. Game never self-pauses. |
+| 5 | Touch target strategy | Full-scene `pointerdown` for in-canvas prompts. No localized hit zones. |
+| 6 | HUD scaling envelope | Clamp `[0.6, 1.5]`, per-element pixel floors (10px HUD, 9px boss label). |
+| 7 | Manifest orientation | Preference only. No `screen.orientation.lock()`. Overlay + pause is enforcement. |
 
-**Pre-seeded recommendations** (propose these but defer to the operator):
-
-| # | Decision | Recommendation | Rationale |
-|---|---|---|---|
-| 1 | Touch auto-fire policy | Default-on with explicit user override via settings | Maximizes one-thumb playability while preserving player agency |
-| 2 | Input adapter activation | Device heuristic with runtime override in settings | Heuristic gets it right 95% of the time; settings escape hatch covers the rest |
-| 3 | Runtime settings transport | Phaser registry events (not a custom bus) | Phaser registry is already the inter-system communication channel; adding a parallel bus increases complexity for no proven benefit |
-| 4 | Pause ownership | Shell-authoritative with game-side fallback | Shell knows about lifecycle events (visibility, orientation) first; game pauses in response. Game can also self-pause (boss intro, wave transition) and notifies shell. |
-| 5 | Touch target strategy | Maintain full-scene pointerdown for prompts | Current pattern works; localized hit zones add complexity without proven need |
-| 6 | HUD scaling envelope | `clamp(0.5, scaleFactor, 2.0)` — tune after iPhone SE + iPad validation | Start conservative, adjust with real device data |
-| 7 | Manifest orientation | Preference only (not strict lock) | Strict lock is unreliable cross-browser; overlay+pause strategy is the real enforcement |
+The `Decisions pending` table in the state log should be empty. If a future task surfaces an unanticipated decision, follow the original escalation protocol: stop dispatching, surface to the operator, record the outcome.
 
 ---
 
@@ -354,14 +350,20 @@ Maintain this structure throughout orchestration. Update after every task comple
 | — | — | — | — |
 
 ### Decisions resolved
-| # | Decision | Outcome | Date |
-|---|---|---|---|
-| 1 | Auto-fire policy | Default-on with override | — |
+| # | Decision | Outcome |
+|---|---|---|
+| 1 | Auto-fire policy | No decision needed — firing already unconditional |
+| 2 | Adapter activation | Capability detection + controlScheme override |
+| 3 | Settings transport | Registry changedata events |
+| 4 | Pause ownership | Shell-authoritative |
+| 5 | Touch targets | Full-scene pointerdown |
+| 6 | HUD scaling | Clamp [0.6, 1.5] + pixel floors |
+| 7 | Manifest orientation | Preference only, overlay enforces |
 
 ### Decisions pending
 | # | Decision | Blocking task |
 |---|---|---|
-| — | — | — |
+| — | None | — |
 ```
 
 ---

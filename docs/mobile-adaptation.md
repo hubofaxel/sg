@@ -165,7 +165,7 @@ Mobile work touches contracts. Treat schema changes as first-class architecture 
 
 ### Candidate mobile settings (phase-aware)
 
-- Phase A: `controlScheme: 'touch'`, `autoFire`, `touchControlsEnabled` (already exists)
+- Phase A: `controlScheme: 'touch'`, `touchControlsEnabled` (already exists)
 - Phase B: `touchDeadZone`, `touchMaxRadius`, `touchHandedness`, `touchUiScale`
 - Phase C: `hapticsEnabled`, `hapticsIntensity`
 
@@ -224,24 +224,31 @@ InputIntent {
 
 If lifecycle is not explicit, mobile regressions appear as stuck movement, ghost inputs, or pointer ownership leaks after app backgrounding.
 
-### Auto-fire as default
+### Firing behavior
 
-On a touchscreen, the second thumb is precious. Basic firing should be automatic — the player's thumb budget goes to movement and (future) secondary abilities like bomb, focus/slow-move, or dash. This gives cleaner one-thumb survivability and more room for later depth.
+Firing is already unconditional — `GameScene.ts:224,238,280-282` fires every frame when cooldown expires. There is no player input for firing (no key binding, no pointer event, no toggle). All four weapons use cooldown-based firing with no charge, burst, or toggle patterns in the schema. The roadmap defers expanded fire patterns ("burst, charge, continuous") to post-launch.
 
-- Auto-fire is the default on touch
-- Optional manual fire button for players who want control (via settings)
-- Keyboard input retains spacebar-to-fire
+The `InputIntent.fireHeld` field exists as a **future hook** for when manual fire patterns ship. Both `KeyboardInput` and `TouchInput` emit `fireHeld: true` unconditionally in their current implementation. This preserves the adapter contract without pretending player-controlled firing exists today.
+
+### Adapter activation
+
+Capability detection at mount time, with `controlScheme: 'touch'` as explicit user override:
+
+1. **Mount-time heuristic:** Check `'ontouchstart' in window || navigator.maxTouchPoints > 0`. If true AND `controlScheme` is not explicitly `'wasd'` or `'arrows'`, activate `TouchInput`. Otherwise activate `KeyboardInput`.
+2. **User override via settings:** `controlScheme: 'touch'` forces touch adapter regardless of device. A tablet user with Bluetooth keyboard can set `'wasd'` to override the heuristic.
+3. **No runtime hot-swap in Phase A.** Control scheme change takes effect on next game mount. Runtime swap is a Phase B concern if needed.
+
+`touchControlsEnabled` gates the heuristic. `controlScheme: 'touch'` forces it. Both `KeyboardInput` adapters (`wasd` and `arrows`) remain a single adapter reading both layouts simultaneously — matching current unwired behavior.
 
 ### Schema changes
 
-- `ControlSchemeSchema` — add `'touch'` option
-- `GameSettingsSchema` — add `autoFire: z.boolean().default(false)` (default off globally; runtime policy sets ON when active control scheme is touch unless player explicitly overrides)
+- `ControlSchemeSchema` — add `'touch'` option (default remains `'wasd'` for migration safety)
 - Add touch tuning fields in Phase B only (dead zone, radius, handedness), not in Phase A
 
 ### Acceptance criteria
 
 - [ ] Touch movement works with floating joystick (dead zone, max radius, pointer capture)
-- [ ] Auto-fire activates on touch devices
+- [ ] Firing works unconditionally on both adapters (fireHeld: true always)
 - [ ] Pause/resume correctly clears all touch state (no stuck movement after backgrounding)
 - [ ] Tab switch / orientation change / app background clears touch pointers
 - [ ] Keyboard input unaffected when touch adapter is not active
@@ -254,7 +261,7 @@ On a touchscreen, the second thumb is precious. Basic firing should be automatic
 - New: `packages/game/src/systems/KeyboardInput.ts` — keyboard adapter
 - New: `packages/game/src/systems/TouchInput.ts` — touch adapter with floating joystick
 - `packages/game/src/scenes/GameScene.ts` — consume InputIntent instead of raw key checks
-- `packages/contracts/src/settings/settings.schema.ts` — extend ControlSchemeSchema, add autoFire
+- `packages/contracts/src/settings/settings.schema.ts` — extend ControlSchemeSchema with `'touch'`
 - `apps/web/src/lib/components/GameCanvas.svelte` — `touch-action: none` on container
 
 ---
@@ -283,13 +290,30 @@ Y-positions use percentage-based placement (already responsive). Font sizes and 
 
 ### Scaling approach
 
-Do not scale from canvas width alone. Use a clamped scalar based on both dimensions:
+Non-uniform scaling with a raised floor for persistent HUD text:
 
+**Base scale factor:**
 ```
-scaleFactor = min(displayWidth / REF_WIDTH, displayHeight / REF_HEIGHT)
+scaleFactor = Math.min(displayWidth / 800, displayHeight / 600)
 ```
 
-Where `REF_WIDTH = 800`, `REF_HEIGHT = 600`. Clamp text and bar sizes separately to prevent extremes on tablets vs. phones.
+**Clamp range:** `Math.max(0.6, Math.min(scaleFactor, 1.5))` — floor at 0.6 prevents extreme shrinkage on iPhone SE; ceiling at 1.5 prevents oversized text on large tablets.
+
+**Per-element pixel floor:** After applying the clamped factor, enforce minimum pixel sizes:
+- Persistent HUD text (score, lives, currency, wave indicator): `Math.max(computedSize, 10)`
+- Boss health bar label: `Math.max(computedSize, 9)`
+- Titles and banners (40px game over, 36px boss warning, 22px wave banner): no floor needed — large enough at 0.6x
+- Debug overlay (11px): do not scale — developer-facing only
+
+**Concrete outcomes at key devices:**
+
+| Device | Raw Factor | Clamped | 16px HUD → | 14px Wave → | 12px Boss → | 40px Title → |
+|---|---|---|---|---|---|---|
+| iPhone SE | 0.533 | 0.6 | 10px (floor) | 10px (floor) | 9px (floor) | 24px |
+| iPhone 15 | 0.65 | 0.65 | 10.4px | 10px (floor) | 9px (floor) | 26px |
+| Pixel 8 | 0.72 | 0.72 | 11.5px | 10.1px | 9px (floor) | 28.8px |
+| iPad mini | 1.0 | 1.0 | 16px | 14px | 12px | 40px |
+| iPad Air | 1.28 | 1.28 | 20.5px | 17.9px | 15.4px | 51.2px |
 
 ### Visual size vs. tap target size — separate concepts
 
@@ -390,7 +414,7 @@ The settings store (`apps/web/src/lib/stores/settings.svelte.ts`) uses Svelte 5 
 
 ### Why this is P1 for mobile
 
-For desktop, remount-time settings are tolerable. For mobile, they become a drag immediately. Players need to tune dead zone, joystick size, handedness, haptics, audio, and auto-fire behavior **without remounting the game**. `TouchInput` must subscribe to runtime config changes.
+For desktop, remount-time settings are tolerable. For mobile, they become a drag immediately. Players need to tune dead zone, joystick size, handedness, haptics, and audio **without remounting the game**. `TouchInput` must subscribe to runtime config changes.
 
 ### Implementation
 
@@ -501,7 +525,7 @@ The hidden risk area is not gameplay logic — the fixed-world approach keeps th
 
 | Risk | Description | Mitigation |
 |---|---|---|
-| Thumb occlusion | Player's thumb covers action on small screens | Floating joystick with configurable offset; auto-fire reduces thumb demand |
+| Thumb occlusion | Player's thumb covers action on small screens | Floating joystick with configurable offset; unconditional firing means no fire button needed |
 | Stuck movement | Tab switch, background, or orientation change leaves touch state active | Adapter `clear()` on every lifecycle transition; test pause/blur/orientation sequences |
 | Prompts too small to hit | "Tap to continue" text is not a real button | Current implementation uses full-scene `pointerdown` which is adequate; maintain this pattern |
 | Browser gesture fight | Swipe/pinch intercepted by browser instead of game | `touch-action: none` on game container; Pointer Events API exclusively |
@@ -563,10 +587,10 @@ Covers PR-1 and PR-2.
 - `touch-action: none` on game container
 - Input intent system: `InputIntent` type, `KeyboardInput` adapter, `TouchInput` adapter
 - Floating virtual joystick with dead zone, max radius, pointer capture
-- Auto-fire default on touch
+- Both adapters emit `fireHeld: true` unconditionally (firing is already auto)
 - Pause/resume clears all touch state
 - Scale Manager event subscriptions (resize, orientation change)
-- Wire `touchControlsEnabled` and `autoFire` settings
+- Wire `touchControlsEnabled` and `controlScheme: 'touch'` settings
 - `prefers-reduced-motion` honored for screen shake
 
 **Acceptance criteria:**
@@ -624,19 +648,19 @@ Covers PR-6.
 
 ---
 
-## 16. Open Decisions (Must Be Resolved Explicitly)
+## 16. Resolved Decisions
 
-These decisions should be logged before implementation crosses Phase A/B boundaries.
+All seven open decisions have been resolved. See [mobile-decisions.md](mobile-decisions.md) for full evidence and rationale.
 
-1. **Touch auto-fire policy** — Always-on for touch, or default-on with explicit user override?
-2. **Input adapter activation** — Device heuristic only, or user-selected control scheme with runtime switching?
-3. **Runtime settings transport** — Phaser registry events only, or typed event bus channel for settings updates?
-4. **Pause ownership** — Shell-authoritative pause state, game-authoritative state, or bidirectional sync model?
-5. **Touch target strategy for in-canvas prompts** — Current full-scene `pointerdown` is adequate; formalize this as the standard pattern or move to localized hit zones?
-6. **HUD scaling envelope** — Exact clamp min/max values for phones vs tablets; define once and keep stable.
-7. **Manifest orientation strictness** — Keep `landscape` as preference only (recommended), or attempt strict lock behavior with browser-specific handling.
-
-Document decisions in an ADR or decision log entry and cross-link from this plan.
+| # | Decision | Outcome |
+|---|---|---|
+| 1 | Touch auto-fire policy | No decision needed — firing is already unconditional. No `autoFire` schema field. |
+| 2 | Input adapter activation | Capability detection at mount + `controlScheme: 'touch'` as explicit override. No UA sniffing. |
+| 3 | Runtime settings transport | Phaser registry `changedata-<key>` events. No custom bus. No new `GameEventMap` entries. |
+| 4 | Pause ownership | Shell-authoritative. Game never self-pauses. Shell calls `handle.pause()`/`handle.resume()`. |
+| 5 | Touch target strategy | Full-scene `pointerdown` for all in-canvas prompts. No localized hit zones. |
+| 6 | HUD scaling envelope | Clamp `[0.6, 1.5]` with per-element pixel floors (10px HUD, 9px boss label). No debug scaling. |
+| 7 | Manifest orientation | Preference only. No `screen.orientation.lock()`. Overlay + game pause is the enforcement. |
 
 ---
 
