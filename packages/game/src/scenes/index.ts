@@ -10,4 +10,6 @@ export const SCENE_KEYS = {
 } as const;
 
 export { BootScene } from './BootScene';
+export { GameScene } from './GameScene';
+export { MenuScene } from './MenuScene';
 export { PreloadScene } from './PreloadScene';

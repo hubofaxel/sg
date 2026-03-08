@@ -41,8 +41,7 @@ export class PreloadScene extends Phaser.Scene {
 
 		this.load.once('complete', () => {
 			this.eventBus.emit('ready');
-			// TODO: transition to MenuScene when it exists
-			// this.scene.start(SCENE_KEYS.Menu);
+			this.scene.start(SCENE_KEYS.Menu);
 		});
 
 		this.load.start();
