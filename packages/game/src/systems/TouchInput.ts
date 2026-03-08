@@ -111,8 +111,8 @@ export class TouchInput implements InputAdapter {
 		scene.input.on('pointerup', this.onPointerUp);
 
 		// pointercancel from browser (tab switch, gesture interrupt)
-		if (typeof window !== 'undefined') {
-			const canvas = scene.game.canvas;
+		const canvas = scene.game.canvas;
+		if (canvas) {
 			canvas.addEventListener('pointercancel', this.onPointerCancel);
 		}
 	}
@@ -137,8 +137,8 @@ export class TouchInput implements InputAdapter {
 			this.scene.input.off('pointermove', this.onPointerMove);
 			this.scene.input.off('pointerup', this.onPointerUp);
 
-			if (typeof window !== 'undefined') {
-				const canvas = this.scene.game.canvas;
+			const canvas = this.scene.game.canvas;
+			if (canvas) {
 				canvas.removeEventListener('pointercancel', this.onPointerCancel);
 			}
 		}
