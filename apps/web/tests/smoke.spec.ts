@@ -7,9 +7,15 @@ test.describe('home page', () => {
 		expect(page.url()).toContain('/');
 	});
 
-	test('renders welcome heading', async ({ page }) => {
+	test('renders SHIP GAME heading', async ({ page }) => {
 		await page.goto('/');
-		await expect(page.locator('h1')).toBeVisible();
+		await expect(page.locator('h1')).toHaveText('SHIP GAME');
+	});
+
+	test('has navigation links', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.locator('a[href="/play"]')).toBeVisible();
+		await expect(page.locator('a[href="/settings"]')).toBeVisible();
 	});
 });
 
@@ -27,5 +33,17 @@ test.describe('play page', () => {
 	test('renders game canvas container', async ({ page }) => {
 		await page.goto('/play');
 		await expect(page.locator('main.play-page')).toBeVisible();
+	});
+});
+
+test.describe('settings page', () => {
+	test('navigates to /settings', async ({ page }) => {
+		await page.goto('/settings');
+		await expect(page.locator('h1')).toHaveText('SETTINGS');
+	});
+
+	test('has volume controls', async ({ page }) => {
+		await page.goto('/settings');
+		await expect(page.locator('input[type="range"]').first()).toBeVisible();
 	});
 });
