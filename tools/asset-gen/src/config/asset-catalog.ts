@@ -38,6 +38,9 @@ export interface AssetCatalogEntry {
 	promptId?: string;
 	outputPath: string;
 
+	/** Phase this asset belongs to. Validator skips entries with phase > current. */
+	phase?: number;
+
 	// sprite-specific
 	frameWidth?: number;
 	frameHeight?: number;
@@ -69,7 +72,10 @@ export interface AssetCatalogEntry {
 }
 
 // ---------------------------------------------------------------------------
-// Catalog entries for the 13 existing content keys + 2 defaults
+/** Current development phase. Validator skips catalog entries with phase > this. */
+export const CURRENT_PHASE = 7;
+
+// Catalog entries — 28 asset keys total (23 shipped + 5 planned for future phases)
 // ---------------------------------------------------------------------------
 
 export const ASSET_CATALOG: AssetCatalogEntry[] = [
@@ -384,6 +390,169 @@ export const ASSET_CATALOG: AssetCatalogEntry[] = [
 		audioFormat: 'mp3',
 	},
 
+	// --- Phase 8: Stage Presentation ---
+	{
+		key: 'sfx-stage-clear',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-stage-clear',
+		outputPath: 'audio/sfx/sfx-stage-clear',
+		audioDuration: 2.0,
+		audioFormat: 'mp3',
+		phase: 8,
+	},
+
+	// --- Phase 10: Audio Polish ---
+	{
+		key: 'music-boss',
+		kind: 'audio',
+		group: 'music',
+		sourceMode: 'elevenlabs-music',
+		generationTier: 'canonical',
+		promptId: 'music-boss',
+		outputPath: 'audio/music/music-boss',
+		audioFormat: 'mp3',
+		musicLengthMs: 75_000,
+		phase: 10,
+		compositionPlan: {
+			positiveGlobalStyles: [
+				'aggressive synthwave',
+				'boss battle intensity',
+				'instrumental only',
+				'146 BPM',
+				'E minor',
+				'driving analog bass pulse',
+				'gated snare hits',
+				'sharp arpeggiated synths',
+				'dark heroic tone',
+				'arcade shooter energy',
+			],
+			negativeGlobalStyles: [
+				'vocals',
+				'singing',
+				'lyrics',
+				'acoustic instruments',
+				'gentle',
+				'ambient',
+				'lo-fi',
+				'jazz',
+				'country',
+			],
+			sections: [
+				{
+					sectionName: 'Tension Intro',
+					positiveLocalStyles: [
+						'building tension',
+						'sparse ominous synth pad',
+						'rising filtered bass',
+						'subtle rhythmic pulse emerging',
+					],
+					negativeLocalStyles: ['full drums', 'bright leads'],
+					durationMs: 10_000,
+					lines: [],
+				},
+				{
+					sectionName: 'Locked Groove',
+					positiveLocalStyles: [
+						'full drums enter',
+						'driving four-on-the-floor kick',
+						'locked bass groove',
+						'stabbing synth chords',
+						'combat intensity',
+					],
+					negativeLocalStyles: ['breakdown', 'sparse'],
+					durationMs: 20_000,
+					lines: [],
+				},
+				{
+					sectionName: 'Escalation',
+					positiveLocalStyles: [
+						'rising arpeggiated lead',
+						'increasing urgency',
+						'layered synths',
+						'snare rolls building',
+						'maximum energy',
+					],
+					negativeLocalStyles: ['calm', 'dropping energy'],
+					durationMs: 20_000,
+					lines: [],
+				},
+				{
+					sectionName: 'Breakdown',
+					positiveLocalStyles: [
+						'brief rhythmic breakdown',
+						'bass pulse only',
+						'filtered sweep',
+						'tension before re-entry',
+					],
+					negativeLocalStyles: ['full arrangement', 'climax'],
+					durationMs: 5_000,
+					lines: [],
+				},
+				{
+					sectionName: 'Re-entry & Loop',
+					positiveLocalStyles: [
+						'full energy return',
+						'aggressive lead synth',
+						'driving rhythm',
+						'ending that transitions smoothly back to locked groove',
+					],
+					negativeLocalStyles: ['fade out', 'winding down'],
+					durationMs: 20_000,
+					lines: [],
+				},
+			],
+		},
+	},
+	{
+		key: 'sfx-low-health',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-low-health',
+		outputPath: 'audio/sfx/sfx-low-health',
+		audioDuration: 0.5,
+		audioFormat: 'mp3',
+		phase: 10,
+	},
+
+	// --- Phase 12: Encounter Director ---
+	{
+		key: 'sfx-telegraph',
+		kind: 'audio',
+		group: 'sfx',
+		sourceMode: 'elevenlabs-sfx',
+		generationTier: 'canonical',
+		promptId: 'sfx-telegraph',
+		outputPath: 'audio/sfx/sfx-telegraph',
+		audioDuration: 0.5,
+		audioFormat: 'mp3',
+		phase: 12,
+	},
+	{
+		key: 'sprite-telegraph',
+		kind: 'sprite-sheet',
+		group: 'effects',
+		sourceMode: 'openai-generate',
+		generationTier: 'canonical',
+		promptId: 'sprite-telegraph',
+		outputPath: 'sprites/effects/sprite-telegraph.png',
+		frameWidth: 32,
+		frameHeight: 32,
+		frameCount: 2,
+		frameOrder: 'horizontal',
+		model: 'gpt-image-1.5',
+		api: 'images.generate',
+		inputSize: '1024x1024',
+		quality: 'high',
+		background: 'transparent',
+		outputFormat: 'png',
+		phase: 12,
+	},
+
 	// --- Defaults ---
 	{
 		key: 'default-bg',
@@ -397,10 +566,12 @@ export const ASSET_CATALOG: AssetCatalogEntry[] = [
 		key: 'default-music',
 		kind: 'audio',
 		group: 'music',
-		sourceMode: 'manual',
+		sourceMode: 'elevenlabs-music',
 		generationTier: 'canonical',
+		promptId: 'default-music',
 		outputPath: 'audio/music/default-music',
 		audioFormat: 'mp3',
+		musicLengthMs: 90_000,
 	},
 ];
 

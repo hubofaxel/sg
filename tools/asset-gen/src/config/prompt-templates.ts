@@ -58,10 +58,36 @@ const AUDIO_TEMPLATES: Record<string, AudioPromptTemplate> = {
 			'Menu selection confirmed. Bright affirmative beep, slightly longer than menu-select. Positive UI confirmation.',
 	},
 
+	// --- Phase 8 ---
+	'sfx-stage-clear': {
+		description:
+			'Arcade victory stinger, bright synth arpeggio rising to a crisp resolved chord, clean retro-futuristic tone, short celebratory finish, no vocals, no drums, no crowd, 2.0 seconds.',
+	},
+
+	// --- Phase 10 ---
+	'sfx-low-health': {
+		description:
+			'Urgent low-health warning pulse, synthetic heartbeat-like thump with focused midrange beep, tense and readable, minimal tail, designed to repeat without fatigue, not melodic, not harsh, 0.5 seconds.',
+	},
+
+	// --- Phase 12 ---
+	'sfx-telegraph': {
+		description:
+			'Brief enemy attack telegraph chirp, sharp bright synthetic warning ping, fast attack, clean futuristic tone, slight pitch rise, minimal reverb, highly readable over gameplay audio, 0.5 seconds.',
+	},
+
 	// --- Music ---
+	'music-boss': {
+		description:
+			'Aggressive synthwave boss battle track, instrumental only, 146 BPM, E minor, driving analog bass pulse, gated snares, sharp arpeggiated synths, tense rising energy, dark heroic tone, arcade shooter final boss, 75 seconds.',
+	},
 	'music-outer-rim': {
 		description:
 			'Electronic space shooter game soundtrack. Driving synthwave rhythm with pulsing bassline and atmospheric pads. Dark sci-fi mood with urgent energy. Suitable for intense arcade action in deep space. Loopable structure.',
+	},
+	'default-music': {
+		description:
+			'Ambient space background music. Gentle synthesizer pads with subtle rhythmic pulse. Low-energy atmospheric sci-fi mood. Works as generic fallback for any game stage. Loopable structure, not distracting.',
 	},
 };
 
@@ -107,21 +133,28 @@ const TEMPLATES: Record<string, PromptTemplate> = {
 			'The Iron Sentinel — massive armored space fortress with symmetrical design, heavy plating, multiple gun turrets along the wings, and a central command bridge. Frame 1: shields up, all armor plates locked, turrets retracted — looks impenetrable. Frame 2: armor plates split open revealing a glowing volatile red energy core (the weak point), turrets deployed. Dark iron-gray hull with crimson red energy veins and gold accent rivets. Intimidating but detailed pixel art. Each frame 128x128 pixels in a 256x128 sheet.',
 	},
 
+	// --- Effects ---
+	'sprite-telegraph': {
+		subject: 'Warning marker sprite sheet, 2 frames side by side',
+		details:
+			'Diamond-shaped enemy attack telegraph indicator. Bright warning signal that appears before enemy attacks land. Frame 1: bright state — vivid hot-red diamond outline with glowing white-yellow center, high visibility. Frame 2: dim state — same shape but darkened to deep red with faint inner glow, low visibility. Clean geometric shape, no organic detail, reads as a pure warning signal. Each frame 32x32 pixels in a 64x32 sheet.',
+	},
+
 	// --- Backgrounds ---
 	'bg-starfield-sparse': {
 		subject: 'Space background — sparse starfield',
 		details:
-			'Deep space with scattered distant stars. Very dark navy-black base. Few stars, emphasizing emptiness and scale. Subtle blue-purple nebula wisps in corners. 1536x1024 pixels.',
+			'Deep space with scattered distant stars. Very dark navy-black base. No more than 15-20 individual tiny white stars. Maximum emptiness. Lonely desolate frontier. Subtle blue-purple nebula wisps in corners. 1536x1024 pixels.',
 	},
 	'bg-starfield-dense': {
 		subject: 'Space background — dense starfield',
 		details:
-			'Rich starfield with many visible stars of varying brightness. Dark space base with more color variation. Faint nebula clouds. Busier than sparse but still dark enough for gameplay readability. 1536x1024 pixels.',
+			'Rich starfield with at least 100+ stars of varying brightness. Dark space base with more color variation. Faint milky way band across one corner. Feels populated and alive. Busier than sparse but still dark enough for gameplay readability. 1536x1024 pixels.',
 	},
 	'bg-endless-void': {
 		subject: 'Space background — endless void',
 		details:
-			'Ominous deep void with minimal stars. Near-black with subtle dark purple undertones. Occasional faint distant galaxy smudge. Feels infinite and threatening. 1536x1024 pixels.',
+			'Almost completely black with deep purple-black gradient. Maximum 5 barely-visible stars. No nebula. Pure oppressive darkness. Feels infinite and threatening. 1536x1024 pixels.',
 	},
 };
 

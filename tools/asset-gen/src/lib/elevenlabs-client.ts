@@ -69,6 +69,7 @@ export async function composeMusic(entry: AssetCatalogEntry): Promise<AudioResul
 		response = await el.music.compose({
 			prompt,
 			musicLengthMs: entry.musicLengthMs ?? 120_000,
+			forceInstrumental: true,
 		});
 	}
 
