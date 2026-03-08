@@ -7,8 +7,25 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ASSET_CATALOG, type AssetCatalogEntry, getCatalogEntry } from '../config/asset-catalog.js';
 import { composeMusic, generateSfx, writeAudioFile } from '../lib/elevenlabs-client.js';
+import { resizeNearest } from '../lib/image-processing.js';
 import { ASSETS_ROOT } from '../lib/manifest-builder.js';
 import { editImage, editImageWithResponses, generateImage } from '../lib/openai-client.js';
+
+/** Resize raw OpenAI output to expected sprite sheet dimensions */
+async function resizeToSheetDimensions(buffer: Buffer, entry: AssetCatalogEntry): Promise<Buffer> {
+	if (entry.kind !== 'sprite-sheet') return buffer;
+
+	const frameWidth = entry.frameWidth ?? 32;
+	const frameHeight = entry.frameHeight ?? 32;
+	const frameCount = entry.frameCount ?? 1;
+	const cols = entry.frameOrder === 'horizontal' ? frameCount : 1;
+	const rows = entry.frameOrder === 'horizontal' ? 1 : frameCount;
+	const sheetWidth = cols * frameWidth;
+	const sheetHeight = rows * frameHeight;
+
+	console.log(`  Resizing: ${buffer.length} bytes → ${sheetWidth}x${sheetHeight}`);
+	return resizeNearest(buffer, sheetWidth, sheetHeight);
+}
 
 function resolveOutputPath(entry: AssetCatalogEntry): string {
 	let outputPath = entry.outputPath;
@@ -33,9 +50,10 @@ async function generateOne(entry: AssetCatalogEntry): Promise<void> {
 
 		case 'openai-generate': {
 			const result = await generateImage(entry);
+			const resized = await resizeToSheetDimensions(result.buffer, entry);
 			fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-			fs.writeFileSync(outputPath, result.buffer);
-			console.log(`  OK: ${outputPath} (${result.buffer.length} bytes)`);
+			fs.writeFileSync(outputPath, resized);
+			console.log(`  OK: ${outputPath} (${resized.length} bytes)`);
 			if (result.revisedPrompt) {
 				console.log(`  Revised prompt: ${result.revisedPrompt}`);
 			}
@@ -60,9 +78,10 @@ async function generateOne(entry: AssetCatalogEntry): Promise<void> {
 					? await editImageWithResponses(entry, parentPath)
 					: await editImage(entry, parentPath);
 
+			const resized = await resizeToSheetDimensions(result.buffer, entry);
 			fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-			fs.writeFileSync(outputPath, result.buffer);
-			console.log(`  OK: ${outputPath} (${result.buffer.length} bytes)`);
+			fs.writeFileSync(outputPath, resized);
+			console.log(`  OK: ${outputPath} (${resized.length} bytes)`);
 			break;
 		}
 

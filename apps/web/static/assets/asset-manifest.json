@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-03-08T06:34:52.870Z",
+	"generatedAt": "2026-03-08T07:55:09.354Z",
 	"assets": [
 		{
 			"type": "sprite-sheet",
@@ -13,41 +13,13 @@
 				"margin": 0,
 				"spacing": 0
 			},
-			"sha256": "e5e3ef41f57642a8e9c19ede082e1cd27ca74394391bb4f788611a8dd86b0a0e",
-			"bytes": 589
+			"sha256": "8acdbdc4744ac9e64466563cc0f39af543dbb9f4eb880d5ae123e08ba57447d0",
+			"bytes": 9602
 		},
 		{
 			"type": "sprite-sheet",
 			"key": "enemy-drone",
 			"path": "sprites/enemies/enemy-drone.png",
-			"frameConfig": {
-				"frameWidth": 32,
-				"frameHeight": 32,
-				"frameCount": 2,
-				"margin": 0,
-				"spacing": 0
-			},
-			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
-			"bytes": 289
-		},
-		{
-			"type": "sprite-sheet",
-			"key": "enemy-weaver",
-			"path": "sprites/enemies/enemy-weaver.png",
-			"frameConfig": {
-				"frameWidth": 32,
-				"frameHeight": 32,
-				"frameCount": 2,
-				"margin": 0,
-				"spacing": 0
-			},
-			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
-			"bytes": 289
-		},
-		{
-			"type": "sprite-sheet",
-			"key": "enemy-bruiser",
-			"path": "sprites/enemies/enemy-bruiser.png",
 			"frameConfig": {
 				"frameWidth": 48,
 				"frameHeight": 48,
@@ -55,36 +27,64 @@
 				"margin": 0,
 				"spacing": 0
 			},
-			"sha256": "8e8c72bef32e3f00a9c140f6b0bf7e09029fb549c9e37c4d78d5cbae2a00f04c",
-			"bytes": 379
+			"sha256": "3dbd48c0e660554378ec7ea4359b5ca3edf25c0417e1aac523f13fcb6a088fd7",
+			"bytes": 3610
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "enemy-weaver",
+			"path": "sprites/enemies/enemy-weaver.png",
+			"frameConfig": {
+				"frameWidth": 48,
+				"frameHeight": 48,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "033ed9ebf19d173d4ba9059581e8f1a6fafa33081f01850984f36efffb636189",
+			"bytes": 4618
+		},
+		{
+			"type": "sprite-sheet",
+			"key": "enemy-bruiser",
+			"path": "sprites/enemies/enemy-bruiser.png",
+			"frameConfig": {
+				"frameWidth": 64,
+				"frameHeight": 64,
+				"frameCount": 2,
+				"margin": 0,
+				"spacing": 0
+			},
+			"sha256": "ac2c8a7c860f3de41016111abcece6c000006f95ecfa163221c223eb89398858",
+			"bytes": 7876
 		},
 		{
 			"type": "sprite-sheet",
 			"key": "enemy-kamikaze",
 			"path": "sprites/enemies/enemy-kamikaze.png",
 			"frameConfig": {
-				"frameWidth": 32,
-				"frameHeight": 32,
+				"frameWidth": 48,
+				"frameHeight": 48,
 				"frameCount": 2,
 				"margin": 0,
 				"spacing": 0
 			},
-			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
-			"bytes": 289
+			"sha256": "d4224e124bb34577f6caf45549e26b02e625584d2a44cf9355b06e0df11106c5",
+			"bytes": 2692
 		},
 		{
 			"type": "sprite-sheet",
 			"key": "enemy-zigzagger",
 			"path": "sprites/enemies/enemy-zigzagger.png",
 			"frameConfig": {
-				"frameWidth": 32,
-				"frameHeight": 32,
+				"frameWidth": 48,
+				"frameHeight": 48,
 				"frameCount": 2,
 				"margin": 0,
 				"spacing": 0
 			},
-			"sha256": "fff5eb1ee6c0b987fd3cf0c3fd9cd008e8919d10ac929cd89aea4f3aa791ba1c",
-			"bytes": 289
+			"sha256": "9226239f0f918cfd8bf1b3a4f89a9805f59ed1426c1bd8f8ee5358338e322742",
+			"bytes": 3910
 		},
 		{
 			"type": "sprite-sheet",
@@ -97,8 +97,8 @@
 				"margin": 0,
 				"spacing": 0
 			},
-			"sha256": "b5350144d710a26d2284dc3c47b117b1382dec4a97277b173979bdad2f7bdf26",
-			"bytes": 1736
+			"sha256": "dbdda1e7abf931334770076f2452de4ed93d02c0067d82fda3b4260ad7a1f40c",
+			"bytes": 40459
 		},
 		{
 			"type": "image",

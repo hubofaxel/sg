@@ -19,7 +19,7 @@ Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorep
 - `pnpm lint` — Biome check
 - `pnpm lint:fix` — Biome check --write
 - `pnpm validate` — check + lint + test + asset:validate
-- `pnpm asset:gen` — generate all assets (OpenAI + ElevenLabs, requires API keys)
+- `pnpm asset:gen` — generate all assets (OpenAI + ElevenLabs, requires API keys via direnv)
 - `pnpm asset:placeholder` — generate placeholder PNGs for all visual assets
 - `pnpm asset:manifest` — rebuild asset-manifest.json from disk
 - `pnpm asset:validate` — deep cross-validation of catalog, manifest, and files

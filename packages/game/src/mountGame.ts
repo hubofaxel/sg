@@ -4,7 +4,7 @@
 
 import Phaser from 'phaser';
 import { GameEventBus } from './events';
-import { BootScene, PreloadScene } from './scenes/index';
+import { BootScene, GameScene, MenuScene, PreloadScene } from './scenes/index';
 import type { GameHandle, GameMountOptions } from './types';
 
 const DEFAULT_WIDTH = 800;
@@ -31,7 +31,7 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 				gravity: { x: 0, y: 0 },
 			},
 		},
-		scene: [BootScene, PreloadScene],
+		scene: [BootScene, PreloadScene, MenuScene, GameScene],
 		banner: false,
 	});
 

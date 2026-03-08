@@ -70,41 +70,41 @@ const TEMPLATES: Record<string, PromptTemplate> = {
 	'ship-viper': {
 		subject: 'Player fighter ship sprite sheet, 3 frames side by side horizontally',
 		details:
-			'Frame 1: banking left (slight left tilt). Frame 2: neutral centered. Frame 3: banking right (slight right tilt). Sleek angular viper-class fighter with blue-white engine glow. Each frame 64x64 pixels in a 192x64 sheet.',
+			'Frame 1: banking left (slight left tilt). Frame 2: neutral centered. Frame 3: banking right (slight right tilt). Sleek angular viper-class starfighter with a narrow nose, swept-back delta wings, and a bright cyan-blue engine exhaust glow. Cockpit canopy has a subtle green-tinted visor. Hull is silver-white with electric blue racing stripes. Fun, heroic, playful arcade spaceship — not realistic military. Each frame 64x64 pixels in a 192x64 sheet.',
 	},
 
 	// --- Enemies ---
 	'enemy-drone': {
-		subject: 'Small enemy drone sprite sheet, 2 frames side by side',
+		subject: 'Small alien drone sprite sheet, 2 frames side by side',
 		details:
-			'Simple circular drone with rotating antenna or blinking light between frames. Red-orange color scheme. Each frame 32x32 pixels in a 64x32 sheet.',
+			'Round saucer-shaped alien drone with a single glowing red eye in the center. Small spinning antenna ring around the body. Frame 1: eye bright, antenna at position A. Frame 2: eye dim, antenna rotated to position B. Red-orange hull with dark metallic trim. Cute but menacing — like an angry little robot. Each frame 48x48 pixels in a 96x48 sheet.',
 	},
 	'enemy-weaver': {
-		subject: 'Enemy weaver ship sprite sheet, 2 frames side by side',
+		subject: 'Alien weaver creature sprite sheet, 2 frames side by side',
 		details:
-			'Serpentine or insectoid enemy that weaves side to side. Frames show slight body undulation. Purple-green color scheme. Each frame 32x32 pixels in a 64x32 sheet.',
+			'Serpentine insectoid alien with segmented body and translucent wing-membranes. Four small glowing eyes. Frame 1: body curved left, wings spread. Frame 2: body curved right, wings tucked. Luminous purple body with acid-green wing highlights and bioluminescent spots. Organic and creepy but charming pixel art. Each frame 48x48 pixels in a 96x48 sheet.',
 	},
 	'enemy-bruiser': {
-		subject: 'Heavy enemy bruiser sprite sheet, 2 frames side by side',
+		subject: 'Heavy armored enemy ship sprite sheet, 2 frames side by side',
 		details:
-			'Large armored enemy, bulky and slow-looking. Frames show subtle shield pulse or armor plate shift. Dark red-gray color scheme. Each frame 48x48 pixels in a 96x48 sheet.',
+			'Chunky heavily-armored battlecruiser with layered plate armor and twin forward cannons. Wide and imposing silhouette. Frame 1: armor plates sealed, shield generators glowing. Frame 2: front plates slightly open, revealing orange energy core. Dark gunmetal gray with crimson red energy accents and glowing vents. Looks like a flying tank. Each frame 64x64 pixels in a 128x64 sheet.',
 	},
 	'enemy-kamikaze': {
-		subject: 'Kamikaze enemy sprite sheet, 2 frames side by side',
+		subject: 'Kamikaze rocket enemy sprite sheet, 2 frames side by side',
 		details:
-			'Fast aggressive enemy with visible engine trail. Frames show increasing engine intensity. Orange-yellow color scheme. Each frame 32x32 pixels in a 64x32 sheet.',
+			'Sleek missile-shaped enemy with a pointed nose cone and oversized rear thruster. Fins swept back for speed. Frame 1: thruster at normal intensity with small flame. Frame 2: thruster at maximum burn with large bright flame trail. Hot orange body fading to yellow at the nose, with white-hot engine glow. Looks fast and reckless. Each frame 48x48 pixels in a 96x48 sheet.',
 	},
 	'enemy-zigzagger': {
-		subject: 'Zigzagger enemy sprite sheet, 2 frames side by side',
+		subject: 'Zigzag fighter enemy sprite sheet, 2 frames side by side',
 		details:
-			'Agile enemy with wing-like fins. Frames show alternating fin positions for zigzag motion. Teal-purple color scheme. Each frame 32x32 pixels in a 64x32 sheet.',
+			'Agile diamond-shaped fighter with articulated wing-fins that tilt for maneuvering. Two small thrusters on the rear. Frame 1: left fins extended, right fins tucked (banking right). Frame 2: right fins extended, left fins tucked (banking left). Teal body with purple energy lines along the wing edges and a bright magenta cockpit gem. Nimble and tricky-looking. Each frame 48x48 pixels in a 96x48 sheet.',
 	},
 
 	// --- Bosses ---
 	'boss-iron-sentinel': {
-		subject: 'Large boss sprite sheet, 2 frames side by side',
+		subject: 'Large boss ship sprite sheet, 2 frames side by side',
 		details:
-			'The Iron Sentinel — massive armored fortress-like boss. Frame 1: shields up, armor plates closed. Frame 2: weak point exposed, glowing core visible. Dark iron with red energy accents. Each frame 128x128 pixels in a 256x128 sheet.',
+			'The Iron Sentinel — massive armored space fortress with symmetrical design, heavy plating, multiple gun turrets along the wings, and a central command bridge. Frame 1: shields up, all armor plates locked, turrets retracted — looks impenetrable. Frame 2: armor plates split open revealing a glowing volatile red energy core (the weak point), turrets deployed. Dark iron-gray hull with crimson red energy veins and gold accent rivets. Intimidating but detailed pixel art. Each frame 128x128 pixels in a 256x128 sheet.',
 	},
 
 	// --- Backgrounds ---
