@@ -26,6 +26,6 @@ Branch naming:
 
 Commit message format: `<type>(scope): <imperative description>`
 Types: feat, fix, chore, test, docs, refactor, style, perf
-Scopes: web, game, contracts, content, ui, repo
+Scopes: web, game, contracts, content, ui, asset-gen, repo
 
 If `pnpm validate` fails, diagnose and fix before reporting ready.

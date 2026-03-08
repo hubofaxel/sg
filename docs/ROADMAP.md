@@ -1,5 +1,7 @@
 # Ship Game — Development Roadmap
 
+**Current phase: Phase 6 — Object Pooling + Performance**
+
 Phases are ordered by dependency and leverage. Each phase ships as one PR.
 
 ## Completed
@@ -15,6 +17,15 @@ Menu, GameScene, WaveManager, data-driven waves, game over/stage clear, AI sprit
 
 ### Stage 4a — Game Systems (basic)
 Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backgrounds.
+
+### Phase 4b — Enemy Attack Patterns + Combat Feedback
+`EnemyAttackSystem`, `CombatFeedbackSchema`, data-driven feedback timing, enemy projectile groups.
+
+### Phase 5 — Boss Framework
+`BossManager`, Iron Sentinel fight, phase transitions, minion spawns, health bar, chain explosion death.
+
+### Phase 5+ — Sprite Frame Support
+`SpriteFrames` system: ship banking (3 frames), enemy idle animation (2-frame oscillation), boss phase frame switching via `spriteFrame` on `BossPhaseSchema`.
 
 ---
 
@@ -58,8 +69,9 @@ Data-driven weapon stats, enemy movement patterns, AudioManager, per-level backg
 - Boss survives player contact (doesn't die on collision), excluded from offscreen cleanup
 
 ### Not yet implemented (future polish)
-- Weak point system: damage multiplier on exposed core (needs sprite frame support)
+- Weak point system: damage multiplier on exposed core. Frame switching (`spriteFrame` on `BossPhaseSchema`) is already implemented — only the hitbox-check + multiplier logic remains.
 - Music override: boss alarm stinger plays, but no crossfade to boss-specific music track
+- `beam` attack type: exists in `AttackTypeSchema` but not yet handled in `EnemyAttack.ts` (silently falls through to no-op)
 
 ### Content already exists
 - `bosses.json` has Iron Sentinel with 3 phases and combatFeedback overrides

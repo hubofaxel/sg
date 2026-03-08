@@ -2,6 +2,7 @@ import { bosses, v1Enemies } from '@sg/content';
 import type { Boss, BossPhase, Enemy } from '@sg/contracts';
 import Phaser from 'phaser';
 import { screenShake } from './CombatFeedback';
+import { applyBossPhaseFrame } from './SpriteFrames';
 
 /** Lookup tables */
 const bossById = new Map<string, Boss>(bosses.map((b) => [b.id, b]));
@@ -225,6 +226,9 @@ export class BossManager {
 
 		if (phase.fireInterval != null) bs.setData('fireInterval', phase.fireInterval);
 		if (phase.projectileDamage != null) bs.setData('projectileDamage', phase.projectileDamage);
+
+		// Switch boss sprite frame for this phase (e.g. shields-up → core-exposed)
+		applyBossPhaseFrame(bs, phase.spriteFrame);
 
 		// Reset spawn time so movement patterns restart from phase transition
 		bs.setData('spawnTime', this.scene.time.now);

@@ -10,7 +10,7 @@ This is a multi-step orchestration. Follow this order:
 
 ## 2. Implement gameplay loop
 Delegate to phaser-integrator agent:
-- Ship movement (keyboard + touch)
+- Ship movement (keyboard: cursor keys + WASD)
 - Shooting (basic weapon from content data)
 - One enemy type (from content data)
 - One wave (from content data)

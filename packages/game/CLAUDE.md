@@ -30,8 +30,9 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 | WaveManager | `WaveManager.ts` | Drives spawning from campaign data; sets all enemy data keys on spawn |
 | BossManager | `BossManager.ts` | Boss encounter lifecycle: intro → phases → minions → death sequence |
 | EnemyMovement | `EnemyMovement.ts` | Per-frame movement: linear, sine-wave, zigzag, spiral, strafe-hover |
-| EnemyAttack | `EnemyAttack.ts` | Enemy ranged attacks: aimed-shot, spread-shot (reads attackType, fireInterval, projectileDamage) |
+| EnemyAttack | `EnemyAttack.ts` | Enemy ranged attacks: aimed-shot, spread-shot (reads attackType, fireInterval, projectileDamage). `beam` is in schema but not yet implemented. |
 | CombatFeedback | `CombatFeedback.ts` | Visual juice: hit flash, hit-stop, screen shake, death burst, spawn-in animation |
+| SpriteFrames | `SpriteFrames.ts` | Ship banking (3 frames by velocity), enemy idle animation (2-frame oscillation), boss phase frame switching |
 | AudioManager | `AudioManager.ts` | SFX + music playback with graceful fallback for missing audio keys |
 
 ### Data flow: content → game object → system
@@ -41,6 +42,8 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 3. Systems read these keys each frame via `enemy.getData('key')`
 4. `CombatFeedback` falls back to `CombatFeedbackSchema` defaults when data is absent
 5. Boss game objects also get `isBoss: true` and `maxHealth` data keys
+6. `SpriteFrames` reads sprite textures to animate enemies (2-frame oscillation) and reads velocity to set ship banking frame
+7. `BossManager.applyPhaseData()` calls `applyBossPhaseFrame()` using `spriteFrame` from `BossPhaseSchema` content data
 
 ### Boss encounter flow
 
@@ -48,7 +51,7 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 2. GameScene creates BossManager → `start()`
 3. Warning banner + `sfx-boss-alarm` → boss entry tween to anchor position
 4. Phases transition by health threshold (data-driven from `BossPhaseSchema`)
-5. Each phase updates: movement pattern, attack type, speed multiplier, minion spawns
+5. Each phase updates: movement pattern, attack type, speed multiplier, minion spawns, sprite frame (via `spriteFrame` on `BossPhaseSchema`)
 6. Minions respect `maxConcurrent` cap per spawn definition
 7. Boss death: chain explosions → `deathBurst` → minion cleanup → stage clear
 8. Health bar renders at screen top with color-coded fill (green→yellow→red)

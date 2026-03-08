@@ -28,4 +28,11 @@ When creating a new scene:
 
 Phaser 4 is RC — check the phaser4-rc skill for known API quirks before using any unfamiliar API.
 
+## Asset boundaries
+- Wire existing assets by key — never hardcode file paths
+- Code-draw effects under ~32px (muzzle flash, engine glow, projectiles) — use Phaser drawing API / tweens
+- Never invent prompt templates or run asset generation commands
+- Never write to `apps/web/static/assets/` or `tools/asset-gen/`
+- If a new asset is needed, document it in `docs/asset-contracts.md` and defer to the asset-pipeline agent
+
 Package scope is `@sg/` — not `@ship-game/`.

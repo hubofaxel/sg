@@ -7,6 +7,7 @@ import { BossManager } from '../systems/BossManager';
 import { deathBurst, flashOnHit, hitStop, screenShake, spawnIn } from '../systems/CombatFeedback';
 import { updateEnemyAttack } from '../systems/EnemyAttack';
 import { updateEnemyMovement } from '../systems/EnemyMovement';
+import { updateEnemyAnimation, updateShipBanking } from '../systems/SpriteFrames';
 import { WaveManager } from '../systems/WaveManager';
 import { SCENE_KEYS } from './index';
 
@@ -76,7 +77,7 @@ export class GameScene extends Phaser.Scene {
 
 		// Player
 		if (this.textures.exists(SHIP.spriteKey)) {
-			this.player = this.add.sprite(width / 2, height - 80, SHIP.spriteKey, 0);
+			this.player = this.add.sprite(width / 2, height - 80, SHIP.spriteKey, 1);
 		} else {
 			const gfx = this.add.graphics();
 			gfx.fillStyle(0x00ff88);
@@ -212,6 +213,7 @@ export class GameScene extends Phaser.Scene {
 			const enemy = obj as Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
 			updateEnemyMovement(enemy, width, this.player.x);
 			updateEnemyAttack(enemy, this.enemyBullets, this.player.x, this.player.y, time);
+			if (!enemy.getData('isBoss')) updateEnemyAnimation(enemy, time);
 		}
 	}
 
@@ -232,6 +234,11 @@ export class GameScene extends Phaser.Scene {
 
 		if ((left || right) && (up || down)) {
 			body.velocity.normalize().scale(PLAYER_SPEED);
+		}
+
+		// Update ship sprite frame for banking visual
+		if (this.player instanceof Phaser.GameObjects.Sprite && this.textures.exists(SHIP.spriteKey)) {
+			updateShipBanking(this.player);
 		}
 	}
 

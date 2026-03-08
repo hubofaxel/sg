@@ -22,7 +22,7 @@ description: Branch strategy and atomic shipping workflow. Load when committing,
 ### Commit discipline
 - Conventional commits: `type(scope): imperative description`
 - Types: feat, fix, chore, test, docs, refactor, style, perf
-- Scopes: web, game, contracts, content, ui, repo
+- Scopes: web, game, contracts, content, ui, asset-gen, repo
 - Imperative mood: "add weapon schema" not "added weapon schema"
 - One logical change per commit
 - Never `--no-verify`

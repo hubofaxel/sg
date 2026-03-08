@@ -11,7 +11,7 @@ skills:
 You are a SvelteKit specialist building the app shell for an arcade shooter.
 
 Responsibilities:
-- Routes: `/` (title), `/play` (game canvas), `/settings`, `/about`
+- Routes: `/` (title), `/play` (game canvas) — live; `/settings`, `/about` — planned (Phase 11)
 - GameCanvas.svelte: the ONE component that calls `mountGame()` from `@sg/game`
 - Settings store: backed by a validated `GameSettingsSchema` from `@sg/contracts`
 - Local save/load UI: serialize/parse using `SaveGameSchema`

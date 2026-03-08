@@ -113,6 +113,8 @@ export const BossPhaseSchema = z.object({
 	fireInterval: z.number().positive().optional(),
 	/** Speed multiplier relative to base speed for this phase */
 	speedMultiplier: z.number().positive().default(1),
+	/** Sprite frame index to display during this phase (e.g. 0 = shields-up, 1 = core-exposed) */
+	spriteFrame: z.number().int().nonnegative().optional(),
 	/** Optional: spawn points for minion enemies during this phase */
 	minionSpawns: z
 		.array(
