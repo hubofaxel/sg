@@ -30,7 +30,13 @@
 			"Bash(tail *)",
 			"Bash(sort *)",
 			"Bash(echo *)",
-			"Bash(cat *)"
+			"Bash(cat *)",
+			"Bash(curl *)",
+			"Bash(kill *)",
+			"Bash(bash tools/scripts/*)",
+			"Bash(chmod *)",
+			"mcp__chrome-devtools__*",
+			"mcp__playwright__*"
 		],
 		"deny": [
 			"Bash(git push *)",
@@ -39,6 +45,18 @@
 		]
 	},
 	"hooks": {
+		"SessionStart": [
+			{
+				"matcher": "cli",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "if [ -f \"$CLAUDE_PROJECT_DIR/apps/web/package.json\" ] && ! curl -s http://localhost:5173 >/dev/null 2>&1; then echo '{\"additionalContext\": \"Dev server is not running. Start it with: bash tools/scripts/dev-server.sh\"}'; fi",
+						"timeout": 5000
+					}
+				]
+			}
+		],
 		"PreToolUse": [
 			{
 				"matcher": "Edit|MultiEdit|Write",
@@ -59,6 +77,11 @@
 						"type": "command",
 						"command": "fp=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .path // empty' 2>/dev/null); [ -z \"$fp\" ] && exit 0; case \"$fp\" in *.ts|*.tsx|*.svelte|*.js|*.jsx|*.json|*.css) npx @biomejs/biome check --write \"$fp\" 2>/dev/null || true;; esac",
 						"timeout": 15000
+					},
+					{
+						"type": "command",
+						"command": "fp=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .path // empty' 2>/dev/null); [ -z \"$fp\" ] && exit 0; case \"$fp\" in *.svelte|*.ts|*.js|*.css) sleep 2; if [ -f \"$CLAUDE_PROJECT_DIR/.dev-logs/vite-dev.log\" ]; then ERRORS=$(tail -30 \"$CLAUDE_PROJECT_DIR/.dev-logs/vite-dev.log\" | grep -i 'error\\|500\\|SyntaxError\\|TypeError\\|Cannot find' | tail -5); if [ -n \"$ERRORS\" ]; then echo \"{\\\"additionalContext\\\": \\\"Dev server errors after edit:\\n$ERRORS\\\"}\"; fi; fi;; esac",
+						"timeout": 10000
 					}
 				]
 			}

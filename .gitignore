@@ -34,5 +34,8 @@ coverage/
 tools/asset-gen/.work/
 tools/asset-gen/.env
 
+# Dev server logs (agent observability)
+.dev-logs/
+
 # Claude Code local settings
 .claude/settings.local.json
