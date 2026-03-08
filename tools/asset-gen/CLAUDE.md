@@ -54,7 +54,7 @@ API keys are loaded via **direnv + gopass** (not `.env` files):
 
 ## Key paths
 - `src/config/asset-catalog.ts` — single source of truth for every asset key (dimensions, generation params)
-- `src/config/style-bible.ts` — shared visual + audio style directives for all prompts (includes `effects` category for VFX)
+- `src/config/style-bible.ts` — shared visual + audio style directives for all prompts (includes `effects` and `branding` categories)
 - `src/config/prompt-templates.ts` — per-key prompt builder (image + audio templates, auto-appends scale hints from frame dimensions)
 - `docs/vfx-prompt-library.md` — curated VFX prompt reference: explosion, hit, shield, power-up templates with color language, scale modifiers, and workflow prompts
 - `src/commands/generate.ts` — AI generation → staging directory
@@ -67,6 +67,7 @@ API keys are loaded via **direnv + gopass** (not `.env` files):
 - `src/lib/image-processing.ts` — Sharp image operations (resizeNearest, alphaTrim, assembleGrid)
 - `src/lib/manifest-builder.ts` — manifest construction + sha256 hashing
 - `src/lib/staging.ts` — staging write, list, and promote logic
+- `src/scripts/generate-icons.ts` — one-shot: derive all favicon/PWA/apple-touch sizes from logo-mark
 
 ## Commands
 ```bash

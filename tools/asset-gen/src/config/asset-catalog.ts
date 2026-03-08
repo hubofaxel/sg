@@ -12,7 +12,8 @@ export type AssetGroup =
 	| 'music'
 	| 'sfx'
 	| 'effects'
-	| 'projectiles';
+	| 'projectiles'
+	| 'branding';
 export type SourceMode =
 	| 'placeholder'
 	| 'manual'
@@ -75,7 +76,7 @@ export interface AssetCatalogEntry {
 /** Current development phase. Validator skips catalog entries with phase > this. */
 export const CURRENT_PHASE = 7;
 
-// Catalog entries — 28 asset keys total (23 shipped + 5 planned for future phases)
+// Catalog entries — 31 asset keys total (23 shipped + 5 future phases + 3 branding)
 // ---------------------------------------------------------------------------
 
 export const ASSET_CATALOG: AssetCatalogEntry[] = [
@@ -551,6 +552,53 @@ export const ASSET_CATALOG: AssetCatalogEntry[] = [
 		background: 'transparent',
 		outputFormat: 'png',
 		phase: 12,
+	},
+
+	// --- Branding ---
+	{
+		key: 'logo-mark',
+		kind: 'image',
+		group: 'branding',
+		sourceMode: 'openai-generate',
+		generationTier: 'canonical',
+		promptId: 'logo-mark',
+		outputPath: 'branding/logo-mark.png',
+		model: 'gpt-image-1.5',
+		api: 'images.generate',
+		inputSize: '1024x1024',
+		quality: 'high',
+		background: 'transparent',
+		outputFormat: 'png',
+	},
+	{
+		key: 'logo-wordmark',
+		kind: 'image',
+		group: 'branding',
+		sourceMode: 'openai-generate',
+		generationTier: 'canonical',
+		promptId: 'logo-wordmark',
+		outputPath: 'branding/logo-wordmark.png',
+		model: 'gpt-image-1.5',
+		api: 'images.generate',
+		inputSize: '1536x1024',
+		quality: 'high',
+		background: 'transparent',
+		outputFormat: 'png',
+	},
+	{
+		key: 'og-image',
+		kind: 'image',
+		group: 'branding',
+		sourceMode: 'openai-generate',
+		generationTier: 'canonical',
+		promptId: 'og-image',
+		outputPath: 'branding/og-image.png',
+		model: 'gpt-image-1.5',
+		api: 'images.generate',
+		inputSize: '1536x1024',
+		quality: 'high',
+		background: 'opaque',
+		outputFormat: 'png',
 	},
 
 	// --- Defaults ---

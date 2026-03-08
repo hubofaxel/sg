@@ -81,6 +81,18 @@ export const STYLE_BIBLE = {
 		'loopable structure for seamless repetition',
 		'high energy but not fatiguing over extended play sessions',
 	],
+
+	branding: [
+		'single iconic image on fully transparent background',
+		'brand mark / logo — NOT a game sprite, NOT a sprite sheet',
+		'simplified pixel art with fewer internal details than in-game sprites',
+		'strong readable silhouette that works as a single-color shape',
+		'must be recognizable when scaled down to 16x16 pixels',
+		'max 8-10 colors — fewer than game sprites',
+		'sharp pixel edges, no anti-aliasing, no gradients, no glow effects',
+		'bold confident composition, centered and balanced',
+		'arcade-clean aesthetic, not prestige sci-fi',
+	],
 } as const;
 
 export function getStyleDirectives(...categories: (keyof typeof STYLE_BIBLE)[]): string {

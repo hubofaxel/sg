@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-03-08T20:19:15.337Z",
+	"generatedAt": "2026-03-08T20:48:45.459Z",
 	"assets": [
 		{
 			"type": "sprite-sheet",
@@ -130,107 +130,77 @@
 		{
 			"type": "audio",
 			"key": "music-outer-rim",
-			"paths": [
-				"audio/music/music-outer-rim.mp3"
-			]
+			"paths": ["audio/music/music-outer-rim.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-laser",
-			"paths": [
-				"audio/sfx/sfx-laser.mp3"
-			]
+			"paths": ["audio/sfx/sfx-laser.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-explosion-small",
-			"paths": [
-				"audio/sfx/sfx-explosion-small.mp3"
-			]
+			"paths": ["audio/sfx/sfx-explosion-small.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-explosion-large",
-			"paths": [
-				"audio/sfx/sfx-explosion-large.mp3"
-			]
+			"paths": ["audio/sfx/sfx-explosion-large.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-hit",
-			"paths": [
-				"audio/sfx/sfx-hit.mp3"
-			]
+			"paths": ["audio/sfx/sfx-hit.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-pickup",
-			"paths": [
-				"audio/sfx/sfx-pickup.mp3"
-			]
+			"paths": ["audio/sfx/sfx-pickup.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-enemy-death",
-			"paths": [
-				"audio/sfx/sfx-enemy-death.mp3"
-			]
+			"paths": ["audio/sfx/sfx-enemy-death.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-player-death",
-			"paths": [
-				"audio/sfx/sfx-player-death.mp3"
-			]
+			"paths": ["audio/sfx/sfx-player-death.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-boss-alarm",
-			"paths": [
-				"audio/sfx/sfx-boss-alarm.mp3"
-			]
+			"paths": ["audio/sfx/sfx-boss-alarm.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-menu-select",
-			"paths": [
-				"audio/sfx/sfx-menu-select.mp3"
-			]
+			"paths": ["audio/sfx/sfx-menu-select.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-menu-confirm",
-			"paths": [
-				"audio/sfx/sfx-menu-confirm.mp3"
-			]
+			"paths": ["audio/sfx/sfx-menu-confirm.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-stage-clear",
-			"paths": [
-				"audio/sfx/sfx-stage-clear.mp3"
-			]
+			"paths": ["audio/sfx/sfx-stage-clear.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "music-boss",
-			"paths": [
-				"audio/music/music-boss.mp3"
-			]
+			"paths": ["audio/music/music-boss.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-low-health",
-			"paths": [
-				"audio/sfx/sfx-low-health.mp3"
-			]
+			"paths": ["audio/sfx/sfx-low-health.mp3"]
 		},
 		{
 			"type": "audio",
 			"key": "sfx-telegraph",
-			"paths": [
-				"audio/sfx/sfx-telegraph.mp3"
-			]
+			"paths": ["audio/sfx/sfx-telegraph.mp3"]
 		},
 		{
 			"type": "sprite-sheet",
@@ -248,6 +218,33 @@
 		},
 		{
 			"type": "image",
+			"key": "logo-mark",
+			"path": "branding/logo-mark.png",
+			"width": 1024,
+			"height": 1024,
+			"sha256": "e447a8b93bd297c696f57697d518f64b2bf0972308b7164d930a46c24e6db9df",
+			"bytes": 1433402
+		},
+		{
+			"type": "image",
+			"key": "logo-wordmark",
+			"path": "branding/logo-wordmark.png",
+			"width": 1536,
+			"height": 1024,
+			"sha256": "660a4c66a9896a19252cac7f9d438838a3f95bcaa7c60697ef9cd00235ffdb03",
+			"bytes": 2103009
+		},
+		{
+			"type": "image",
+			"key": "og-image",
+			"path": "branding/og-image.png",
+			"width": 1536,
+			"height": 1024,
+			"sha256": "cefc4ece778926d9f02706185e006609a672efd5093c673d66d434b86f301630",
+			"bytes": 497584
+		},
+		{
+			"type": "image",
 			"key": "default-bg",
 			"path": "backgrounds/default-bg.png",
 			"width": 480,
@@ -258,9 +255,7 @@
 		{
 			"type": "audio",
 			"key": "default-music",
-			"paths": [
-				"audio/music/default-music.mp3"
-			]
+			"paths": ["audio/music/default-music.mp3"]
 		}
 	]
 }
