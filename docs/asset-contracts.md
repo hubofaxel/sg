@@ -62,7 +62,7 @@ AI image generation produces 1024x1024+ output that gets reduced to final size. 
 | `sfx-explosion-large` | wired-existing | BossManager → chainExplosions | Boss death sequence |
 | `sfx-menu-select` | wired-existing | MenuScene | Button hover/focus |
 | `sfx-menu-confirm` | wired-existing | MenuScene | Start game |
-| `sfx-pickup` | wired-existing | DropManager (Phase 7) | Item collected |
+| `sfx-pickup` | generated-final | DropManager → collectPickup | shipped |
 
 ### Audio — defaults
 
@@ -70,12 +70,25 @@ AI image generation produces 1024x1024+ output that gets reduced to final size. 
 |---|---|---|---|
 | `default-music` | generated-final | AudioManager fallback | shipped |
 
-### Phase 7 — Drop System (planned)
+### Branding — shipped
 
-| Key | Strategy | Owner | Dims | Notes |
+| Key | Strategy | Owner | Dims | Status |
 |---|---|---|---|---|
-| `pickup-currency` | generated-source OR code-drawn | DropManager | 16x16, 1 frame | Single image + code pulse/bob. Decision: code-driven animation, not sprite sheet. |
-| `pickup-token` | generated-source OR code-drawn | DropManager | 16x16, 1 frame | Same approach as currency. Distinct color (cyan/green vs gold). |
+| `logo-mark` | generated-final | Web integration | 1024x1024 source | shipped |
+| `logo-wordmark` | generated-final | Web integration | 1536x1024 source | shipped |
+| `og-image` | generated-final | Web integration (OG meta) | 1536x1024 source | shipped |
+
+Derived icons (not in asset catalog — generated via `src/scripts/generate-icons.ts`):
+- `favicon.ico` (16+32+48), `favicon.svg`, `apple-touch-icon.png` (180x180)
+- `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (70% mark on #0A0A1A)
+
+### Phase 7 — Drop System (shipped, code-drawn)
+
+| Effect | Strategy | Owner | Notes |
+|---|---|---|---|
+| `pickup-currency` | code-drawn | DropManager | 16x16 gold rectangle, sine-bob + magnetism |
+| `pickup-token` | code-drawn | DropManager | 16x16 cyan rectangle |
+| `pickup-recipe` | code-drawn | DropManager | 16x16 green rectangle |
 
 ### Phase 8 — Stage Presentation (catalogued, ready to generate)
 
