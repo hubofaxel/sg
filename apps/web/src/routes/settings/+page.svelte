@@ -1,5 +1,5 @@
 <script lang="ts">
-import { settings } from '$lib/stores/settings';
+import { settings } from '$lib/stores/settings.svelte';
 
 function setVolume(key: 'masterVolume' | 'sfxVolume' | 'musicVolume', e: Event) {
 	const input = e.target as HTMLInputElement;

@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { GameHandle } from '@sg/game';
 import { onDestroy, onMount } from 'svelte';
-import { settings } from '../stores/settings';
+import { settings } from '../stores/settings.svelte';
 
 let container: HTMLDivElement;
 let handle: GameHandle | null = $state(null);

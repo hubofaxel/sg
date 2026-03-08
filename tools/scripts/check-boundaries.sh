@@ -30,6 +30,18 @@ if [ -n "$game_internals" ]; then
 	violations=$((violations + 1))
 fi
 
+# Rule 3: Svelte runes only in .svelte or .svelte.ts files (not plain .ts)
+rune_in_ts=$(grep -rn '\$state\b\|\$derived\b\|\$effect\b' \
+	--include='*.ts' \
+	"$ROOT/apps" "$ROOT/packages" \
+	2>/dev/null | grep -v '\.svelte\.ts:' | grep -v 'node_modules' | grep -v '\.svelte-kit' || true)
+
+if [ -n "$rune_in_ts" ]; then
+	echo "BOUNDARY VIOLATION: Svelte runes used in plain .ts file (must be .svelte.ts)"
+	echo "$rune_in_ts"
+	violations=$((violations + 1))
+fi
+
 if [ "$violations" -gt 0 ]; then
 	echo ""
 	echo "$violations boundary violation(s) found."

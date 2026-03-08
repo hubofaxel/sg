@@ -6,7 +6,7 @@ Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorep
 
 - SvelteKit owns the app (routes, menus, settings, persistence UI)
 - Phaser owns only the play surface (scenes, rendering, input, physics)
-- `@sg/game` exposes ONE public API: `mountGame(element, options): GameHandle`
+- `@sg/game` exposes one entry point: `mountGame(element, options): GameHandle` (plus types)
 - No Phaser types leak outside `packages/game`
 
 ## Commands
@@ -18,7 +18,7 @@ Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorep
 - `pnpm format` — Biome format
 - `pnpm lint` — Biome check
 - `pnpm lint:fix` — Biome check --write
-- `pnpm validate` — check + lint + build + test + asset:validate + boundary checks
+- `pnpm validate` — check + lint + build + test + e2e + asset:validate + boundary checks
 - `pnpm asset:gen` — generate all assets to staging (OpenAI + ElevenLabs, requires API keys via direnv)
 - `pnpm asset:placeholder` — generate placeholder PNGs for all visual assets (bypasses staging)
 - `pnpm asset:manifest` — rebuild asset-manifest.json from runtime files
