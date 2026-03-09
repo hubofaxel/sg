@@ -3,6 +3,7 @@ import type { Boss, BossPhase, Enemy } from '@sg/contracts';
 import * as Phaser from 'phaser';
 import { screenShake } from './CombatFeedback';
 import { BOSS_LABEL_MIN_PX, computeScaleFactor, scaleFontSize } from './HudScale';
+import type { SafeZone } from './SafeZone';
 import { applyBossPhaseFrame } from './SpriteFrames';
 
 /** Lookup tables */
@@ -15,6 +16,8 @@ export interface BossManagerConfig {
 	enemies: Phaser.Physics.Arcade.Group;
 	screenWidth: number;
 	screenHeight: number;
+	/** Safe zone for centering boss and constraining minion spawns */
+	safeZone?: SafeZone;
 	onBossDefeated: () => void;
 	onMinionSpawned: (
 		enemy: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
@@ -28,6 +31,7 @@ export class BossManager {
 	private enemies: Phaser.Physics.Arcade.Group;
 	private screenWidth: number;
 	private screenHeight: number;
+	private safeZone: SafeZone | undefined;
 	private onBossDefeated: () => void;
 	private onMinionSpawned: BossManagerConfig['onMinionSpawned'];
 
@@ -49,6 +53,7 @@ export class BossManager {
 		this.enemies = config.enemies;
 		this.screenWidth = config.screenWidth;
 		this.screenHeight = config.screenHeight;
+		this.safeZone = config.safeZone;
 		this.onBossDefeated = config.onBossDefeated;
 		this.onMinionSpawned = config.onMinionSpawned;
 
@@ -105,7 +110,10 @@ export class BossManager {
 	}
 
 	private showWarningBanner(onComplete: () => void): void {
-		const { scene, screenWidth, screenHeight } = this;
+		const { scene } = this;
+		// Use gameSize for HUD positioning (screen edges, not safe zone)
+		const screenWidth = scene.scale.width;
+		const screenHeight = scene.scale.height;
 		const factor = computeScaleFactor(
 			scene.scale.displaySize.width,
 			scene.scale.displaySize.height,
@@ -162,7 +170,8 @@ export class BossManager {
 
 	private spawnBoss(): void {
 		const def = this.boss;
-		const centerX = this.screenWidth / 2;
+		// Boss centers on safe zone (consistent regardless of screen width)
+		const centerX = this.safeZone ? this.safeZone.centerX : this.screenWidth / 2;
 		const entryY = def.entryPosition.y;
 		const anchorY = def.anchorPosition.y;
 
@@ -269,7 +278,7 @@ export class BossManager {
 	}
 
 	private createHealthBar(): void {
-		const barX = this.screenWidth / 2;
+		const barX = this.scene.scale.width / 2;
 		const barY = 50;
 		const barH = 8;
 		const factor = computeScaleFactor(
@@ -363,7 +372,10 @@ export class BossManager {
 
 	private spawnMinion(def: Enemy): void {
 		const margin = 40;
-		const x = Phaser.Math.Between(margin, this.screenWidth - margin);
+		// Minions spawn within safe zone corridor (like wave enemies)
+		const spawnLeft = (this.safeZone?.x ?? 0) + margin;
+		const spawnRight = (this.safeZone?.right ?? this.screenWidth) - margin;
+		const x = Phaser.Math.Between(spawnLeft, spawnRight);
 
 		let minion: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle;
 		if (this.scene.textures.exists(def.spriteKey)) {
