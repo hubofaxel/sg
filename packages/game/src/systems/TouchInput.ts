@@ -1,5 +1,8 @@
 // ---------------------------------------------------------------------------
-// TouchInput — floating virtual joystick via Pointer Events
+// TouchInput — floating virtual joystick via DOM Pointer Events
+//
+// Uses DOM pointer events on the canvas directly (not Phaser's input system)
+// for reliable touch tracking across Phaser 4 RC versions.
 // ---------------------------------------------------------------------------
 
 import type * as Phaser from 'phaser';
@@ -22,6 +25,7 @@ const THUMB_RADIUS = 16;
 
 export class TouchInput implements InputAdapter {
 	private scene: Phaser.Scene | null = null;
+	private canvas: HTMLCanvasElement | null = null;
 	private activePointerId: number | null = null;
 	private originX = 0;
 	private originY = 0;
@@ -37,13 +41,14 @@ export class TouchInput implements InputAdapter {
 	};
 
 	// Bound listener references for cleanup
-	private onPointerDown!: (pointer: Phaser.Input.Pointer) => void;
-	private onPointerMove!: (pointer: Phaser.Input.Pointer) => void;
-	private onPointerUp!: (pointer: Phaser.Input.Pointer) => void;
-	private onPointerCancel!: () => void;
+	private boundPointerDown!: (e: PointerEvent) => void;
+	private boundPointerMove!: (e: PointerEvent) => void;
+	private boundPointerUp!: (e: PointerEvent) => void;
+	private boundPointerCancel!: (e: PointerEvent) => void;
 
 	create(scene: Phaser.Scene): void {
 		this.scene = scene;
+		this.canvas = scene.game.canvas;
 
 		// Create joystick graphics (hidden until touch)
 		this.joystickOuter = scene.add.graphics();
@@ -57,25 +62,31 @@ export class TouchInput implements InputAdapter {
 		this.drawOuter();
 		this.drawThumb(0, 0);
 
-		// Bind pointer listeners
-		this.onPointerDown = (pointer: Phaser.Input.Pointer) => {
-			// Only respond to left-half touches, ignore if already tracking
+		// Use DOM pointer events on canvas for reliable touch tracking
+		this.boundPointerDown = (e: PointerEvent) => {
 			if (this.activePointerId !== null) return;
+
+			const worldPos = this.toWorldCoords(e);
+			if (!worldPos) return;
+
 			const { width } = scene.scale;
-			if (pointer.x > width / 2) return;
+			if (worldPos.x > width / 2) return;
 
-			this.activePointerId = pointer.id;
-			this.originX = pointer.x;
-			this.originY = pointer.y;
+			this.activePointerId = e.pointerId;
+			this.originX = worldPos.x;
+			this.originY = worldPos.y;
 
-			this.showJoystick(pointer.x, pointer.y);
+			this.showJoystick(worldPos.x, worldPos.y);
 		};
 
-		this.onPointerMove = (pointer: Phaser.Input.Pointer) => {
-			if (pointer.id !== this.activePointerId) return;
+		this.boundPointerMove = (e: PointerEvent) => {
+			if (e.pointerId !== this.activePointerId) return;
 
-			const dx = pointer.x - this.originX;
-			const dy = pointer.y - this.originY;
+			const worldPos = this.toWorldCoords(e);
+			if (!worldPos) return;
+
+			const dx = worldPos.x - this.originX;
+			const dy = worldPos.y - this.originY;
 			const dist = Math.sqrt(dx * dx + dy * dy);
 
 			if (dist < DEAD_ZONE) {
@@ -97,23 +108,21 @@ export class TouchInput implements InputAdapter {
 			this.updateThumbPosition(nx, ny);
 		};
 
-		this.onPointerUp = (pointer: Phaser.Input.Pointer) => {
-			if (pointer.id !== this.activePointerId) return;
+		this.boundPointerUp = (e: PointerEvent) => {
+			if (e.pointerId !== this.activePointerId) return;
 			this.releaseJoystick();
 		};
 
-		this.onPointerCancel = () => {
+		this.boundPointerCancel = (e: PointerEvent) => {
+			if (e.pointerId !== this.activePointerId) return;
 			this.clear();
 		};
 
-		scene.input.on('pointerdown', this.onPointerDown);
-		scene.input.on('pointermove', this.onPointerMove);
-		scene.input.on('pointerup', this.onPointerUp);
-
-		// pointercancel from browser (tab switch, gesture interrupt)
-		const canvas = scene.game.canvas;
-		if (canvas) {
-			canvas.addEventListener('pointercancel', this.onPointerCancel);
+		if (this.canvas) {
+			this.canvas.addEventListener('pointerdown', this.boundPointerDown);
+			this.canvas.addEventListener('pointermove', this.boundPointerMove);
+			this.canvas.addEventListener('pointerup', this.boundPointerUp);
+			this.canvas.addEventListener('pointercancel', this.boundPointerCancel);
 		}
 	}
 
@@ -132,22 +141,36 @@ export class TouchInput implements InputAdapter {
 	}
 
 	destroy(): void {
-		if (this.scene) {
-			this.scene.input.off('pointerdown', this.onPointerDown);
-			this.scene.input.off('pointermove', this.onPointerMove);
-			this.scene.input.off('pointerup', this.onPointerUp);
-
-			const canvas = this.scene.game.canvas;
-			if (canvas) {
-				canvas.removeEventListener('pointercancel', this.onPointerCancel);
-			}
+		if (this.canvas) {
+			this.canvas.removeEventListener('pointerdown', this.boundPointerDown);
+			this.canvas.removeEventListener('pointermove', this.boundPointerMove);
+			this.canvas.removeEventListener('pointerup', this.boundPointerUp);
+			this.canvas.removeEventListener('pointercancel', this.boundPointerCancel);
 		}
 
 		this.joystickOuter?.destroy();
 		this.joystickThumb?.destroy();
 		this.joystickOuter = null;
 		this.joystickThumb = null;
+		this.canvas = null;
 		this.scene = null;
+	}
+
+	/** Convert a DOM PointerEvent to Phaser world coordinates */
+	private toWorldCoords(e: PointerEvent): { x: number; y: number } | null {
+		if (!this.canvas || !this.scene) return null;
+
+		const rect = this.canvas.getBoundingClientRect();
+		// CSS pixel position relative to canvas element
+		const cssX = e.clientX - rect.left;
+		const cssY = e.clientY - rect.top;
+
+		// Scale from CSS pixels to game world coordinates
+		const { width, height } = this.scene.scale;
+		const worldX = (cssX / rect.width) * width;
+		const worldY = (cssY / rect.height) * height;
+
+		return { x: worldX, y: worldY };
 	}
 
 	// --- Visual helpers ---
