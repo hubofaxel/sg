@@ -36,10 +36,8 @@ export class DebugOverlay {
 		this.enemyBullets = config.enemyBullets;
 		this.enemies = config.enemies;
 
-		const { width } = this.scene.scale;
-
 		this.text = this.scene.add
-			.text(width - 10, 10, '', {
+			.text(this.scene.scale.width - 10, 10, '', {
 				fontSize: '11px',
 				fontFamily: 'monospace',
 				color: '#00ff00',
@@ -83,6 +81,8 @@ export class DebugOverlay {
 		];
 
 		this.text.setText(lines.join('\n'));
+		// Reposition to right edge (gameSize may have changed on resize)
+		this.text.setX(this.scene.scale.width - 10);
 	}
 
 	destroy(): void {
