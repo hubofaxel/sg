@@ -1,4 +1,5 @@
 <script lang="ts">
+import { base } from '$app/paths';
 import { settings } from '$lib/stores/settings.svelte';
 
 function setVolume(key: 'masterVolume' | 'sfxVolume' | 'musicVolume', e: Event) {
@@ -22,7 +23,7 @@ function resetDefaults() {
 
 <div class="settings-page">
 	<header>
-		<a href="/" class="back-link">&larr; BACK</a>
+		<a href="{base}/" class="back-link">&larr; BACK</a>
 		<h1>SETTINGS</h1>
 	</header>
 

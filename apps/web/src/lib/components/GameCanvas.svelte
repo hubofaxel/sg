@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { GameHandle } from '@sg/game';
 import { onDestroy, onMount } from 'svelte';
+import { base } from '$app/paths';
 import { settings } from '../stores/settings.svelte';
 
 interface Props {
@@ -35,6 +36,7 @@ onMount(() => {
 	import('@sg/game').then(({ mountGame }) => {
 		const s = settings.value;
 		handle = mountGame(container, {
+			basePath: base,
 			settings: {
 				masterVolume: s.masterVolume,
 				sfxVolume: s.sfxVolume,

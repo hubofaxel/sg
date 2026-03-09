@@ -19,7 +19,8 @@ export class PreloadScene extends Phaser.Scene {
 	}
 
 	preload(): void {
-		this.load.json('asset-manifest', '/assets/asset-manifest.json');
+		const base = (this.registry.get('basePath') as string) || '';
+		this.load.json('asset-manifest', `${base}/assets/asset-manifest.json`);
 	}
 
 	create(): void {
@@ -48,7 +49,8 @@ export class PreloadScene extends Phaser.Scene {
 	}
 
 	private assetUrl(relativePath: string): string {
-		return `/assets/${relativePath}`;
+		const base = (this.registry.get('basePath') as string) || '';
+		return `${base}/assets/${relativePath}`;
 	}
 
 	private queueAsset(entry: AssetEntry): void {

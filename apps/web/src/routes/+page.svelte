@@ -1,9 +1,13 @@
+<script lang="ts">
+import { base } from '$app/paths';
+</script>
+
 <div class="home">
 	<h1>SHIP GAME</h1>
 	<p class="tagline">ARCADE SHOOTER</p>
 	<nav>
-		<a href="/play" class="nav-btn primary">PLAY</a>
-		<a href="/settings" class="nav-btn">SETTINGS</a>
+		<a href="{base}/play" class="nav-btn primary">PLAY</a>
+		<a href="{base}/settings" class="nav-btn">SETTINGS</a>
 	</nav>
 </div>
 

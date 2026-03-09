@@ -7,6 +7,8 @@ export interface GameMountOptions {
 	width?: number;
 	height?: number;
 	pixelArt?: boolean;
+	/** Base path prefix for asset URLs (e.g. '/sg' for GitHub Pages subpath) */
+	basePath?: string;
 	/** Aspect ratio clamp for adaptive world sizing */
 	aspectRatio?: {
 		minWidth?: number;

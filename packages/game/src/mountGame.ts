@@ -56,7 +56,8 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 	game.registry.set('safeZone', safeZone);
 	game.registry.set('safeAreaInsets', getSafeAreaInsets());
 
-	// Stash the event bus in the registry so scenes can access it
+	// Stash base path and event bus in the registry so scenes can access them
+	game.registry.set('basePath', options.basePath ?? '');
 	game.registry.set('eventBus', eventBus);
 
 	// Stash settings in registry so scenes can read them
