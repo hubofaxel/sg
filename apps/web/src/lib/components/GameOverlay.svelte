@@ -95,8 +95,8 @@ function toggleMute() {
 
 	.overlay-buttons {
 		position: absolute;
-		top: env(safe-area-inset-top, 8px);
-		right: env(safe-area-inset-right, 8px);
+		top: calc(8px + env(safe-area-inset-top, 0px));
+		right: calc(8px + env(safe-area-inset-right, 0px));
 		display: flex;
 		gap: 4px;
 		padding: 8px;

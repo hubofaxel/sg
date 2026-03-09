@@ -3,7 +3,7 @@
 	"short_name": "Ship Game",
 	"description": "Arcade space shooter",
 	"start_url": "/",
-	"display": "standalone",
+	"display": "fullscreen",
 	"theme_color": "#0A0A1A",
 	"background_color": "#0A0A1A",
 	"orientation": "landscape",
