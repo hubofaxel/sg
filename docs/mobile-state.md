@@ -19,6 +19,8 @@
 | PR-2 | land | pr-shipper | ✅ | FF-merged to main at d523c12 |
 | PR-3 | runtime-settings-bridge | phaser-integrator | ✅ | updateSettings(), AudioManager + DebugOverlay subscriptions |
 | PR-3 | settings-store-bridge | svelte-shell | ✅ | $effect pushes volume + showFps to game |
+| PR-3 | cross-tab-sync | svelte-shell | ✅ | storage event listener syncs settings across tabs |
+| PR-3 | manual-check | operator | ✅ | Volume changes propagate cross-tab, game plays correctly |
 
 ## In Progress
 
@@ -57,6 +59,12 @@ Adapter selection: controlScheme 'touch' → force TouchInput; touchEnabled !== 
 ## Decisions Pending
 
 None — all seven resolved.
+
+## Known Issues (Deferred)
+
+| Issue | Observed | Notes |
+|---|---|---|
+| Visibility-change pause feels unsteady | PR-3 manual check | game.pause()/resume() via visibilitychange may need per-platform investigation — audio context, WebGL context, Phaser loop state. Not a PR-3 regression. |
 
 ## Rollback Log
 

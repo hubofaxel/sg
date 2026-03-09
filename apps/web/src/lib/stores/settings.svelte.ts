@@ -21,6 +21,15 @@ function saveSettings(settings: GameSettings): void {
 
 let current = $state<GameSettings>(loadSettings());
 
+// Sync settings across tabs via storage events
+if (typeof window !== 'undefined') {
+	window.addEventListener('storage', (e) => {
+		if (e.key === STORAGE_KEY) {
+			current = loadSettings();
+		}
+	});
+}
+
 export const settings = {
 	get value() {
 		return current;
