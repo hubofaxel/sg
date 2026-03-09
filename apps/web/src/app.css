@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Dark theme base — prevent white flash on load and letterbox gaps */
+html,
+body {
+	background: #0a0a1a;
+	color: #e0e0e0;
+}
+
 /* Safe area custom properties for reuse */
 :root {
 	--safe-top: env(safe-area-inset-top, 0px);

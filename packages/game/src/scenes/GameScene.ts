@@ -282,16 +282,22 @@ export class GameScene extends Phaser.Scene {
 		const controlScheme = this.registry.get('controlScheme') as string | undefined;
 		const touchEnabled = this.registry.get('touchControlsEnabled') as boolean | undefined;
 
+		// Explicit keyboard override — user deliberately chose keyboard
+		if (controlScheme === 'arrows') {
+			return new KeyboardInput();
+		}
+
 		// Explicit touch override
 		if (controlScheme === 'touch') {
 			return new TouchInput();
 		}
 
-		// Capability detection: use touch if device supports it and setting allows
+		// Auto-detect: use touch if device supports it and setting allows
+		// Default controlScheme is 'wasd' which still allows auto-detection
 		if (touchEnabled !== false) {
 			const hasTouch =
 				typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-			if (hasTouch && controlScheme !== 'wasd' && controlScheme !== 'arrows') {
+			if (hasTouch) {
 				return new TouchInput();
 			}
 		}

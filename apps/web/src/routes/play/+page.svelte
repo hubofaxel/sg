@@ -23,6 +23,7 @@ let gameHandle: GameHandle | null = $state(null);
 		width: 100dvw;
 		height: 100dvh;
 		overflow: hidden;
+		background: #000;
 		padding:
 			env(safe-area-inset-top)
 			env(safe-area-inset-right)
