@@ -1,21 +1,24 @@
 # Mobile Adaptation — Orchestration State
 
-## Current phase: A (Input-valid)
-## Current PR: PR-2 (Input Intent Backbone)
-## Branch: feat/mobile-input-intent
+## Current phase: A (Input-valid) → transitioning to B (Physically usable)
+## Current PR: PR-3 (Runtime Settings Bridge)
+## Branch: feat/mobile-settings-bridge
 
 ## Completed
 
 | PR | Task | Agent | Status | Notes |
 |---|---|---|---|---|
 | readiness | Pre-implementation fixes | planning-agent | ✅ | All 10 fixes applied |
-| PR-1 | viewport-and-layout | svelte-shell | ✅ | Commit 9073d44 |
-| PR-1 | rotate-overlay | svelte-shell | ✅ | Commit 1f285e2 |
-| PR-1 | e2e-verification | test-runner | ✅ | 6 new tests, commit b1f12d1 |
+| PR-1 | shell-foundation | svelte-shell | ✅ | viewport-fit, dvh, safe area, touch-action, rotate overlay |
+| PR-1 | e2e-verification | test-runner | ✅ | 6 new tests |
 | PR-1 | land | pr-shipper | ✅ | FF-merged to main at 6e46104 |
-| PR-2 | schema-extension | schema-validator | ✅ | ControlScheme += 'touch', 15 tests, commit 85e4681 |
-| PR-2 | input-intent-system | phaser-integrator | ✅ | InputIntent, KeyboardInput, TouchInput, GameScene refactor, commits 83b72b9 + 73ff41e |
-| PR-2 | adapter-and-schema-tests | test-runner | ✅ | 23 adapter tests (11 keyboard + 12 touch), commit 38821ee |
+| PR-2 | schema-extension | schema-validator | ✅ | ControlScheme + 'touch', 15 tests |
+| PR-2 | input-intent-system | phaser-integrator | ✅ | InputIntent, KeyboardInput, TouchInput, GameScene refactor |
+| PR-2 | adapter-tests | test-runner | ✅ | 23 adapter tests (11 keyboard + 12 touch) |
+| PR-2 | desktop-parity-check | operator | ✅ | Manual gameplay verification — confirmed identical |
+| PR-2 | land | pr-shipper | ✅ | FF-merged to main at d523c12 |
+| PR-3 | runtime-settings-bridge | phaser-integrator | ✅ | updateSettings(), AudioManager + DebugOverlay subscriptions |
+| PR-3 | settings-store-bridge | svelte-shell | ✅ | $effect pushes volume + showFps to game |
 
 ## In Progress
 
@@ -29,35 +32,31 @@
 |---|---|---|---|
 | — | — | — | — |
 
+## Type Contracts
+
+GameMountOptions.settings: masterVolume, sfxVolume, musicVolume, showFps, touchControlsEnabled, controlScheme
+
+RuntimeSettings (updateSettings): masterVolume (number), sfxVolume (number), musicVolume (number), showFps (boolean)
+
+Registry keys: masterVolume, sfxVolume, musicVolume, showFps, touchControlsEnabled, controlScheme, audioVolumes (compat), eventBus
+
+Adapter selection: controlScheme 'touch' → force TouchInput; touchEnabled !== false AND device touch AND controlScheme not 'wasd'/'arrows' → TouchInput; else → KeyboardInput
+
 ## Decisions Resolved
 
 | # | Decision | Outcome | Date |
 |---|---|---|---|
-| 1 | Touch auto-fire policy | No decision needed — auto-fire is existing behavior. `autoFire` setting removed from plan. | 2026-03-08 |
-| 2 | Input adapter activation | Capability detection at mount + `controlScheme: 'touch'` override. No UA sniffing. | 2026-03-08 |
-| 3 | Runtime settings transport | Phaser registry `changedata` events. No custom bus. No new GameEventMap entries. | 2026-03-08 |
-| 4 | Pause ownership | Shell-authoritative. Game never self-pauses. | 2026-03-08 |
-| 5 | Touch target strategy | Full-scene `pointerdown` for all in-canvas prompts. No localized hit zones. | 2026-03-08 |
-| 6 | HUD scaling envelope | Clamped `[0.6, 1.5]` with per-element pixel floors (10px HUD, 9px boss label). | 2026-03-08 |
-| 7 | Manifest orientation | Preference only. Overlay + game pause is real enforcement. No `screen.orientation.lock()`. | 2026-03-08 |
+| 1 | Touch auto-fire policy | No decision needed — auto-fire is existing behavior | 2026-03-08 |
+| 2 | Input adapter activation | Capability detection at mount + controlScheme override | 2026-03-08 |
+| 3 | Runtime settings transport | Phaser registry changedata events | 2026-03-08 |
+| 4 | Pause ownership | Shell-authoritative | 2026-03-08 |
+| 5 | Touch target strategy | Full-scene pointerdown | 2026-03-08 |
+| 6 | HUD scaling envelope | Clamped [0.6, 1.5] + pixel floors | 2026-03-08 |
+| 7 | Manifest orientation | Preference only, overlay enforces | 2026-03-08 |
 
 ## Decisions Pending
 
 None — all seven resolved.
-
-## Type Contract Handoff
-
-`GameMountOptions.settings` expanded type (for svelte-shell in PR-3):
-```typescript
-settings?: {
-  masterVolume?: number;
-  sfxVolume?: number;
-  musicVolume?: number;
-  showFps?: boolean;
-  touchControlsEnabled?: boolean;
-  controlScheme?: string; // 'wasd' | 'arrows' | 'touch'
-}
-```
 
 ## Rollback Log
 
