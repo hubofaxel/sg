@@ -9,6 +9,8 @@ export interface WaveManagerConfig {
 	scene: Phaser.Scene;
 	enemies: Phaser.Physics.Arcade.Group;
 	screenWidth: number;
+	/** X offset added to all spawn positions (safe zone origin) */
+	spawnOffsetX?: number;
 	stageIndex?: number;
 	onEnemySpawned: (
 		enemy: Phaser.GameObjects.Sprite | Phaser.GameObjects.Rectangle,
@@ -24,6 +26,7 @@ export class WaveManager {
 	private scene: Phaser.Scene;
 	private enemies: Phaser.Physics.Arcade.Group;
 	private screenWidth: number;
+	private spawnOffsetX: number;
 	private onEnemySpawned: WaveManagerConfig['onEnemySpawned'];
 	private onWaveCleared: WaveManagerConfig['onWaveCleared'];
 	private onLevelCleared: WaveManagerConfig['onLevelCleared'];
@@ -43,6 +46,7 @@ export class WaveManager {
 		this.scene = config.scene;
 		this.enemies = config.enemies;
 		this.screenWidth = config.screenWidth;
+		this.spawnOffsetX = config.spawnOffsetX ?? 0;
 		this.onEnemySpawned = config.onEnemySpawned;
 		this.onWaveCleared = config.onWaveCleared;
 		this.onLevelCleared = config.onLevelCleared;
@@ -111,6 +115,12 @@ export class WaveManager {
 
 	get bossId(): string {
 		return this.stage.bossId;
+	}
+
+	/** Update spawn bounds on resize (safe zone changed) */
+	updateSpawnBounds(screenWidth: number, spawnOffsetX: number): void {
+		this.screenWidth = screenWidth;
+		this.spawnOffsetX = spawnOffsetX;
 	}
 
 	start(): void {
@@ -224,30 +234,31 @@ export class WaveManager {
 	private getFormationX(formation: string, index: number, total: number): number {
 		const margin = 40;
 		const usableWidth = this.screenWidth - margin * 2;
+		const ox = this.spawnOffsetX;
 
 		switch (formation) {
 			case 'row': {
 				const spacing = usableWidth / (total + 1);
-				return margin + spacing * (index + 1);
+				return ox + margin + spacing * (index + 1);
 			}
 			case 'v-formation': {
-				const center = this.screenWidth / 2;
+				const center = ox + this.screenWidth / 2;
 				const half = Math.floor(total / 2);
 				const offset = (index - half) * 40;
 				return center + offset;
 			}
 			case 'column':
-				return this.screenWidth / 2;
+				return ox + this.screenWidth / 2;
 			case 'grid': {
 				const cols = Math.ceil(Math.sqrt(total));
 				const col = index % cols;
 				const colSpacing = usableWidth / (cols + 1);
-				return margin + colSpacing * (col + 1);
+				return ox + margin + colSpacing * (col + 1);
 			}
 			case 'scatter':
-				return Phaser.Math.Between(margin, this.screenWidth - margin);
+				return Phaser.Math.Between(ox + margin, ox + this.screenWidth - margin);
 			default:
-				return Phaser.Math.Between(margin, this.screenWidth - margin);
+				return Phaser.Math.Between(ox + margin, ox + this.screenWidth - margin);
 		}
 	}
 

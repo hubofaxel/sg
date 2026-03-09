@@ -13,6 +13,7 @@ import { HudManager } from '../systems/HudManager';
 import type { InputAdapter } from '../systems/InputIntent';
 import { KeyboardInput } from '../systems/KeyboardInput';
 import { BulletPool } from '../systems/ObjectPool';
+import type { SafeZone } from '../systems/SafeZone';
 import { updateEnemyAnimation, updateShipBanking } from '../systems/SpriteFrames';
 import { TouchInput } from '../systems/TouchInput';
 import { WaveManager } from '../systems/WaveManager';
@@ -77,6 +78,9 @@ export class GameScene extends Phaser.Scene {
 
 	create(): void {
 		const { width, height } = this.scale;
+
+		// Physics world bounds — match expanded canvas
+		this.physics.world.setBounds(0, 0, width, height);
 
 		// Audio — read initial volume from registry (set by mountGame from options)
 		const volumes = this.registry.get('audioVolumes') as
@@ -179,10 +183,16 @@ export class GameScene extends Phaser.Scene {
 		this.hud = new HudManager({ scene: this, initialLives: this.lives });
 
 		// Wave manager — drives gameplay from campaign data
+		// Spawning uses safe zone width so wave density stays consistent
+		const safeZone = this.registry.get('safeZone') as SafeZone | undefined;
+		const spawnWidth = safeZone ? safeZone.width : width;
+		const spawnOffset = safeZone ? safeZone.x : 0;
+
 		this.waveManager = new WaveManager({
 			scene: this,
 			enemies: this.enemies,
-			screenWidth: width,
+			screenWidth: spawnWidth,
+			spawnOffsetX: spawnOffset,
 			stageIndex: this.stageIndex,
 			onEnemySpawned: (enemy, _data) => {
 				spawnIn(enemy);
@@ -194,7 +204,8 @@ export class GameScene extends Phaser.Scene {
 			onLevelCleared: (levelIndex) => {
 				this.hud.showBanner(`LEVEL ${levelIndex + 2} — ${this.waveManager.levelName}`);
 				// Switch background for new level
-				this.setBackground(width, height);
+				const { width: w, height: h } = this.scale;
+				this.setBackground(w, h);
 			},
 			onBossEncounter: (bossId) => {
 				this.startBossEncounter(bossId);
@@ -230,6 +241,18 @@ export class GameScene extends Phaser.Scene {
 		};
 		this.registry.events.on('changedata-showFps', showFpsListener);
 		this.registryListeners.push({ event: 'changedata-showFps', fn: showFpsListener });
+
+		// Update physics bounds and spawn parameters on world resize
+		const worldWidthListener = (_: unknown, newWidth: number) => {
+			const newHeight = this.registry.get('worldHeight') as number;
+			this.physics.world.setBounds(0, 0, newWidth, newHeight);
+			const newSz = this.registry.get('safeZone') as SafeZone | undefined;
+			if (newSz) {
+				this.waveManager.updateSpawnBounds(newSz.width, newSz.x);
+			}
+		};
+		this.registry.events.on('changedata-worldWidth', worldWidthListener);
+		this.registryListeners.push({ event: 'changedata-worldWidth', fn: worldWidthListener });
 
 		this.eventBus.emit('scene-change', 'game');
 	}
@@ -462,6 +485,7 @@ export class GameScene extends Phaser.Scene {
 
 	private startBossEncounter(bossId: string): void {
 		const { width, height } = this.scale;
+		const sz = this.registry.get('safeZone') as SafeZone | undefined;
 
 		this.hud.setWaveTextBoss();
 
@@ -471,6 +495,7 @@ export class GameScene extends Phaser.Scene {
 			enemies: this.enemies,
 			screenWidth: width,
 			screenHeight: height,
+			safeZone: sz,
 			onBossDefeated: () => {
 				// Boss drops — guaranteed per content data
 				const bossObj = this.bossManager?.bossGameObject;
