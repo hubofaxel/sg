@@ -1,4 +1,16 @@
 import type * as Phaser from 'phaser';
+import { computeScaleFactor, HUD_TEXT_MIN_PX, scaleFontSize, scaleMargin } from './HudScale';
+
+// Base font sizes (at reference 800×600)
+const BASE_HUD_SIZE = 16;
+const BASE_WAVE_SIZE = 14;
+const BASE_BANNER_SIZE = 22;
+const BASE_TITLE_SIZE = 40;
+const BASE_SCORE_SIZE = 24;
+const BASE_CREDITS_SIZE = 18;
+const BASE_PROMPT_SIZE = 16;
+const BASE_BONUS_SIZE = 16;
+const BASE_MARGIN = 10;
 
 interface HudManagerConfig {
 	scene: Phaser.Scene;
@@ -11,33 +23,48 @@ export class HudManager {
 	private livesText: Phaser.GameObjects.Text;
 	private currencyText: Phaser.GameObjects.Text;
 	private waveText: Phaser.GameObjects.Text;
+	private scaleFactor = 1;
+	private resizeListener: (() => void) | null = null;
 
 	constructor(config: HudManagerConfig) {
 		this.scene = config.scene;
 		const { width } = config.scene.scale;
 
-		this.scoreText = config.scene.add.text(10, 10, 'SCORE: 0', {
-			fontSize: '16px',
+		this.scaleFactor = computeScaleFactor(
+			config.scene.scale.displaySize.width,
+			config.scene.scale.displaySize.height,
+		);
+
+		const m = scaleMargin(BASE_MARGIN, this.scaleFactor);
+		const hudSize = this.hudFontSize(BASE_HUD_SIZE);
+		const waveSize = this.hudFontSize(BASE_WAVE_SIZE);
+
+		this.scoreText = config.scene.add.text(m, m, 'SCORE: 0', {
+			fontSize: `${hudSize}px`,
 			fontFamily: 'monospace',
 			color: '#ffffff',
 		});
-		this.livesText = config.scene.add.text(10, 30, `LIVES: ${config.initialLives}`, {
-			fontSize: '16px',
+		this.livesText = config.scene.add.text(m, m + hudSize + 4, `LIVES: ${config.initialLives}`, {
+			fontSize: `${hudSize}px`,
 			fontFamily: 'monospace',
 			color: '#ff6666',
 		});
-		this.currencyText = config.scene.add.text(10, 50, 'CREDITS: 0', {
-			fontSize: '16px',
+		this.currencyText = config.scene.add.text(m, m + (hudSize + 4) * 2, 'CREDITS: 0', {
+			fontSize: `${hudSize}px`,
 			fontFamily: 'monospace',
 			color: '#ffdd00',
 		});
 		this.waveText = config.scene.add
-			.text(width / 2, 12, '', {
-				fontSize: '14px',
+			.text(width / 2, m + 2, '', {
+				fontSize: `${waveSize}px`,
 				fontFamily: 'monospace',
 				color: '#888888',
 			})
 			.setOrigin(0.5, 0);
+
+		// Recompute on resize
+		this.resizeListener = () => this.rescaleHud();
+		this.scene.scale.on('resize', this.resizeListener);
 	}
 
 	updateScore(score: number): void {
@@ -67,9 +94,10 @@ export class HudManager {
 
 	showBanner(text: string): void {
 		const { width, height } = this.scene.scale;
+		const fontSize = scaleFontSize(BASE_BANNER_SIZE, this.scaleFactor);
 		const banner = this.scene.add
 			.text(width / 2, height * 0.2, text, {
-				fontSize: '22px',
+				fontSize: `${fontSize}px`,
 				fontFamily: 'monospace',
 				color: '#ffcc00',
 			})
@@ -88,10 +116,11 @@ export class HudManager {
 
 	showGameOver(score: number, currency: number, onRestart: () => void): void {
 		const { width, height } = this.scene.scale;
+		const f = this.scaleFactor;
 
 		this.scene.add
 			.text(width / 2, height * 0.35, 'GAME OVER', {
-				fontSize: '40px',
+				fontSize: `${scaleFontSize(BASE_TITLE_SIZE, f)}px`,
 				fontFamily: 'monospace',
 				color: '#ff4444',
 			})
@@ -99,7 +128,7 @@ export class HudManager {
 
 		this.scene.add
 			.text(width / 2, height * 0.45, `SCORE: ${score}`, {
-				fontSize: '24px',
+				fontSize: `${scaleFontSize(BASE_SCORE_SIZE, f)}px`,
 				fontFamily: 'monospace',
 				color: '#ffffff',
 			})
@@ -107,7 +136,7 @@ export class HudManager {
 
 		this.scene.add
 			.text(width / 2, height * 0.52, `CREDITS: ${currency}`, {
-				fontSize: '18px',
+				fontSize: `${scaleFontSize(BASE_CREDITS_SIZE, f)}px`,
 				fontFamily: 'monospace',
 				color: '#ffdd00',
 			})
@@ -115,7 +144,7 @@ export class HudManager {
 
 		const restart = this.scene.add
 			.text(width / 2, height * 0.6, 'PRESS SPACE OR CLICK TO RESTART', {
-				fontSize: '16px',
+				fontSize: `${this.hudFontSize(BASE_PROMPT_SIZE)}px`,
 				fontFamily: 'monospace',
 				color: '#aaaaaa',
 			})
@@ -143,10 +172,11 @@ export class HudManager {
 		onContinue: () => void,
 	): void {
 		const { width, height } = this.scene.scale;
+		const f = this.scaleFactor;
 
 		this.scene.add
 			.text(width / 2, height * 0.28, 'STAGE CLEAR!', {
-				fontSize: '40px',
+				fontSize: `${scaleFontSize(BASE_TITLE_SIZE, f)}px`,
 				fontFamily: 'monospace',
 				color: '#00ff88',
 			})
@@ -154,7 +184,7 @@ export class HudManager {
 
 		this.scene.add
 			.text(width / 2, height * 0.4, `SCORE: ${score}`, {
-				fontSize: '24px',
+				fontSize: `${scaleFontSize(BASE_SCORE_SIZE, f)}px`,
 				fontFamily: 'monospace',
 				color: '#ffffff',
 			})
@@ -162,7 +192,7 @@ export class HudManager {
 
 		this.scene.add
 			.text(width / 2, height * 0.48, `CREDITS: ${currency}`, {
-				fontSize: '18px',
+				fontSize: `${scaleFontSize(BASE_CREDITS_SIZE, f)}px`,
 				fontFamily: 'monospace',
 				color: '#ffdd00',
 			})
@@ -171,7 +201,7 @@ export class HudManager {
 		if (reward > 0) {
 			this.scene.add
 				.text(width / 2, height * 0.54, `BONUS: +${reward} CREDITS`, {
-					fontSize: '16px',
+					fontSize: `${this.hudFontSize(BASE_BONUS_SIZE)}px`,
 					fontFamily: 'monospace',
 					color: '#88ff88',
 				})
@@ -184,7 +214,7 @@ export class HudManager {
 
 		const cont = this.scene.add
 			.text(width / 2, height * 0.63, promptText, {
-				fontSize: '16px',
+				fontSize: `${this.hudFontSize(BASE_PROMPT_SIZE)}px`,
 				fontFamily: 'monospace',
 				color: '#aaaaaa',
 			})
@@ -202,5 +232,41 @@ export class HudManager {
 			this.scene.input.keyboard?.once('keydown-SPACE', onContinue);
 			this.scene.input.once('pointerdown', onContinue);
 		});
+	}
+
+	destroy(): void {
+		if (this.resizeListener) {
+			this.scene.scale.off('resize', this.resizeListener);
+			this.resizeListener = null;
+		}
+	}
+
+	/** Compute HUD font size with pixel floor */
+	private hudFontSize(baseSize: number): number {
+		return scaleFontSize(baseSize, this.scaleFactor, HUD_TEXT_MIN_PX);
+	}
+
+	private rescaleHud(): void {
+		this.scaleFactor = computeScaleFactor(
+			this.scene.scale.displaySize.width,
+			this.scene.scale.displaySize.height,
+		);
+
+		const m = scaleMargin(BASE_MARGIN, this.scaleFactor);
+		const hudSize = this.hudFontSize(BASE_HUD_SIZE);
+		const waveSize = this.hudFontSize(BASE_WAVE_SIZE);
+		const { width } = this.scene.scale;
+
+		this.scoreText.setFontSize(hudSize);
+		this.scoreText.setPosition(m, m);
+
+		this.livesText.setFontSize(hudSize);
+		this.livesText.setPosition(m, m + hudSize + 4);
+
+		this.currencyText.setFontSize(hudSize);
+		this.currencyText.setPosition(m, m + (hudSize + 4) * 2);
+
+		this.waveText.setFontSize(waveSize);
+		this.waveText.setPosition(width / 2, m + 2);
 	}
 }

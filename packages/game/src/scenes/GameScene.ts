@@ -536,6 +536,7 @@ export class GameScene extends Phaser.Scene {
 	private cleanupScene(): void {
 		this.inputAdapter.destroy();
 		this.debugOverlay.destroy();
+		this.hud.destroy();
 		this.playerBulletPool.destroy();
 		this.enemyBulletPool.destroy();
 		this.dropManager.destroy();

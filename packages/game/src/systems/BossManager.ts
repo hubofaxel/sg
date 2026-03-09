@@ -2,6 +2,7 @@ import { bosses, v1Enemies } from '@sg/content';
 import type { Boss, BossPhase, Enemy } from '@sg/contracts';
 import * as Phaser from 'phaser';
 import { screenShake } from './CombatFeedback';
+import { BOSS_LABEL_MIN_PX, computeScaleFactor, scaleFontSize } from './HudScale';
 import { applyBossPhaseFrame } from './SpriteFrames';
 
 /** Lookup tables */
@@ -105,6 +106,10 @@ export class BossManager {
 
 	private showWarningBanner(onComplete: () => void): void {
 		const { scene, screenWidth, screenHeight } = this;
+		const factor = computeScaleFactor(
+			scene.scale.displaySize.width,
+			scene.scale.displaySize.height,
+		);
 
 		// Play boss alarm if available
 		if (scene.cache.audio.exists('sfx-boss-alarm')) {
@@ -114,7 +119,7 @@ export class BossManager {
 		// Flash warning text
 		const warning = scene.add
 			.text(screenWidth / 2, screenHeight * 0.35, 'WARNING', {
-				fontSize: '36px',
+				fontSize: `${scaleFontSize(36, factor)}px`,
 				fontFamily: 'monospace',
 				color: '#ff0000',
 			})
@@ -124,7 +129,7 @@ export class BossManager {
 
 		const bossName = scene.add
 			.text(screenWidth / 2, screenHeight * 0.45, this.boss.name.toUpperCase(), {
-				fontSize: '20px',
+				fontSize: `${scaleFontSize(20, factor)}px`,
 				fontFamily: 'monospace',
 				color: '#ffcc00',
 			})
@@ -267,6 +272,10 @@ export class BossManager {
 		const barX = this.screenWidth / 2;
 		const barY = 50;
 		const barH = 8;
+		const factor = computeScaleFactor(
+			this.scene.scale.displaySize.width,
+			this.scene.scale.displaySize.height,
+		);
 
 		this.healthBarBg = this.scene.add
 			.rectangle(barX, barY, this.healthBarWidth + 4, barH + 4, 0x333333)
@@ -278,7 +287,7 @@ export class BossManager {
 
 		this.bossNameText = this.scene.add
 			.text(barX, barY - 14, this.boss.name, {
-				fontSize: '12px',
+				fontSize: `${scaleFontSize(12, factor, BOSS_LABEL_MIN_PX)}px`,
 				fontFamily: 'monospace',
 				color: '#ffcc00',
 			})

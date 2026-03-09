@@ -1,5 +1,6 @@
 import type { CombatFeedback } from '@sg/contracts';
 import type * as Phaser from 'phaser';
+import { computeScaleFactor } from './HudScale';
 
 /**
  * CombatFeedback — visual juice for hits, deaths, and spawns.
@@ -52,10 +53,32 @@ export function flashOnHit(target: Phaser.GameObjects.Sprite | Phaser.GameObject
 	}
 }
 
-/** Shake the camera briefly — uses target's feedback data for intensity */
+/** Check if user prefers reduced motion (cached per page load) */
+let prefersReducedMotion: boolean | null = null;
+function checkReducedMotion(): boolean {
+	if (prefersReducedMotion === null) {
+		prefersReducedMotion =
+			typeof window !== 'undefined' &&
+			window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+	}
+	return prefersReducedMotion;
+}
+
+/** Reset cached reduced motion preference (for testing) */
+export function resetReducedMotionCache(): void {
+	prefersReducedMotion = null;
+}
+
+/** Shake the camera briefly — scales by inverse of display factor for physical consistency */
 export function screenShake(scene: Phaser.Scene, intensity = 0.005, durationMs = 100): void {
 	if (intensity <= 0 || durationMs <= 0) return;
-	scene.cameras.main.shake(durationMs, intensity);
+	if (checkReducedMotion()) return;
+
+	const factor = computeScaleFactor(scene.scale.displaySize.width, scene.scale.displaySize.height);
+	// Smaller screen → amplify so shake is physically perceptible
+	// Larger screen → dampen so it's not excessive
+	const scaledIntensity = intensity / factor;
+	scene.cameras.main.shake(durationMs, scaledIntensity);
 }
 
 /** Brief hit-stop: pause physics for a few frames */
