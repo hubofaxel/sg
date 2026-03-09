@@ -2,6 +2,10 @@
 
 Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorepo.
 
+## Planning
+
+Current priorities, backlog, and project status: `docs/DELIVERY_PLAN.md`
+
 ## Boundaries
 
 - SvelteKit owns the app (routes, menus, settings, persistence UI)
