@@ -20,10 +20,9 @@ let gameHandle: GameHandle | null = $state(null);
 <style>
 	.play-page {
 		position: fixed;
-		top: 0;
-		bottom: 0;
-		left: env(safe-area-inset-left, 0px);
-		right: env(safe-area-inset-right, 0px);
+		inset: 0;
+		margin: 0;
+		padding: 0;
 		overflow: hidden;
 		background: #000;
 	}
