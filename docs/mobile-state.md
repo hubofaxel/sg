@@ -1,8 +1,8 @@
 # Mobile Adaptation — Orchestration State
 
 ## Current phase: B (Physically usable)
-## Current PR: PR-4
-## Branch: feat/mobile-hud-scaling
+## Current PR: PR-5
+## Branch: feat/mobile-overlay-responsive
 
 ## Completed
 
@@ -17,12 +17,15 @@
 | PR-2 | adapter-tests | test-runner | ✅ | 23 adapter tests |
 | PR-2 | desktop-parity-check | operator | ✅ | Manual gameplay verification |
 | PR-2 | land | pr-shipper | ✅ | Merged to main |
-| PR-3 | runtime-settings-bridge | phaser-integrator | ✅ | updateSettings(), registry changedata, AudioManager subscriptions |
-| PR-3 | settings-store-bridge | svelte-shell | ✅ | $effect wiring to GameHandle |
-| PR-3 | cross-tab-sync | svelte-shell | ✅ | storage event listener syncs settings across tabs |
-| PR-3 | bridge-verification | operator | ✅ | Runtime update verified — cross-tab volume propagation works |
+| PR-3 | runtime-settings-bridge | phaser-integrator | ✅ | updateSettings(), registry changedata |
+| PR-3 | settings-store-bridge | svelte-shell | ✅ | $effect wiring |
+| PR-3 | cross-tab-sync | svelte-shell | ✅ | storage event listener |
+| PR-3 | bridge-verification | operator | ✅ | Runtime update verified |
 | PR-3 | land | pr-shipper | ✅ | Merged to main at 3a06e46 |
 | hotfix | visibility-pause fix | diagnostician + phaser-integrator | ✅ | Game-level PAUSE event, removed double-pause — merged at 8cbe442 |
+| PR-4 | hud-scaling | phaser-integrator | ✅ | Clamped [0.6,1.5], pixel floors, reduced motion |
+| PR-4 | scaling-tests | test-runner | ✅ | 19 new tests (345 total) |
+| PR-4 | land | pr-shipper | ✅ | Merged to main at c0fa010 |
 
 ## In Progress
 
@@ -66,8 +69,16 @@ None — all seven resolved.
 
 | Issue | Severity | Discovered | Blocking? | Tracking |
 |---|---|---|---|---|
-| Visibility-change pause unsteadiness | P0 | PR-3 | ✅ Fixed | Root cause: game-level vs scene-level PAUSE event + double-pause race. Fixed at 8cbe442 |
-| UX entry flow (two intro screens) | P2 | PR-4 triage | No | SvelteKit home + Phaser MenuScene overlap — future unification task |
+| Visibility-change pause unsteadiness | P0 | PR-3 | ✅ Fixed | Fixed at 8cbe442 — game-level PAUSE event + removed double-pause |
+| UX entry flow (two intro screens) | P2 | PR-4 triage | No | Future unification task |
+| Frame-rate independence unverified | TBD | PR-4 checkpoint | Diagnostician dispatched | Parallel check — likely safe (fixedStep: true) |
+
+## Phase C Notes
+
+- PWA install: Android Chrome (beforeinstallprompt) vs Safari (Home Screen guidance) vs iOS Chrome (no install prompt)
+- Offline: validate in Safari installed mode (7-day eviction for non-installed)
+- Performance: profile at 60Hz and 120Hz, rAF budget 8.3ms at 120Hz
+- Debugging: Chrome DevTools for Android, Safari Web Inspector for iOS
 
 ## Rollback Log
 
