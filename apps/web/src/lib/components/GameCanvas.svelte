@@ -3,6 +3,18 @@ import type { GameHandle } from '@sg/game';
 import { onDestroy, onMount } from 'svelte';
 import { settings } from '../stores/settings.svelte';
 
+// Push runtime-updatable settings to the game when they change
+$effect(() => {
+	if (!handle) return;
+	const s = settings.value;
+	handle.updateSettings({
+		masterVolume: s.masterVolume,
+		sfxVolume: s.sfxVolume,
+		musicVolume: s.musicVolume,
+		showFps: s.showFps,
+	});
+});
+
 let container: HTMLDivElement;
 let handle: GameHandle | null = $state(null);
 
