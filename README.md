@@ -64,7 +64,7 @@ No Phaser types leak outside `packages/game`. All content validates against `@sg
 - **Conventional commits**: `type(scope): description`
 - **Trunk-based development**: short-lived feature branches, atomic PRs
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the phase-by-phase development plan.
+See [docs/README.md](docs/README.md) for the current documentation index and active planning docs.
 
 ## License
 
