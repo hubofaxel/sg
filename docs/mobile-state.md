@@ -1,8 +1,8 @@
 # Mobile Adaptation — Orchestration State
 
-## Current phase: A (Input-valid) → transitioning to B (Physically usable)
-## Current PR: PR-3 (Runtime Settings Bridge)
-## Branch: feat/mobile-settings-bridge
+## Current phase: B (Physically usable)
+## Current PR: PR-4
+## Branch: feat/mobile-hud-scaling
 
 ## Completed
 
@@ -11,16 +11,18 @@
 | readiness | Pre-implementation fixes | planning-agent | ✅ | All 10 fixes applied |
 | PR-1 | shell-foundation | svelte-shell | ✅ | viewport-fit, dvh, safe area, touch-action, rotate overlay |
 | PR-1 | e2e-verification | test-runner | ✅ | 6 new tests |
-| PR-1 | land | pr-shipper | ✅ | FF-merged to main at 6e46104 |
+| PR-1 | land | pr-shipper | ✅ | Merged to main |
 | PR-2 | schema-extension | schema-validator | ✅ | ControlScheme + 'touch', 15 tests |
 | PR-2 | input-intent-system | phaser-integrator | ✅ | InputIntent, KeyboardInput, TouchInput, GameScene refactor |
-| PR-2 | adapter-tests | test-runner | ✅ | 23 adapter tests (11 keyboard + 12 touch) |
-| PR-2 | desktop-parity-check | operator | ✅ | Manual gameplay verification — confirmed identical |
-| PR-2 | land | pr-shipper | ✅ | FF-merged to main at d523c12 |
-| PR-3 | runtime-settings-bridge | phaser-integrator | ✅ | updateSettings(), AudioManager + DebugOverlay subscriptions |
-| PR-3 | settings-store-bridge | svelte-shell | ✅ | $effect pushes volume + showFps to game |
+| PR-2 | adapter-tests | test-runner | ✅ | 23 adapter tests |
+| PR-2 | desktop-parity-check | operator | ✅ | Manual gameplay verification |
+| PR-2 | land | pr-shipper | ✅ | Merged to main |
+| PR-3 | runtime-settings-bridge | phaser-integrator | ✅ | updateSettings(), registry changedata, AudioManager subscriptions |
+| PR-3 | settings-store-bridge | svelte-shell | ✅ | $effect wiring to GameHandle |
 | PR-3 | cross-tab-sync | svelte-shell | ✅ | storage event listener syncs settings across tabs |
-| PR-3 | manual-check | operator | ✅ | Volume changes propagate cross-tab, game plays correctly |
+| PR-3 | bridge-verification | operator | ✅ | Runtime update verified — cross-tab volume propagation works |
+| PR-3 | land | pr-shipper | ✅ | Merged to main at 3a06e46 |
+| hotfix | visibility-pause fix | diagnostician + phaser-integrator | ✅ | Game-level PAUSE event, removed double-pause — merged at 8cbe442 |
 
 ## In Progress
 
@@ -60,11 +62,12 @@ Adapter selection: controlScheme 'touch' → force TouchInput; touchEnabled !== 
 
 None — all seven resolved.
 
-## Known Issues (Deferred)
+## Known Issues
 
-| Issue | Observed | Notes |
-|---|---|---|
-| Visibility-change pause feels unsteady | PR-3 manual check | game.pause()/resume() via visibilitychange may need per-platform investigation — audio context, WebGL context, Phaser loop state. Not a PR-3 regression. |
+| Issue | Severity | Discovered | Blocking? | Tracking |
+|---|---|---|---|---|
+| Visibility-change pause unsteadiness | P0 | PR-3 | ✅ Fixed | Root cause: game-level vs scene-level PAUSE event + double-pause race. Fixed at 8cbe442 |
+| UX entry flow (two intro screens) | P2 | PR-4 triage | No | SvelteKit home + Phaser MenuScene overlap — future unification task |
 
 ## Rollback Log
 
