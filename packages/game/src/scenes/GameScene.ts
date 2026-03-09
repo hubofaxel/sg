@@ -255,6 +255,8 @@ export class GameScene extends Phaser.Scene {
 			if (newSz) {
 				this.waveManager.updateSpawnBounds(newSz.width, newSz.x);
 			}
+			// Update background to fill new world dimensions
+			this.setBackground(newWidth, newHeight);
 		};
 		this.registry.events.on('changedata-worldWidth', worldWidthListener);
 		this.registryListeners.push({ event: 'changedata-worldWidth', fn: worldWidthListener });
@@ -614,6 +616,8 @@ export class GameScene extends Phaser.Scene {
 		if (this.textures.exists(bgKey)) {
 			if (this.bgImage) {
 				this.bgImage.setTexture(bgKey);
+				this.bgImage.setPosition(width / 2, height / 2);
+				this.bgImage.setDisplaySize(width, height);
 			} else {
 				this.bgImage = this.add.image(width / 2, height / 2, bgKey);
 				this.bgImage.setDisplaySize(width, height);
