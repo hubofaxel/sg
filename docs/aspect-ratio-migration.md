@@ -1,8 +1,8 @@
 # Aspect Ratio Migration — Foundation Plan
 
-Replaces the fixed 4:3 world assumption with an adaptive aspect ratio system. This is foundational work — all five shipped mobile PRs remain valid but the scaling model changes underneath them.
+**Status: EXECUTED. Shipped as PR-7 on branch feat/adaptive-aspect-ratio, merged to main.**
 
-**Status:** This work supersedes the "non-goal" statement in mobile-adaptation.md §1 ("No adaptive gameplay world per device class"). That decision was wrong for mobile. This plan corrects it.
+Replaces the fixed 4:3 world assumption with an adaptive aspect ratio system. This is foundational work — all five shipped mobile PRs remain valid but the scaling model changes underneath them.
 
 ---
 

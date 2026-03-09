@@ -31,7 +31,7 @@ Mobile adaptation requires separating three distinct concepts that must not be c
 | **Display size** | Phaser Scale Manager | The physical pixel dimensions of the rendered canvas. Phaser's `FIT` mode automatically scales the 800x600 world to fit the parent container while preserving 4:3 aspect ratio. Accessible via `scale.displaySize`, `scale.parentSize`, `scale.getViewPort()`. |
 | **Shell size** | SvelteKit / CSS | The browser viewport and DOM layout. Owns safe areas, orientation overlays, fullscreen parent container, and any DOM-based UI chrome. |
 
-**Key principle:** The Svelte shell sizes the parent container. Phaser fits the fixed world into that container. HUD and input systems adapt using Phaser's display size and viewport APIs — not by changing the world size. `setGameSize()` is for changing the underlying game world, which we do not do. Container measurement is for the shell and overlay math, not for Phaser config.
+**Key principle:** The Svelte shell sizes the parent container. Phaser fills it via dynamic world sizing — `computeWorldSize()` computes width from container aspect ratio (800-1200, height fixed 600), and `setGameSize()` is called on resize. A centered SafeZone (800x600) defines gameplay density. Margins beyond the safe zone are touch control zones on wide screens. HUD and input systems use `gameSize` (expanded canvas dimensions) for positioning.
 
 ---
 

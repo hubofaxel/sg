@@ -1,6 +1,7 @@
 # Mobile Adaptation — Orchestration State
 
-## Current phase: B — COMPLETE
+## Current phase: B + V2 — COMPLETE
+## Current work: PR-8 (doc alignment and overlay verification)
 ## Next: Phase C (PWA polish) or ship
 
 ## Completed
@@ -30,6 +31,15 @@
 | PR-5 | e2e-tests | test-runner | ✅ | 7 new e2e tests (21 total) |
 | PR-5 | land | pr-shipper | ✅ | Merged to main at 2bb7444 |
 | hotfix | touch-input + canvas bg | operator | ✅ | Auto-detect touch on default 'wasd', dark background — merged at 6003c5a |
+| PR-7 | safe-zone-and-world-sizing | phaser-integrator | ✅ | SafeZone type, computeWorldSize, dynamic world, registry |
+| PR-7 | player-bounds-physics | phaser-integrator | ✅ | Expanded canvas bounds, physics world resize |
+| PR-7 | spawn-migration | phaser-integrator | ✅ | Safe zone spawn coordinates via WaveManager spawnOffsetX |
+| PR-7 | hud-boss-anchoring | phaser-integrator | ✅ | gameSize anchoring, height-only scale factor, boss safe zone |
+| PR-7 | background-fill | phaser-integrator | ✅ | Full canvas coverage, resize update |
+| PR-7 | remaining-systems | phaser-integrator | ✅ | DebugOverlay, TouchInput DOM events, RotateOverlay touch gate |
+| PR-7 | relative-touch-input | phaser-integrator | ✅ | RelativeTouchInput 1:1 tracking, isPositionDelta, TouchStyleSchema |
+| PR-7 | tests | test-runner | ✅ | 14 SafeZone + 12 RelativeTouchInput + 13 TouchInput + e2e updates |
+| PR-7 | land | operator | ✅ | Merged to main, 10 commits |
 
 ## Phase B Acceptance Criteria
 
@@ -61,13 +71,15 @@ Verified clean by diagnostician. All systems safe:
 
 ## Type Contracts
 
-GameMountOptions.settings: masterVolume, sfxVolume, musicVolume, showFps, touchControlsEnabled, controlScheme
+GameMountOptions.settings: masterVolume, sfxVolume, musicVolume, showFps, touchControlsEnabled, controlScheme, touchStyle
+
+GameMountOptions.aspectRatio: { minWidth?, maxWidth? } (optional, defaults 800-1200)
 
 RuntimeSettings (updateSettings): masterVolume (number), sfxVolume (number), musicVolume (number), showFps (boolean)
 
-Registry keys: masterVolume, sfxVolume, musicVolume, showFps, touchControlsEnabled, controlScheme, audioVolumes (compat), eventBus
+Registry keys: masterVolume, sfxVolume, musicVolume, showFps, touchControlsEnabled, controlScheme, touchStyle, audioVolumes (compat), eventBus, worldWidth, worldHeight, safeZone
 
-Adapter selection: controlScheme 'arrows' → force KeyboardInput; controlScheme 'touch' → force TouchInput; default/wasd + touch capability → TouchInput; else → KeyboardInput
+Adapter selection: controlScheme 'arrows' → KeyboardInput; controlScheme 'touch' → touchStyle 'joystick' ? TouchInput : RelativeTouchInput; default/wasd + touch capability → touchStyle 'joystick' ? TouchInput : RelativeTouchInput; else → KeyboardInput
 
 ## Decisions Resolved
 

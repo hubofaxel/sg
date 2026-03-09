@@ -109,27 +109,14 @@ Pause is shell-authoritative. The game never self-pauses. All triggers (visibili
 
 ## Orientation Handling
 
-Shell detects portrait orientation and shows a rotate overlay:
+Shell detects portrait orientation and shows a rotate overlay. `RotateOverlay.svelte` only activates on touch-capable devices (`'ontouchstart' in window || navigator.maxTouchPoints > 0`). Desktop browsers in narrow windows do not trigger the overlay.
 
-```svelte
-<script>
-  let isPortrait = $state(false);
+The game-side safety net: GameScene adapter cleared on pause. The shell overlay is the primary enforcement via `RotateOverlay`.
 
-  function checkOrientation() {
-    isPortrait = window.innerWidth < window.innerHeight;
-    if (isPortrait) handle?.pause();
-  }
+## Dynamic World Sizing and Margins
 
-  $effect(() => {
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
-    return () => window.removeEventListener('resize', checkOrientation);
-  });
-</script>
+The game uses dynamic world sizing — width varies 800-1200 based on container aspect ratio, height fixed at 600. A centered SafeZone (800x600) defines gameplay density. The margins between the safe zone and world edges serve as touch control surfaces on wide screens.
 
-{#if isPortrait}
-  <RotateOverlay />
-{/if}
-```
+Margins are inside the Phaser canvas, not DOM elements. No CSS gutters or three-panel flex layouts are used.
 
-The game-side safety net: GameScene subscribes to `Phaser.Scale.Events.ORIENTATION_CHANGE` and calls `adapter.clear()` on portrait. This is a fallback — the shell overlay is the primary enforcement.
+`GameOverlay.svelte` positions pause/mute buttons in the top-right of the canvas. On wide screens this falls in the right margin area. On 4:3 where margins are zero, buttons sit in the canvas corner. The overlay uses `pointer-events: none` on its container with `pointer-events: auto` on buttons only, so it doesn't interfere with canvas touch input.

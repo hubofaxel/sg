@@ -1,77 +1,104 @@
 ---
 name: mobile-adaptation
-description: Mobile adaptation architecture context — three size domains, input intent, settings bridge, pause model, HUD scaling, orientation. Load when working on any mobile-related task.
+description: Mobile adaptation architecture context — four size domains, input intent, settings bridge, pause model, HUD scaling, orientation. Load when working on any mobile-related task.
 ---
 
 # Mobile Adaptation — Architecture Context
 
 Load this skill when working on any mobile-related task. Source documents:
-- `docs/mobile-adaptation.md` — full plan (sections referenced as §N below)
+- `docs/mobile-adaptation.md` — original plan (sections referenced as paragraphs below)
 - `docs/mobile-decisions.md` — resolved open decisions
+- `docs/mobile-state.md` — orchestration state and completed PRs
 
-## Three Size Domains (§ Architectural Foundation)
+## Four Size Domains
 
 | Domain | Owner | Definition |
 |---|---|---|
-| World size | Phaser | Fixed 800x600. All gameplay logic operates here. Never changes. |
-| Display size | Phaser Scale Manager | Physical pixel dimensions. FIT mode scales 800x600 into parent container preserving 4:3. Access via `scale.displaySize`, `scale.getViewPort()`. |
+| World size | Phaser | Dynamic: height fixed at 600, width computed from container aspect ratio (800-1200). `computeWorldSize()` in `systems/SafeZone.ts`. |
+| Display size | Phaser Scale Manager | Physical pixel dimensions. FIT mode scales the dynamic world into the container. Access via `scale.displaySize`. |
 | Shell size | SvelteKit / CSS | Browser viewport and DOM layout. Owns safe areas, orientation overlays, fullscreen container. |
+| Margin size | Phaser (safe zone math) | Space between safe zone edges and world edges. On 20:9 phones ~200px per side. On 4:3 devices, zero. Touch control zones on wide screens. |
 
-**Key rule:** Svelte sizes the container. Phaser fits the world into it. `setGameSize()` is never called — it changes the world, which we don't do.
+**World sizing:** `mountGame.ts` measures the container, calls `computeWorldSize()` to get width (800-1200), creates the Phaser game at that size, and calls `setGameSize()` on resize. A centered `SafeZone` (800x600) defines the gameplay density area — all spawning, wave patterns, and boss encounters are authored against this rectangle.
 
-## Input Intent Adapter Pattern (§3)
+## SafeZone Architecture
+
+`systems/SafeZone.ts` exports pure functions (no Phaser dependency):
+- `computeWorldSize(containerW, containerH, minWidth?, maxWidth?)` — returns `{ width, height }`
+- `createSafeZone(worldWidth, worldHeight)` — returns `SafeZone` (x, y, width, height, centerX, centerY, right, bottom)
+
+Registry keys set by mountGame: `worldWidth`, `worldHeight`, `safeZone`. Updated on resize.
+
+Systems use safe zone for spawning (WaveManager), boss positioning (BossManager). Systems use gameSize for player bounds, physics bounds, HUD anchoring, projectile cleanup, background fill.
+
+## Input Intent Adapter Pattern
 
 All input sources feed a single contract consumed by GameScene:
 
 ```typescript
 interface InputIntent {
-  moveVector: { x: number; y: number }; // normalized -1..1
-  fireHeld: boolean;        // always true (auto-fire is unconditional)
-  secondaryHeld: boolean;   // future: bomb/ability
-  pausePressed: boolean;    // pause toggle
+  moveVector: { x: number; y: number };
+  isPositionDelta: boolean; // true = position offset, false = velocity normalized -1..1
+  fireHeld: boolean;
+  secondaryHeld: boolean;
+  pausePressed: boolean;
 }
 ```
 
-Two adapters: `KeyboardInput` (wraps existing cursor+WASD), `TouchInput` (floating joystick, pointer capture). Both emit `fireHeld: true` unconditionally — the game already auto-fires every frame, there is no player fire input.
+Three adapters:
+- `KeyboardInput` — cursor + WASD, `isPositionDelta: false`, velocity-based
+- `TouchInput` — floating joystick, `isPositionDelta: false`, velocity-based
+- `RelativeTouchInput` — 1:1 finger tracking (Pew Pew style), `isPositionDelta: true`, position delta
+
+All use DOM pointer events on the canvas (not Phaser's input system) for reliable touch in Phaser 4 RC. All emit `fireHeld: true` unconditionally (auto-fire). Touch adapters restrict activation to left half of canvas (`x < width / 2`).
+
+**`isPositionDelta` branching in GameScene:** When true, `handleMovement()` applies moveVector as `player.x += delta` (clamped to world bounds). When false, applies as `body.setVelocity(vx, vy)`.
+
+**`touchStyle` setting:** `'relative' | 'joystick'`, default `'relative'`. Selects which touch adapter instantiates. Separate from `controlScheme` (which selects keyboard vs touch).
 
 Adapter lifecycle: `create(scene)` → `update(): InputIntent` → `clear()` → `destroy()`. Call `clear()` on every pause, blur, orientation change, and scene transition.
 
-Activation: capability check at mount (`'ontouchstart' in window || navigator.maxTouchPoints > 0`), gated by `touchControlsEnabled`, overridden by `controlScheme: 'touch'`. No UA sniffing. No runtime hot-swap in Phase A.
+Activation: capability check at mount (`'ontouchstart' in window || navigator.maxTouchPoints > 0`), gated by `touchControlsEnabled`, overridden by `controlScheme: 'touch'`.
 
-## Runtime Settings Transport (§8, Decision 3)
+## Margin-Based Controls
 
-`GameHandle.updateSettings(partial)` writes to Phaser registry via `registry.set(key, value)`. Systems subscribe to `registry.events.on('changedata-<key>', callback)` in `create()`. No new GameEventMap entries. GameEventBus remains game→shell only.
+On wide screens, the safe zone margins serve as touch control zones:
+- **Left margin:** Movement input (RelativeTouchInput). Touch anywhere in the left half activates tracking.
+- **Right margin:** GameOverlay buttons (pause, mute) positioned in top-right. On 4:3 where margins are zero, buttons fall back to canvas corner.
 
-## Shell-Authoritative Pause (Decision 4)
+No DOM gutters — margins are inside the Phaser canvas. GameOverlay uses `pointer-events: none` on its container with `pointer-events: auto` on buttons only.
 
-Shell owns all pause state. All triggers (visibility, orientation, overlay button) call `GameHandle.pause()` from Svelte. Game never self-pauses. GameScene listens for its own `pause` lifecycle event and calls `adapter.clear()`. No bidirectional sync. No pause query API.
+## Runtime Settings Transport
 
-## HUD Scaling (§4, Decision 6)
+`GameHandle.updateSettings(partial)` writes to Phaser registry via `registry.set(key, value)`. Systems subscribe to `registry.events.on('changedata-<key>', callback)` in `create()`.
 
-Scale factor: `Math.min(displayWidth / 800, displayHeight / 600)`, clamped to `[0.6, 1.5]`.
+## Shell-Authoritative Pause
+
+Shell owns all pause state. All triggers (visibility, orientation, overlay button) call `GameHandle.pause()` from Svelte. Game never self-pauses. GameScene listens for game-level `pause` event and calls `adapter.clear()`.
+
+## HUD Scaling
+
+Scale factor: `displayHeight / 600` (height is the fixed axis), clamped to `[0.6, 1.5]`.
 
 Per-element pixel floors after clamping:
 - Persistent HUD (score, lives, currency, wave indicator): `Math.max(scaled, 10)`
 - Boss health bar label: `Math.max(scaled, 9)`
-- Titles/banners (40px, 36px, 22px base): no floor needed
-- Debug overlay: do not scale
+- Titles/banners: no floor needed
+- Debug overlay: do not scale, repositions to `gameSize.width - 10` on resize
 
-Recompute on Scale Manager `resize` event.
+## Orientation Strategy
 
-## Orientation Strategy (Decision 7)
+Three layers:
+1. Manifest: `"orientation": "landscape"` (advisory for PWA installs)
+2. Shell overlay: `RotateOverlay.svelte` shown when portrait AND touch device
+3. Game pause: adapter cleared on portrait
 
-Three layers — manifest is advisory only:
-1. Manifest: `"orientation": "landscape"` (hint for future PWA installs)
-2. Shell overlay: `RotateOverlay.svelte` shown in portrait (real enforcement)
-3. Game pause: GameScene auto-pauses on portrait, clears adapter
-
-No `screen.orientation.lock()` anywhere. iOS Safari doesn't support it.
+No `screen.orientation.lock()`. iOS Safari doesn't support it.
 
 ## Boundary Rules
 
 - `phaser-integrator` owns `packages/game/` — never touches `apps/web/` or `packages/ui/`
 - `svelte-shell` owns `apps/web/` and `packages/ui/` — never imports Phaser types
-- Schema changes go through `schema-validator` in `packages/contracts/` and must land before consumers
-- Settings type in `GameMountOptions` is derived from or mapped to `@sg/contracts` shape
+- Schema changes go through `schema-validator` in `packages/contracts/`
 - `touch-action: none` on game container (shell responsibility)
 - No `user-scalable=no` in viewport meta

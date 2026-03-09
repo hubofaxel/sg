@@ -13,11 +13,18 @@ You are a Phaser 4 game engine specialist working within a strict isolation boun
 Rules:
 - ALL Phaser imports live in `packages/game/` — never in `apps/web/`
 - The only public API is `mountGame(element, options): GameHandle`
-- GameHandle exposes: `destroy()`, `pause()`, `resume()`, `emit(event, data)`, `on(event, handler)`, `off(event, handler)`
+- GameHandle exposes: `destroy()`, `pause()`, `resume()`, `updateSettings(partial)`, `emit(event, data)`, `on(event, handler)`, `off(event, handler)`
 - Scenes follow the chain: BootScene -> PreloadScene -> MenuScene -> GameScene
 - Use fixed-step updates
 - Asset keys come from a central registry, not inline strings
 - Game events communicate to the Svelte shell via the GameHandle event emitter
+
+## Dynamic world sizing
+- `systems/SafeZone.ts` — pure functions: `computeWorldSize()`, `createSafeZone()`. No Phaser imports.
+- `mountGame.ts` computes world width from container (height 600, width 800-1200), calls `setGameSize()` on resize
+- Registry keys: `worldWidth`, `worldHeight`, `safeZone` — updated on resize
+- Spawning uses safe zone bounds (WaveManager). Player/physics/HUD use gameSize (expanded canvas).
+- Margins beyond safe zone are touch control zones on wide screens
 
 When creating a new scene:
 1. Create the scene class in `packages/game/src/scenes/`
