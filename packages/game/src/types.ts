@@ -7,6 +7,11 @@ export interface GameMountOptions {
 	width?: number;
 	height?: number;
 	pixelArt?: boolean;
+	/** Aspect ratio clamp for adaptive world sizing */
+	aspectRatio?: {
+		minWidth?: number;
+		maxWidth?: number;
+	};
 	/** Settings pulled from the Svelte settings store */
 	settings?: {
 		masterVolume?: number;
