@@ -1,8 +1,7 @@
 # Mobile Adaptation — Orchestration State
 
-## Current phase: B (Physically usable)
-## Current PR: PR-5
-## Branch: feat/mobile-overlay-responsive
+## Current phase: B — COMPLETE
+## Next: Phase C (PWA polish) or ship
 
 ## Completed
 
@@ -26,18 +25,39 @@
 | PR-4 | hud-scaling | phaser-integrator | ✅ | Clamped [0.6,1.5], pixel floors, reduced motion |
 | PR-4 | scaling-tests | test-runner | ✅ | 19 new tests (345 total) |
 | PR-4 | land | pr-shipper | ✅ | Merged to main at c0fa010 |
+| PR-5 | game-overlay | svelte-shell | ✅ | Pause/mute DOM overlay, 44px touch targets, safe area, aria |
+| PR-5 | responsive-css | svelte-shell | ✅ | clamp() fonts, min() widths, 44px slider thumbs, reduced-motion |
+| PR-5 | e2e-tests | test-runner | ✅ | 7 new e2e tests (21 total) |
+| PR-5 | land | pr-shipper | ✅ | Merged to main at 2bb7444 |
+| hotfix | touch-input + canvas bg | operator | ✅ | Auto-detect touch on default 'wasd', dark background — merged at 6003c5a |
 
-## In Progress
+## Phase B Acceptance Criteria
 
-| PR | Task | Agent | Status | Blocker |
-|---|---|---|---|---|
-| — | — | — | — | — |
+| Criterion | Delivering PR | Status |
+|---|---|---|
+| All interactive elements meet 44×44pt on iPhone SE | PR-5 | ✅ |
+| Settings changeable at runtime without remount | PR-3 | ✅ |
+| HUD text readable on iPhone SE and iPad | PR-4 | ✅ |
+| Settings page usable on 320px screen | PR-5 | ✅ |
+| `prefers-reduced-motion` reduces shake and transitions | PR-4 + PR-5 | ✅ |
 
-## Blocked
+## Real Device Testing (Pixel)
 
-| PR | Task | Agent | Blocker |
-|---|---|---|---|
-| — | — | — | — |
+| Check | Result | Notes |
+|---|---|---|
+| Rotate overlay | ✅ | Correctly shown in portrait |
+| Touch controls | ❌→✅ | Fixed: auto-detection was blocked by default 'wasd' scheme |
+| Canvas background | ❌→✅ | Fixed: white letterbox → dark background on body + play page |
+| Game rendering position | Observed off-center | 4:3 in 16:9 with FIT mode — expected letterboxing, now dark |
+| Menu start (tap) | ✅ | Press space / tap to start works |
+
+## Frame-Rate Independence
+
+Verified clean by diagnostician. All systems safe:
+- Player/enemy movement: `body.setVelocity()` + `fixedStep: true`
+- Firing cooldowns: wall-clock `time - lastFired`
+- Spawning/timers: `scene.time.delayedCall()`
+- No frame counters, no `setInterval`/`setTimeout` in gameplay
 
 ## Type Contracts
 
@@ -47,7 +67,7 @@ RuntimeSettings (updateSettings): masterVolume (number), sfxVolume (number), mus
 
 Registry keys: masterVolume, sfxVolume, musicVolume, showFps, touchControlsEnabled, controlScheme, audioVolumes (compat), eventBus
 
-Adapter selection: controlScheme 'touch' → force TouchInput; touchEnabled !== false AND device touch AND controlScheme not 'wasd'/'arrows' → TouchInput; else → KeyboardInput
+Adapter selection: controlScheme 'arrows' → force KeyboardInput; controlScheme 'touch' → force TouchInput; default/wasd + touch capability → TouchInput; else → KeyboardInput
 
 ## Decisions Resolved
 
@@ -61,17 +81,15 @@ Adapter selection: controlScheme 'touch' → force TouchInput; touchEnabled !== 
 | 6 | HUD scaling envelope | Clamped [0.6, 1.5] + pixel floors | 2026-03-08 |
 | 7 | Manifest orientation | Preference only, overlay enforces | 2026-03-08 |
 
-## Decisions Pending
-
-None — all seven resolved.
-
 ## Known Issues
 
 | Issue | Severity | Discovered | Blocking? | Tracking |
 |---|---|---|---|---|
-| Visibility-change pause unsteadiness | P0 | PR-3 | ✅ Fixed | Fixed at 8cbe442 — game-level PAUSE event + removed double-pause |
+| Visibility-change pause | P0 | PR-3 | ✅ Fixed | Fixed at 8cbe442 |
 | UX entry flow (two intro screens) | P2 | PR-4 triage | No | Future unification task |
-| Frame-rate independence unverified | TBD | PR-4 checkpoint | Diagnostician dispatched | Parallel check — likely safe (fixedStep: true) |
+| Frame-rate independence | Verified safe | PR-4 checkpoint | ✅ Resolved | fixedStep: true, all velocity-based |
+| Touch input not activating | P0 | Real device test | ✅ Fixed | Fixed at 6003c5a — auto-detect on default 'wasd' |
+| White canvas letterbox | P1 | Real device test | ✅ Fixed | Fixed at 6003c5a — dark body/play-page bg |
 
 ## Phase C Notes
 
