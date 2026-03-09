@@ -2,7 +2,7 @@ import { bosses, v1Enemies } from '@sg/content';
 import type { Boss, BossPhase, Enemy } from '@sg/contracts';
 import * as Phaser from 'phaser';
 import { screenShake } from './CombatFeedback';
-import { BOSS_LABEL_MIN_PX, computeScaleFactor, scaleFontSize } from './HudScale';
+import { BOSS_LABEL_MIN_PX, computeTextScaleFactor, scaleFontSize } from './HudScale';
 import type { SafeZone } from './SafeZone';
 import { applyBossPhaseFrame } from './SpriteFrames';
 
@@ -114,7 +114,7 @@ export class BossManager {
 		// Use gameSize for HUD positioning (screen edges, not safe zone)
 		const screenWidth = scene.scale.width;
 		const screenHeight = scene.scale.height;
-		const factor = computeScaleFactor(
+		const factor = computeTextScaleFactor(
 			scene.scale.displaySize.width,
 			scene.scale.displaySize.height,
 		);
@@ -281,7 +281,7 @@ export class BossManager {
 		const barX = this.scene.scale.width / 2;
 		const barY = 50;
 		const barH = 8;
-		const factor = computeScaleFactor(
+		const factor = computeTextScaleFactor(
 			this.scene.scale.displaySize.width,
 			this.scene.scale.displaySize.height,
 		);

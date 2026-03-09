@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
 	BOSS_LABEL_MIN_PX,
 	computeScaleFactor,
+	computeTextScaleFactor,
 	HUD_TEXT_MIN_PX,
 	scaleFontSize,
 	scaleMargin,
+	TEXT_SCALE_FLOOR,
 } from './HudScale';
 
 describe('computeScaleFactor', () => {
@@ -40,6 +42,21 @@ describe('computeScaleFactor', () => {
 
 	it('clamps to floor at very small displays', () => {
 		expect(computeScaleFactor(400, 200)).toBe(0.6);
+	});
+});
+
+describe('computeTextScaleFactor', () => {
+	it('returns 1.0 at reference size (800×600)', () => {
+		expect(computeTextScaleFactor(800, 600)).toBeCloseTo(1.0);
+	});
+
+	it('floors small phone displays to 1.0', () => {
+		expect(computeTextScaleFactor(960, 432)).toBe(TEXT_SCALE_FLOOR);
+		expect(computeTextScaleFactor(568, 320)).toBe(TEXT_SCALE_FLOOR);
+	});
+
+	it('scales up on larger displays', () => {
+		expect(computeTextScaleFactor(1024, 768)).toBeCloseTo(1.28, 2);
 	});
 });
 

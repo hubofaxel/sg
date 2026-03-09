@@ -1,5 +1,6 @@
 import type * as Phaser from 'phaser';
-import { computeScaleFactor, HUD_TEXT_MIN_PX, scaleFontSize, scaleMargin } from './HudScale';
+import { computeTextScaleFactor, HUD_TEXT_MIN_PX, scaleFontSize, scaleMargin } from './HudScale';
+import type { SafeZone } from './SafeZone';
 
 // Base font sizes (at reference 800×600)
 const BASE_HUD_SIZE = 16;
@@ -25,12 +26,11 @@ export class HudManager {
 	private waveText: Phaser.GameObjects.Text;
 	private scaleFactor = 1;
 	private resizeListener: (() => void) | null = null;
+	private safeZoneListener: ((parent: unknown, value: SafeZone) => void) | null = null;
 
 	constructor(config: HudManagerConfig) {
 		this.scene = config.scene;
-		const { width } = config.scene.scale;
-
-		this.scaleFactor = computeScaleFactor(
+		this.scaleFactor = computeTextScaleFactor(
 			config.scene.scale.displaySize.width,
 			config.scene.scale.displaySize.height,
 		);
@@ -38,24 +38,35 @@ export class HudManager {
 		const m = scaleMargin(BASE_MARGIN, this.scaleFactor);
 		const hudSize = this.hudFontSize(BASE_HUD_SIZE);
 		const waveSize = this.hudFontSize(BASE_WAVE_SIZE);
+		const hudAnchor = this.getHudAnchor(m);
 
-		this.scoreText = config.scene.add.text(m, m, 'SCORE: 0', {
+		this.scoreText = config.scene.add.text(hudAnchor.left, hudAnchor.top, 'SCORE: 0', {
 			fontSize: `${hudSize}px`,
 			fontFamily: 'monospace',
 			color: '#ffffff',
 		});
-		this.livesText = config.scene.add.text(m, m + hudSize + 4, `LIVES: ${config.initialLives}`, {
-			fontSize: `${hudSize}px`,
-			fontFamily: 'monospace',
-			color: '#ff6666',
-		});
-		this.currencyText = config.scene.add.text(m, m + (hudSize + 4) * 2, 'CREDITS: 0', {
-			fontSize: `${hudSize}px`,
-			fontFamily: 'monospace',
-			color: '#ffdd00',
-		});
+		this.livesText = config.scene.add.text(
+			hudAnchor.left,
+			hudAnchor.top + hudSize + 4,
+			`LIVES: ${config.initialLives}`,
+			{
+				fontSize: `${hudSize}px`,
+				fontFamily: 'monospace',
+				color: '#ff6666',
+			},
+		);
+		this.currencyText = config.scene.add.text(
+			hudAnchor.left,
+			hudAnchor.top + (hudSize + 4) * 2,
+			'CREDITS: 0',
+			{
+				fontSize: `${hudSize}px`,
+				fontFamily: 'monospace',
+				color: '#ffdd00',
+			},
+		);
 		this.waveText = config.scene.add
-			.text(width / 2, m + 2, '', {
+			.text(hudAnchor.centerX, hudAnchor.top + 2, '', {
 				fontSize: `${waveSize}px`,
 				fontFamily: 'monospace',
 				color: '#888888',
@@ -65,6 +76,8 @@ export class HudManager {
 		// Recompute on resize
 		this.resizeListener = () => this.rescaleHud();
 		this.scene.scale.on('resize', this.resizeListener);
+		this.safeZoneListener = () => this.rescaleHud();
+		this.scene.registry.events.on('changedata-safeZone', this.safeZoneListener);
 	}
 
 	updateScore(score: number): void {
@@ -239,6 +252,10 @@ export class HudManager {
 			this.scene.scale.off('resize', this.resizeListener);
 			this.resizeListener = null;
 		}
+		if (this.safeZoneListener) {
+			this.scene.registry.events.off('changedata-safeZone', this.safeZoneListener);
+			this.safeZoneListener = null;
+		}
 	}
 
 	/** Compute HUD font size with pixel floor */
@@ -247,7 +264,7 @@ export class HudManager {
 	}
 
 	private rescaleHud(): void {
-		this.scaleFactor = computeScaleFactor(
+		this.scaleFactor = computeTextScaleFactor(
 			this.scene.scale.displaySize.width,
 			this.scene.scale.displaySize.height,
 		);
@@ -255,18 +272,35 @@ export class HudManager {
 		const m = scaleMargin(BASE_MARGIN, this.scaleFactor);
 		const hudSize = this.hudFontSize(BASE_HUD_SIZE);
 		const waveSize = this.hudFontSize(BASE_WAVE_SIZE);
-		const { width } = this.scene.scale;
+		const hudAnchor = this.getHudAnchor(m);
 
 		this.scoreText.setFontSize(hudSize);
-		this.scoreText.setPosition(m, m);
+		this.scoreText.setPosition(hudAnchor.left, hudAnchor.top);
 
 		this.livesText.setFontSize(hudSize);
-		this.livesText.setPosition(m, m + hudSize + 4);
+		this.livesText.setPosition(hudAnchor.left, hudAnchor.top + hudSize + 4);
 
 		this.currencyText.setFontSize(hudSize);
-		this.currencyText.setPosition(m, m + (hudSize + 4) * 2);
+		this.currencyText.setPosition(hudAnchor.left, hudAnchor.top + (hudSize + 4) * 2);
 
 		this.waveText.setFontSize(waveSize);
-		this.waveText.setPosition(width / 2, m + 2);
+		this.waveText.setPosition(hudAnchor.centerX, hudAnchor.top + 2);
+	}
+
+	private getHudAnchor(margin: number): { left: number; top: number; centerX: number } {
+		const safeZone = this.scene.registry.get('safeZone') as SafeZone | undefined;
+		if (safeZone) {
+			return {
+				left: safeZone.x + margin,
+				top: safeZone.y + margin,
+				centerX: safeZone.centerX,
+			};
+		}
+
+		return {
+			left: margin,
+			top: margin,
+			centerX: this.scene.scale.width / 2,
+		};
 	}
 }

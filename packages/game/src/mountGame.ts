@@ -35,7 +35,9 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 		backgroundColor: '#000000',
 		scale: {
 			mode: Phaser.Scale.FIT,
-			autoCenter: Phaser.Scale.CENTER_BOTH,
+			// Canvas is centered by the Svelte shell container.
+			// Disable Phaser auto-centering to avoid competing layout systems.
+			autoCenter: Phaser.Scale.NO_CENTER,
 		},
 		physics: {
 			default: 'arcade',
