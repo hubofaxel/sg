@@ -1,7 +1,10 @@
 <script lang="ts">
 let isPortrait = $state(false);
+let isTouchDevice = $state(false);
 
 $effect(() => {
+	isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
 	function check() {
 		isPortrait = window.innerWidth < window.innerHeight;
 	}
@@ -15,7 +18,7 @@ $effect(() => {
 });
 </script>
 
-{#if isPortrait}
+{#if isPortrait && isTouchDevice}
 	<div
 		class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[#0A0A1A]/95"
 		role="alert"

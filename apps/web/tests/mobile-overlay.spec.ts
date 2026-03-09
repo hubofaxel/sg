@@ -62,9 +62,16 @@ test.describe('responsive layout', () => {
 });
 
 test.describe('overlay and rotate overlay interaction', () => {
-	test('portrait shows rotate overlay, landscape shows game overlay', async ({ page }) => {
+	test('portrait shows rotate overlay, landscape shows game overlay (touch device)', async ({
+		browser,
+	}) => {
+		const context = await browser.newContext({
+			viewport: { width: 667, height: 375 },
+			hasTouch: true,
+		});
+		const page = await context.newPage();
+
 		// Start in landscape — game overlay visible, rotate overlay absent
-		await page.setViewportSize({ width: 667, height: 375 });
 		await page.goto('/play');
 		await expect(page.locator('[role="toolbar"]')).toBeVisible();
 		await expect(page.locator('[role="alert"]')).toHaveCount(0);
@@ -77,5 +84,6 @@ test.describe('overlay and rotate overlay interaction', () => {
 		await page.setViewportSize({ width: 667, height: 375 });
 		await expect(page.locator('[role="alert"]')).toHaveCount(0);
 		await expect(page.locator('[role="toolbar"]')).toBeVisible();
+		await context.close();
 	});
 });

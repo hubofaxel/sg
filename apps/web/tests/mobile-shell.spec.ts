@@ -22,23 +22,37 @@ test.describe('mobile shell foundation', () => {
 		expect(touchAction).toBe('none');
 	});
 
-	test('rotate overlay exists in DOM when portrait', async ({ page }) => {
-		await page.setViewportSize({ width: 375, height: 667 });
+	test('rotate overlay exists in DOM when portrait on touch device', async ({ browser }) => {
+		const context = await browser.newContext({
+			viewport: { width: 375, height: 667 },
+			hasTouch: true,
+		});
+		const page = await context.newPage();
 		await page.goto('/play');
 		const overlay = page.locator('[role="alert"]');
 		await expect(overlay).toBeVisible();
 		await expect(overlay).toContainText('Rotate your device');
+		await context.close();
 	});
 
-	test('rotate overlay hidden in landscape', async ({ page }) => {
-		await page.setViewportSize({ width: 667, height: 375 });
+	test('rotate overlay hidden in landscape on touch device', async ({ browser }) => {
+		const context = await browser.newContext({
+			viewport: { width: 667, height: 375 },
+			hasTouch: true,
+		});
+		const page = await context.newPage();
 		await page.goto('/play');
 		const overlay = page.locator('[role="alert"]');
 		await expect(overlay).toHaveCount(0);
+		await context.close();
 	});
 
-	test('rotate overlay responds to viewport change', async ({ page }) => {
-		await page.setViewportSize({ width: 667, height: 375 });
+	test('rotate overlay responds to viewport change on touch device', async ({ browser }) => {
+		const context = await browser.newContext({
+			viewport: { width: 667, height: 375 },
+			hasTouch: true,
+		});
+		const page = await context.newPage();
 		await page.goto('/play');
 		await expect(page.locator('[role="alert"]')).toHaveCount(0);
 
@@ -47,5 +61,14 @@ test.describe('mobile shell foundation', () => {
 
 		await page.setViewportSize({ width: 667, height: 375 });
 		await expect(page.locator('[role="alert"]')).toHaveCount(0);
+		await context.close();
+	});
+
+	test('rotate overlay does NOT show on desktop in portrait', async ({ page }) => {
+		// Default Playwright has no touch — desktop browser
+		await page.setViewportSize({ width: 375, height: 667 });
+		await page.goto('/play');
+		const overlay = page.locator('[role="alert"]');
+		await expect(overlay).toHaveCount(0);
 	});
 });
