@@ -8,7 +8,7 @@ test.describe('mobile shell foundation', () => {
 		}
 	});
 
-	test('play page uses dynamic viewport units', async ({ page }) => {
+	test('play page renders full-bleed game container', async ({ page }) => {
 		await page.goto('/play');
 		const playPage = page.locator('main.play-page');
 		await expect(playPage).toBeVisible();

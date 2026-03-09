@@ -80,6 +80,9 @@ export class GameScene extends Phaser.Scene {
 	create(): void {
 		const { width, height } = this.scale;
 
+		// Fade in from MenuScene's fade-out transition
+		this.cameras.main.fadeIn(400, 0, 0, 0);
+
 		// Physics world bounds — match expanded canvas
 		this.physics.world.setBounds(0, 0, width, height);
 
@@ -587,8 +590,9 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private returnToMenu(): void {
+		const lastScore = this.score;
 		this.cleanupScene();
-		this.scene.start(SCENE_KEYS.Menu);
+		this.scene.start(SCENE_KEYS.Menu, { lastScore });
 	}
 
 	private cleanupScene(): void {
