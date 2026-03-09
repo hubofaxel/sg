@@ -19,15 +19,12 @@ let gameHandle: GameHandle | null = $state(null);
 
 <style>
 	.play-page {
-		position: relative;
-		width: 100dvw;
-		height: 100dvh;
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: env(safe-area-inset-left, 0px);
+		right: env(safe-area-inset-right, 0px);
 		overflow: hidden;
 		background: #000;
-		padding:
-			env(safe-area-inset-top)
-			env(safe-area-inset-right)
-			env(safe-area-inset-bottom)
-			env(safe-area-inset-left);
 	}
 </style>
