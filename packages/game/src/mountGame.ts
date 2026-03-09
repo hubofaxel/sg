@@ -5,6 +5,7 @@
 import * as Phaser from 'phaser';
 import { GameEventBus } from './events';
 import { BootScene, GameScene, MenuScene, PreloadScene } from './scenes/index';
+import { getSafeAreaInsets } from './systems/SafeAreaInsets';
 import { computeWorldSize, createSafeZone } from './systems/SafeZone';
 import type { GameHandle, GameMountOptions } from './types';
 
@@ -48,11 +49,12 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 		banner: false,
 	});
 
-	// Store world dimensions and safe zone in registry
+	// Store world dimensions, safe zone, and hardware insets in registry
 	const safeZone = createSafeZone(worldWidth, worldHeight);
 	game.registry.set('worldWidth', worldWidth);
 	game.registry.set('worldHeight', worldHeight);
 	game.registry.set('safeZone', safeZone);
+	game.registry.set('safeAreaInsets', getSafeAreaInsets());
 
 	// Stash the event bus in the registry so scenes can access it
 	game.registry.set('eventBus', eventBus);
@@ -95,6 +97,7 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 			game.registry.set('worldWidth', newSize.width);
 			game.registry.set('worldHeight', newSize.height);
 			game.registry.set('safeZone', newSafeZone);
+			game.registry.set('safeAreaInsets', getSafeAreaInsets());
 		}, 100);
 	};
 
