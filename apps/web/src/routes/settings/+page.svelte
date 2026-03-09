@@ -30,7 +30,7 @@ function resetDefaults() {
 		<h2>AUDIO</h2>
 
 		<label>
-			<span>Master Volume</span>
+			<span class="label-text">Master Volume</span>
 			<input
 				type="range"
 				min="0"
@@ -43,7 +43,7 @@ function resetDefaults() {
 		</label>
 
 		<label>
-			<span>SFX Volume</span>
+			<span class="label-text">SFX Volume</span>
 			<input
 				type="range"
 				min="0"
@@ -56,7 +56,7 @@ function resetDefaults() {
 		</label>
 
 		<label>
-			<span>Music Volume</span>
+			<span class="label-text">Music Volume</span>
 			<input
 				type="range"
 				min="0"
@@ -73,7 +73,7 @@ function resetDefaults() {
 		<h2>DISPLAY</h2>
 
 		<label>
-			<span>Screen Shake</span>
+			<span class="label-text">Screen Shake</span>
 			<input
 				type="range"
 				min="0"
@@ -86,7 +86,7 @@ function resetDefaults() {
 		</label>
 
 		<label class="toggle-row">
-			<span>Show FPS</span>
+			<span class="label-text">Show FPS</span>
 			<button class="toggle" class:active={settings.value.showFps} onclick={toggleFps}>
 				{settings.value.showFps ? 'ON' : 'OFF'}
 			</button>
@@ -102,7 +102,7 @@ function resetDefaults() {
 	.settings-page {
 		max-width: 480px;
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: 2rem clamp(0.75rem, 4vw, 1.5rem);
 		font-family: 'Courier New', monospace;
 		color: #e0e0e0;
 		background: #0a0a1a;
@@ -119,21 +119,24 @@ function resetDefaults() {
 	.back-link {
 		color: #888;
 		text-decoration: none;
-		font-size: 14px;
+		font-size: clamp(0.75rem, 2vw, 0.875rem);
+		min-height: 44px;
+		display: flex;
+		align-items: center;
 	}
 	.back-link:hover {
 		color: #fff;
 	}
 
 	h1 {
-		font-size: 28px;
+		font-size: clamp(1.25rem, 3vw, 1.75rem);
 		color: #fff;
 		margin: 0;
 		letter-spacing: 4px;
 	}
 
 	h2 {
-		font-size: 14px;
+		font-size: clamp(0.75rem, 2vw, 0.875rem);
 		color: #00ff88;
 		letter-spacing: 2px;
 		border-bottom: 1px solid #333;
@@ -147,21 +150,38 @@ function resetDefaults() {
 
 	label {
 		display: grid;
-		grid-template-columns: 140px 1fr 50px;
+		grid-template-columns: minmax(100px, 140px) 1fr 50px;
 		align-items: center;
 		gap: 0.75rem;
 		margin-bottom: 1rem;
-		font-size: 13px;
+		font-size: clamp(0.75rem, 2vw, 0.875rem);
+	}
+
+	@media (max-width: 400px) {
+		label {
+			grid-template-columns: 1fr 50px;
+			gap: 0.5rem;
+		}
+
+		.label-text {
+			grid-column: 1 / -1;
+		}
 	}
 
 	.toggle-row {
-		grid-template-columns: 140px auto 1fr;
+		grid-template-columns: minmax(100px, 140px) auto 1fr;
+	}
+
+	@media (max-width: 400px) {
+		.toggle-row {
+			grid-template-columns: 1fr auto;
+		}
 	}
 
 	.value {
 		text-align: right;
 		color: #888;
-		font-size: 12px;
+		font-size: clamp(0.625rem, 1.5vw, 0.75rem);
 	}
 
 	input[type='range'] {
@@ -176,17 +196,29 @@ function resetDefaults() {
 	input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		appearance: none;
-		width: 16px;
-		height: 16px;
+		width: 44px;
+		height: 44px;
 		border-radius: 50%;
 		background: #00ff88;
 		cursor: pointer;
+		border: 2px solid #0a0a1a;
+		box-shadow: 0 0 0 2px #00ff88;
+	}
+	input[type='range']::-moz-range-thumb {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: #00ff88;
+		cursor: pointer;
+		border: 2px solid #0a0a1a;
+		box-shadow: 0 0 0 2px #00ff88;
 	}
 
 	.toggle {
 		font-family: 'Courier New', monospace;
-		font-size: 12px;
-		padding: 4px 12px;
+		font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+		padding: 8px 16px;
+		min-height: 44px;
 		border: 1px solid #555;
 		background: #1a1a2e;
 		color: #888;
@@ -201,8 +233,9 @@ function resetDefaults() {
 
 	.reset-btn {
 		font-family: 'Courier New', monospace;
-		font-size: 13px;
-		padding: 8px 20px;
+		font-size: clamp(0.75rem, 2vw, 0.875rem);
+		padding: 12px 20px;
+		min-height: 44px;
 		border: 1px solid #ff4444;
 		background: transparent;
 		color: #ff4444;

@@ -26,6 +26,7 @@ let { label, variant = 'primary', size = 'md', disabled = false, onclick }: Prop
 		letter-spacing: 0.05em;
 		border: 2px solid var(--sg-border, #444);
 		cursor: pointer;
+		min-height: 44px;
 		transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
 	}
 

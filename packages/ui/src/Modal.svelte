@@ -62,7 +62,7 @@ function handleBackdrop() {
 		background: var(--sg-bg, #111);
 		border: 1px solid var(--sg-border, #444);
 		border-radius: 4px;
-		min-width: 280px;
+		min-width: min(280px, 90vw);
 		max-width: 90vw;
 		max-height: 90vh;
 		overflow-y: auto;
@@ -93,6 +93,8 @@ function handleBackdrop() {
 		cursor: pointer;
 		padding: 0 0.25rem;
 		line-height: 1;
+		min-width: 44px;
+		min-height: 44px;
 	}
 
 	.sg-modal-close:hover {

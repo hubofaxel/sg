@@ -17,17 +17,18 @@
 		background: #0a0a1a;
 		font-family: 'Courier New', monospace;
 		color: #e0e0e0;
+		padding: 1rem;
 	}
 
 	h1 {
-		font-size: 48px;
+		font-size: clamp(1.5rem, 4vw + 1rem, 3rem);
 		color: #fff;
 		margin: 0;
 		letter-spacing: 8px;
 	}
 
 	.tagline {
-		font-size: 14px;
+		font-size: clamp(0.625rem, 1.5vw, 0.875rem);
 		color: #888;
 		letter-spacing: 6px;
 		margin: 0.5rem 0 3rem;
@@ -37,15 +38,16 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		width: 240px;
+		width: min(240px, 80vw);
 	}
 
 	.nav-btn {
 		display: block;
 		text-align: center;
 		padding: 12px 24px;
+		min-height: 44px;
 		font-family: 'Courier New', monospace;
-		font-size: 16px;
+		font-size: clamp(0.875rem, 2vw, 1rem);
 		letter-spacing: 3px;
 		text-decoration: none;
 		border: 1px solid #555;
