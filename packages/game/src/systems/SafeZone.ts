@@ -21,7 +21,7 @@ export const SAFE_ZONE_HEIGHT = 600;
 
 // World size limits
 export const MIN_WORLD_WIDTH = 800;
-export const MAX_WORLD_WIDTH = 1200;
+export const MAX_WORLD_WIDTH = 1340;
 export const WORLD_HEIGHT = 600;
 
 /**

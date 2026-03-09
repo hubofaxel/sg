@@ -22,9 +22,15 @@ describe('computeWorldSize', () => {
 		expect(height).toBe(WORLD_HEIGHT);
 	});
 
-	it('clamps to 1200 at ultra-wide 20:9', () => {
+	it('returns 1333 at 20:9 (within max)', () => {
 		const { width } = computeWorldSize(960, 432);
-		// 600 * (960/432) = 1333, clamped to 1200
+		// 600 * (960/432) = 1333, under 1340 max
+		expect(width).toBe(1333);
+	});
+
+	it('clamps to max at extreme ultra-wide', () => {
+		const { width } = computeWorldSize(3000, 1000);
+		// 600 * 3 = 1800, clamped to 1340
 		expect(width).toBe(MAX_WORLD_WIDTH);
 	});
 
@@ -102,7 +108,7 @@ describe('createSafeZone', () => {
 	});
 
 	it('safe zone dimensions are always 800x600', () => {
-		for (const w of [800, 960, 1067, 1200]) {
+		for (const w of [800, 960, 1067, 1200, 1333]) {
 			const sz = createSafeZone(w, 600);
 			expect(sz.width).toBe(800);
 			expect(sz.height).toBe(600);
