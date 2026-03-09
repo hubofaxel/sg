@@ -18,15 +18,6 @@ $effect(() => {
 let container: HTMLDivElement;
 let handle: GameHandle | null = $state(null);
 
-const onVisibility = () => {
-	if (!handle) return;
-	if (document.hidden) {
-		handle.pause();
-	} else {
-		handle.resume();
-	}
-};
-
 onMount(() => {
 	// Dynamic import — Phaser accesses `window` at module scope,
 	// so it must never be imported during SSR.
@@ -51,12 +42,6 @@ onMount(() => {
 			console.error('[GameCanvas] game error:', err);
 		});
 	});
-
-	document.addEventListener('visibilitychange', onVisibility);
-
-	return () => {
-		document.removeEventListener('visibilitychange', onVisibility);
-	};
 });
 
 onDestroy(() => {

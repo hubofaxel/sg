@@ -53,6 +53,7 @@ export class GameScene extends Phaser.Scene {
 	private weaponStats!: WeaponLevelStats;
 	private stageClear = false;
 	private stageIndex = 0;
+	private onGamePause: (() => void) | null = null;
 	// biome-ignore lint/suspicious/noExplicitAny: Phaser registry event callbacks use varying signatures
 	private registryListeners: Array<{ event: string; fn: (...args: any[]) => void }> = [];
 
@@ -106,10 +107,13 @@ export class GameScene extends Phaser.Scene {
 		this.inputAdapter = this.selectInputAdapter();
 		this.inputAdapter.create(this);
 
-		// Clear input state on scene pause (shell-authoritative pause)
-		this.events.on('pause', () => {
+		// Clear input state on game-level pause (fired by Phaser's VisibilityHandler
+		// and by explicit handle.pause() calls). Scene-level 'pause' does NOT fire
+		// when game.pause() is called, only when scene.sys.pause() is called.
+		this.onGamePause = () => {
 			this.inputAdapter.clear();
-		});
+		};
+		this.game.events.on('pause', this.onGamePause);
 
 		// Bullet pools — recycle instead of create/destroy each frame
 		// Pool defaults match current weaponStats; if weapon-level-up changes
@@ -536,6 +540,10 @@ export class GameScene extends Phaser.Scene {
 		this.enemyBulletPool.destroy();
 		this.dropManager.destroy();
 		this.audioManager.destroy();
+		if (this.onGamePause) {
+			this.game.events.off('pause', this.onGamePause);
+			this.onGamePause = null;
+		}
 		for (const { event, fn } of this.registryListeners) {
 			this.registry.events.off(event, fn);
 		}
