@@ -30,11 +30,20 @@ export interface GameEventMap {
 	error: [error: Error];
 }
 
+/** Settings that can be updated at runtime without remounting */
+export interface RuntimeSettings {
+	masterVolume: number;
+	sfxVolume: number;
+	musicVolume: number;
+	showFps: boolean;
+}
+
 /** Handle returned by mountGame — the ONLY public API */
 export interface GameHandle {
 	destroy(): void;
 	pause(): void;
 	resume(): void;
+	updateSettings(partial: Partial<RuntimeSettings>): void;
 	emit<K extends keyof GameEventMap>(event: K, ...args: GameEventMap[K]): void;
 	on<K extends keyof GameEventMap>(event: K, handler: (...args: GameEventMap[K]) => void): void;
 	off<K extends keyof GameEventMap>(event: K, handler: (...args: GameEventMap[K]) => void): void;

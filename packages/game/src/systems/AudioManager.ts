@@ -20,11 +20,32 @@ export class AudioManager {
 	private musicVol: number;
 	private baseMusicVol = 0.3;
 
+	// biome-ignore lint/suspicious/noExplicitAny: Phaser registry event callbacks use varying signatures
+	private registryListeners: Array<{ event: string; fn: (...args: any[]) => void }> = [];
+
 	constructor(scene: Phaser.Scene, volumes?: Partial<AudioVolumes>) {
 		this.scene = scene;
 		this.masterVol = volumes?.master ?? 0.8;
 		this.sfxVol = volumes?.sfx ?? 1.0;
 		this.musicVol = volumes?.music ?? 0.7;
+
+		// Subscribe to runtime volume changes via registry
+		this.onRegistryChange('masterVolume', (_: unknown, value: number) => {
+			this.setVolumes({ master: value });
+		});
+		this.onRegistryChange('sfxVolume', (_: unknown, value: number) => {
+			this.setVolumes({ sfx: value });
+		});
+		this.onRegistryChange('musicVolume', (_: unknown, value: number) => {
+			this.setVolumes({ music: value });
+		});
+	}
+
+	// biome-ignore lint/suspicious/noExplicitAny: Phaser registry event callbacks use varying signatures
+	private onRegistryChange(key: string, fn: (...args: any[]) => void): void {
+		const event = `changedata-${key}`;
+		this.scene.registry.events.on(event, fn);
+		this.registryListeners.push({ event, fn });
 	}
 
 	/** Play a one-shot SFX if the key is loaded */
@@ -77,5 +98,9 @@ export class AudioManager {
 	/** Clean up on scene shutdown */
 	destroy(): void {
 		this.stopMusic();
+		for (const { event, fn } of this.registryListeners) {
+			this.scene.registry.events.off(event, fn);
+		}
+		this.registryListeners.length = 0;
 	}
 }

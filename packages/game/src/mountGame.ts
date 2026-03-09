@@ -40,13 +40,20 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 
 	// Stash settings in registry so scenes can read them
 	if (options.settings) {
+		const s = options.settings;
+		// Individual keys for changedata subscriptions
+		game.registry.set('masterVolume', s.masterVolume ?? 0.8);
+		game.registry.set('sfxVolume', s.sfxVolume ?? 1.0);
+		game.registry.set('musicVolume', s.musicVolume ?? 0.7);
+		game.registry.set('showFps', s.showFps ?? false);
+		// Backward-compat aggregate for AudioManager constructor
 		game.registry.set('audioVolumes', {
-			master: options.settings.masterVolume ?? 0.8,
-			sfx: options.settings.sfxVolume ?? 1.0,
-			music: options.settings.musicVolume ?? 0.7,
+			master: s.masterVolume ?? 0.8,
+			sfx: s.sfxVolume ?? 1.0,
+			music: s.musicVolume ?? 0.7,
 		});
-		game.registry.set('touchControlsEnabled', options.settings.touchControlsEnabled ?? true);
-		game.registry.set('controlScheme', options.settings.controlScheme ?? 'wasd');
+		game.registry.set('touchControlsEnabled', s.touchControlsEnabled ?? true);
+		game.registry.set('controlScheme', s.controlScheme ?? 'wasd');
 	}
 
 	const handle: GameHandle = {
@@ -59,6 +66,11 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 		},
 		resume() {
 			game.resume();
+		},
+		updateSettings(partial) {
+			for (const [key, value] of Object.entries(partial)) {
+				game.registry.set(key, value);
+			}
 		},
 		emit(event, ...args) {
 			eventBus.emit(event, ...args);

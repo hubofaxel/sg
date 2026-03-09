@@ -90,13 +90,16 @@ export class DebugOverlay {
 		this.text.destroy();
 	}
 
-	private toggle(): void {
-		this.visible = !this.visible;
-		this.text.setVisible(this.visible);
-		if (this.visible) {
-			// Force immediate sample on toggle-on
+	setVisible(visible: boolean): void {
+		this.visible = visible;
+		this.text.setVisible(visible);
+		if (visible) {
 			this.lastSampleTime = 0;
 		}
+	}
+
+	private toggle(): void {
+		this.setVisible(!this.visible);
 	}
 
 	private countActiveEnemies(): number {

@@ -3,4 +3,4 @@
 // ---------------------------------------------------------------------------
 
 export { mountGame } from './mountGame';
-export type { GameEventMap, GameHandle, GameMountOptions } from './types';
+export type { GameEventMap, GameHandle, GameMountOptions, RuntimeSettings } from './types';

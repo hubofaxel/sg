@@ -53,6 +53,8 @@ export class GameScene extends Phaser.Scene {
 	private weaponStats!: WeaponLevelStats;
 	private stageClear = false;
 	private stageIndex = 0;
+	// biome-ignore lint/suspicious/noExplicitAny: Phaser registry event callbacks use varying signatures
+	private registryListeners: Array<{ event: string; fn: (...args: any[]) => void }> = [];
 
 	constructor() {
 		super({ key: SCENE_KEYS.Game });
@@ -69,6 +71,7 @@ export class GameScene extends Phaser.Scene {
 		this.bossManager = null;
 		this.weaponStats = DEFAULT_WEAPON.levels[WEAPON_LEVEL - 1];
 		this.stageIndex = data?.stageIndex ?? 0;
+		this.registryListeners = [];
 	}
 
 	create(): void {
@@ -212,6 +215,17 @@ export class GameScene extends Phaser.Scene {
 			enemyBullets: this.enemyBulletPool,
 			enemies: this.enemies,
 		});
+
+		// Show debug overlay if showFps was enabled at mount
+		const initialShowFps = this.registry.get('showFps') as boolean | undefined;
+		if (initialShowFps) this.debugOverlay.setVisible(true);
+
+		// Runtime showFps toggle via registry
+		const showFpsListener = (_: unknown, value: boolean) => {
+			this.debugOverlay.setVisible(value);
+		};
+		this.registry.events.on('changedata-showFps', showFpsListener);
+		this.registryListeners.push({ event: 'changedata-showFps', fn: showFpsListener });
 
 		this.eventBus.emit('scene-change', 'game');
 	}
@@ -506,23 +520,26 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private startNextStage(): void {
-		this.inputAdapter.destroy();
-		this.debugOverlay.destroy();
-		this.playerBulletPool.destroy();
-		this.enemyBulletPool.destroy();
-		this.dropManager.destroy();
-		this.audioManager.destroy();
+		this.cleanupScene();
 		this.scene.restart({ stageIndex: this.stageIndex + 1 });
 	}
 
 	private returnToMenu(): void {
+		this.cleanupScene();
+		this.scene.start(SCENE_KEYS.Menu);
+	}
+
+	private cleanupScene(): void {
 		this.inputAdapter.destroy();
 		this.debugOverlay.destroy();
 		this.playerBulletPool.destroy();
 		this.enemyBulletPool.destroy();
 		this.dropManager.destroy();
 		this.audioManager.destroy();
-		this.scene.start(SCENE_KEYS.Menu);
+		for (const { event, fn } of this.registryListeners) {
+			this.registry.events.off(event, fn);
+		}
+		this.registryListeners.length = 0;
 	}
 
 	private bgImage: Phaser.GameObjects.Image | null = null;
