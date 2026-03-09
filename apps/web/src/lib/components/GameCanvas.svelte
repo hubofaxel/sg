@@ -3,6 +3,12 @@ import type { GameHandle } from '@sg/game';
 import { onDestroy, onMount } from 'svelte';
 import { settings } from '../stores/settings.svelte';
 
+interface Props {
+	onhandle?: (handle: GameHandle | null) => void;
+}
+
+let { onhandle }: Props = $props();
+
 // Push runtime-updatable settings to the game when they change
 $effect(() => {
 	if (!handle) return;
@@ -17,6 +23,11 @@ $effect(() => {
 
 let container: HTMLDivElement;
 let handle: GameHandle | null = $state(null);
+
+// Notify parent when handle changes
+$effect(() => {
+	onhandle?.(handle);
+});
 
 onMount(() => {
 	// Dynamic import — Phaser accesses `window` at module scope,
