@@ -1,20 +1,18 @@
 # Documentation Index
 
-This folder now has two active source-of-truth documents and a historical archive.
+## Active docs
 
-## Active docs (authoritative)
+| Document | Purpose |
+|----------|---------|
+| `DELIVERY_PLAN.md` | Current status, priorities, backlog — single source of planning truth |
+| `RESPONSIVE_GAMEPLAY.md` | Rendering pipeline, safe-zone model, aspect-ratio behavior, mobile playability |
+| `asset-contracts.md` | Asset strategy, registry, acceptance criteria, generation policy |
+| `branding.md` | Brand system, color palette, icon deliverables, visual identity |
+| `asset-generation-advice.md` | Forward-looking AI generation guidance (March 2026 best practices) |
+| `vfx-prompt-library.md` | Prompt templates for VFX sprite generation (ready for Phase 10+) |
+| `entity-relationships.mermaid` | Data/entity relationship diagram |
 
-- `RESPONSIVE_GAMEPLAY.md` — rendering pipeline, safe-zone model, aspect-ratio behavior, and mobile playability rules.
-- `DELIVERY_PLAN.md` — current status, priorities, and execution plan.
-- `asset-contracts.md` — authoritative asset strategy and contract policy.
-- `branding.md` — brand system and visual identity rules.
-- `vfx-prompt-library.md` — prompt guidance for generated VFX assets.
-- `entity-relationships.mermaid` — data/entity relationship map.
+## Archive
 
-## Historical docs (non-authoritative)
-
-Legacy mobile migration, orchestration, and PR handoff docs were moved to:
-
-- `archive/mobile-migration-2026/`
-
-Use archive docs for implementation history only. For current decisions and planning, use the active docs above.
+Legacy mobile migration docs (completed work) in `archive/mobile-migration-2026/`.
+Use for implementation history only.

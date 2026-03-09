@@ -3,9 +3,10 @@
 - Svelte 5 runes syntax only — no legacy `$:` reactivity
 - Tailwind 4 for all DOM styling — never style Phaser internals with Tailwind
 - Game canvas lives in ONE component: `src/lib/components/GameCanvas.svelte`
-- Routes: `/`, `/play` — live; `/settings`, `/about` — planned (Phase 11)
+- Routes: `/` (home), `/play` (game canvas), `/settings` (volume, screen shake, FPS)
+- Key components: `GameCanvas.svelte` (Phaser mount), `GameOverlay.svelte` (pause/mute), `RotateOverlay.svelte` (portrait warning)
 - Local persistence via `@sg/contracts` save schema + localStorage wrapper
-- All settings changes go through a Svelte store backed by validated schema
+- All settings changes go through a Svelte store backed by validated schema (`stores/settings.svelte.ts`)
 - Import game functionality from `@sg/game` only — never import `phaser` directly
 
 ## Branding & Web Integration

@@ -20,7 +20,7 @@ Workflow:
 
 ## Rollback
 
-If a merge introduces regressions on `main`, follow the rollback protocol in `docs/mobile-rollback.md`. Log all rollbacks in `docs/mobile-state.md`.
+If a merge introduces regressions on `main`: revert the merge commit (`git revert -m 1 <sha>`), push the revert, then investigate on a fix branch.
 
 Branch naming:
 - `feat/<slug>` for features

@@ -9,3 +9,4 @@
 - `dev-server.sh` — Start Vite dev server with logging to `.dev-logs/vite-dev.log`
 - `dev-stop.sh` — Stop the dev server started by `dev-server.sh`
 - `chrome-debug.sh` — Launch Chrome with remote debugging on port 9222
+- `check-boundaries.sh` — Verify architecture boundaries (no Phaser outside game package, etc.)

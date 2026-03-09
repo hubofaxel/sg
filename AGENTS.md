@@ -12,7 +12,7 @@
 | asset-pipeline | Asset generation, manifests, placeholder pipeline |
 | diagnostician | Runtime error triage via dev server logs and browser console |
 
-## Skills (`.agents/skills/`)
+## Skills (`.claude/skills/`)
 
 | Skill | Trigger Context |
 |---|---|

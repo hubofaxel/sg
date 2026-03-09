@@ -38,6 +38,13 @@ objects via `getData()` — values set by WaveManager from `@sg/content` definit
 | SpriteFrames | `SpriteFrames.ts` | Ship banking (3 frames by velocity), enemy idle animation (2-frame oscillation), boss phase frame switching |
 | AudioManager | `AudioManager.ts` | SFX + music playback with graceful fallback for missing audio keys |
 | DropManager | `DropManager.ts` | Drop spawning from enemy data, pity timer, magnetism, code-drawn pickups (currency/token/recipe), `sfx-pickup` on collect |
+| HudScale | `HudScale.ts` | Pure scaling: displayHeight/600, clamped [0.6,1.5], pixel floors for text/margins |
+| SafeAreaInsets | `SafeAreaInsets.ts` | Reads CSS `env(safe-area-inset-*)` via DOM probe, converts screen px to world coords |
+| SafeZone | `SafeZone.ts` | Pure functions: `computeWorldSize`, `createSafeZone` (no Phaser imports) |
+| InputIntent | `InputIntent.ts` | Normalized input contract (`moveVector`, `isPositionDelta`, `fireHeld`, `pausePressed`) |
+| KeyboardInput | `KeyboardInput.ts` | Keyboard adapter (cursor + WASD), velocity-based, implements InputAdapter |
+| TouchInput | `TouchInput.ts` | Floating joystick adapter, DOM pointer events, velocity-based |
+| RelativeTouchInput | `RelativeTouchInput.ts` | 1:1 finger tracking adapter, DOM pointer events, position delta-based |
 
 ### Data flow: content → game object → system
 

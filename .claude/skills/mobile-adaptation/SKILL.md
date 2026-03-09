@@ -6,9 +6,9 @@ description: Mobile adaptation architecture context — four size domains, input
 # Mobile Adaptation — Architecture Context
 
 Load this skill when working on any mobile-related task. Source documents:
-- `docs/mobile-adaptation.md` — original plan (sections referenced as paragraphs below)
-- `docs/mobile-decisions.md` — resolved open decisions
-- `docs/mobile-state.md` — orchestration state and completed PRs
+- `docs/RESPONSIVE_GAMEPLAY.md` — rendering pipeline, safe-zone model, aspect-ratio behavior
+- `docs/DELIVERY_PLAN.md` — current status and priorities
+- `docs/archive/mobile-migration-2026/` — historical implementation docs (for reference only)
 
 ## Four Size Domains
 

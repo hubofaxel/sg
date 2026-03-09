@@ -1,49 +1,52 @@
 # Delivery Plan
 
-This is the active planning document for the repo.
+Single source of planning truth for the ship-game repo.
 
-## Current Objectives
+## Current State (March 2026)
 
-1. Responsive gameplay across modern mobile/tablet aspect ratios.
-2. Documentation and planning consistency after architecture refactors.
-
-## Status Snapshot
-
-- Monorepo, contracts/content/runtime seam are in place and actively used.
-- Gameplay loop, boss encounter, drops/currency, and mobile input are implemented.
-- Adaptive world width + centered safe zone are implemented.
-- Remaining work is primarily polish, consistency, and hardening.
+- Phase 9 complete (gameplay loop, boss encounters, drops/currency, stage progression)
+- Mobile Phase B + V2 complete (edge-to-edge canvas, safe area insets, dynamic world sizing, relative touch input, HUD scaling, orientation overlay)
+- 382 unit tests, 22 e2e tests — all green
+- 31 asset keys cataloged, all on disk (0 validation errors)
+- 2-stage campaign (6 levels, 19 waves, 2 bosses)
+- `pnpm validate` green on trunk
 
 ## Near-Term Priorities
 
-1. Responsive UX hardening
-- Validate HUD/menu readability across device matrix.
-- Validate input comfort and gameplay clarity in ultra-wide landscape.
-- Add regression tests where practical for scale/resize edge cases.
+1. **Documentation and structure alignment**
+   - Consolidate planning docs (this document is the single plan)
+   - Keep CLAUDE.md files accurate to codebase
+   - Keep agentic config references valid
 
-2. Documentation stability
-- Keep `RESPONSIVE_GAMEPLAY.md` aligned with implementation.
-- Keep this plan current and archive superseded directives instead of editing them in place.
-- Prefer one canonical doc per concern (architecture, planning, assets, branding).
+2. **Quality-gate reliability**
+   - Keep `pnpm validate` green on trunk
+   - Expand tests around resize-sensitive behavior when regressions surface
 
-3. Quality-gate reliability
-- Keep `pnpm validate` green on trunk.
-- Expand tests around resize-sensitive behavior when regressions are found.
+3. **Responsive UX hardening**
+   - Validate HUD/menu readability across device matrix
+   - Validate input comfort on ultra-wide landscape
 
-## Backlog (After Near-Term)
+## Backlog
 
-1. Stage presentation polish
-- Intro cards, transitions, and stronger scene pacing cues.
+1. **Stage presentation polish** — intro cards, transitions, scene pacing
+2. **Audio polish** — boss music crossfade, low-health warning mixing (`sfx-low-health` on disk, not wired)
+3. **PWA polish** — offline install, low-end performance profiling
+4. **VFX sprites** — generated hit/death effects (see `docs/vfx-prompt-library.md` for prompt templates)
+5. **Deferred gameplay** — `beam` attack type, weak point damage multiplier, VFX sprite pools
 
-2. Audio polish
-- Variation/crossfade behavior and low-health warning mixing.
+## Deferred Assets (cataloged, not yet wired)
 
-3. Product polish
-- PWA install/offline refinements and low-end performance profiling.
+| Key | Phase | Status |
+|-----|-------|--------|
+| `music-boss` | 10 | On disk, composition plan ready |
+| `sfx-low-health` | 10 | On disk |
+| `sfx-telegraph` | 12 | On disk |
+| `sprite-telegraph` | 12 | On disk |
 
 ## Planning Rules
 
-- `main` is always treated as releasable.
-- Feature work ships in small, reviewable branches.
-- Any stale planning doc gets archived, not silently left active.
-- Runtime behavior wins over doc claims; update docs immediately after behavior changes.
+- `main` is always releasable
+- Feature work ships in small, reviewable branches
+- Stale planning docs get archived or removed, not left active
+- Runtime behavior wins over doc claims — update docs immediately after behavior changes
+- One canonical doc per concern: this plan (planning), `RESPONSIVE_GAMEPLAY.md` (mobile/responsive), `asset-contracts.md` (assets), `branding.md` (brand)
