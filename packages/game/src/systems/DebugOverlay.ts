@@ -1,5 +1,7 @@
 import * as Phaser from 'phaser';
 import type { BulletPool, PoolStats } from './ObjectPool';
+import type { SafeAreaInsets } from './SafeAreaInsets';
+import { toWorldInsets, ZERO_INSETS } from './SafeAreaInsets';
 
 /**
  * DebugOverlay — toggled with backtick key.
@@ -36,8 +38,9 @@ export class DebugOverlay {
 		this.enemyBullets = config.enemyBullets;
 		this.enemies = config.enemies;
 
+		const wi = this.getWorldInsets();
 		this.text = this.scene.add
-			.text(this.scene.scale.width - 10, 10, '', {
+			.text(this.scene.scale.width - 10 - wi.right, 10 + wi.top, '', {
 				fontSize: '11px',
 				fontFamily: 'monospace',
 				color: '#00ff00',
@@ -81,8 +84,9 @@ export class DebugOverlay {
 		];
 
 		this.text.setText(lines.join('\n'));
-		// Reposition to right edge (gameSize may have changed on resize)
-		this.text.setX(this.scene.scale.width - 10);
+		// Reposition to right edge (gameSize or insets may have changed)
+		const wi = this.getWorldInsets();
+		this.text.setPosition(this.scene.scale.width - 10 - wi.right, 10 + wi.top);
 	}
 
 	destroy(): void {
@@ -100,6 +104,18 @@ export class DebugOverlay {
 
 	private toggle(): void {
 		this.setVisible(!this.visible);
+	}
+
+	private getWorldInsets(): SafeAreaInsets {
+		const raw = this.scene.registry.get('safeAreaInsets') as SafeAreaInsets | undefined;
+		if (!raw) return ZERO_INSETS;
+		return toWorldInsets(
+			raw,
+			this.scene.scale.width,
+			this.scene.scale.height,
+			this.scene.scale.displaySize.width,
+			this.scene.scale.displaySize.height,
+		);
 	}
 
 	private countActiveEnemies(): number {

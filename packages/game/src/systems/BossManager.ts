@@ -3,6 +3,8 @@ import type { Boss, BossPhase, Enemy } from '@sg/contracts';
 import * as Phaser from 'phaser';
 import { screenShake } from './CombatFeedback';
 import { BOSS_LABEL_MIN_PX, computeTextScaleFactor, scaleFontSize } from './HudScale';
+import type { SafeAreaInsets } from './SafeAreaInsets';
+import { toWorldInsets, ZERO_INSETS } from './SafeAreaInsets';
 import type { SafeZone } from './SafeZone';
 import { applyBossPhaseFrame } from './SpriteFrames';
 
@@ -279,7 +281,8 @@ export class BossManager {
 
 	private createHealthBar(): void {
 		const barX = this.scene.scale.width / 2;
-		const barY = 50;
+		const wi = this.getWorldInsets();
+		const barY = 50 + wi.top;
 		const barH = 8;
 		const factor = computeTextScaleFactor(
 			this.scene.scale.displaySize.width,
@@ -429,6 +432,18 @@ export class BossManager {
 			// Final death burst (handled by GameScene's normal kill path via deathBurst)
 			this.onBossDefeated();
 		});
+	}
+
+	private getWorldInsets(): SafeAreaInsets {
+		const raw = this.scene.registry.get('safeAreaInsets') as SafeAreaInsets | undefined;
+		if (!raw) return ZERO_INSETS;
+		return toWorldInsets(
+			raw,
+			this.scene.scale.width,
+			this.scene.scale.height,
+			this.scene.scale.displaySize.width,
+			this.scene.scale.displaySize.height,
+		);
 	}
 
 	private chainExplosions(onComplete: () => void): void {
