@@ -7,6 +7,9 @@ import { z } from 'zod';
 export const ControlSchemeSchema = z.enum(['wasd', 'arrows', 'touch']);
 export type ControlScheme = z.infer<typeof ControlSchemeSchema>;
 
+export const TouchStyleSchema = z.enum(['relative', 'joystick']);
+export type TouchStyle = z.infer<typeof TouchStyleSchema>;
+
 // ---------------------------------------------------------------------------
 // Game settings — persisted to localStorage
 // ---------------------------------------------------------------------------
@@ -25,6 +28,8 @@ export const GameSettingsSchema = z.object({
 	controlScheme: ControlSchemeSchema.default('wasd'),
 	/** Whether touch controls are shown on mobile */
 	touchControlsEnabled: z.boolean().default(true),
+	/** Touch input style: 'relative' (1:1 finger tracking) or 'joystick' (virtual stick) */
+	touchStyle: TouchStyleSchema.default('relative'),
 
 	// --- Display ---
 	/**

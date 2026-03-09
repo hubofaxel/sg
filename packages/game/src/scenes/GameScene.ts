@@ -13,6 +13,7 @@ import { HudManager } from '../systems/HudManager';
 import type { InputAdapter } from '../systems/InputIntent';
 import { KeyboardInput } from '../systems/KeyboardInput';
 import { BulletPool } from '../systems/ObjectPool';
+import { RelativeTouchInput } from '../systems/RelativeTouchInput';
 import type { SafeZone } from '../systems/SafeZone';
 import { updateEnemyAnimation, updateShipBanking } from '../systems/SpriteFrames';
 import { TouchInput } from '../systems/TouchInput';
@@ -110,6 +111,10 @@ export class GameScene extends Phaser.Scene {
 		// Input adapter — select based on settings and device capability
 		this.inputAdapter = this.selectInputAdapter();
 		this.inputAdapter.create(this);
+		// RelativeTouchInput needs a reference to the player sprite
+		if (this.inputAdapter instanceof RelativeTouchInput) {
+			this.inputAdapter.setPlayer(this.player);
+		}
 
 		// Clear input state on game-level pause (fired by Phaser's VisibilityHandler
 		// and by explicit handle.pause() calls). Scene-level 'pause' does NOT fire
@@ -291,9 +296,28 @@ export class GameScene extends Phaser.Scene {
 		const body = this.player.body as Phaser.Physics.Arcade.Body;
 		const intent = this.inputAdapter.update();
 
-		const vx = intent.moveVector.x * PLAYER_SPEED;
-		const vy = intent.moveVector.y * PLAYER_SPEED;
-		body.setVelocity(vx, vy);
+		if (intent.isPositionDelta) {
+			// Relative touch: moveVector is a position delta in world pixels
+			// Apply directly and clamp to world bounds
+			const { width, height } = this.scale;
+			const margin = 12;
+			this.player.x = Phaser.Math.Clamp(
+				this.player.x + intent.moveVector.x,
+				margin,
+				width - margin,
+			);
+			this.player.y = Phaser.Math.Clamp(
+				this.player.y + intent.moveVector.y,
+				margin,
+				height - margin,
+			);
+			body.setVelocity(0, 0);
+		} else {
+			// Velocity-based: keyboard or joystick
+			const vx = intent.moveVector.x * PLAYER_SPEED;
+			const vy = intent.moveVector.y * PLAYER_SPEED;
+			body.setVelocity(vx, vy);
+		}
 
 		// Update ship sprite frame for banking visual
 		if (this.player instanceof Phaser.GameObjects.Sprite && this.textures.exists(SHIP.spriteKey)) {
@@ -304,6 +328,7 @@ export class GameScene extends Phaser.Scene {
 	private selectInputAdapter(): InputAdapter {
 		const controlScheme = this.registry.get('controlScheme') as string | undefined;
 		const touchEnabled = this.registry.get('touchControlsEnabled') as boolean | undefined;
+		const touchStyle = (this.registry.get('touchStyle') as string | undefined) ?? 'relative';
 
 		// Explicit keyboard override — user deliberately chose keyboard
 		if (controlScheme === 'arrows') {
@@ -312,7 +337,7 @@ export class GameScene extends Phaser.Scene {
 
 		// Explicit touch override
 		if (controlScheme === 'touch') {
-			return new TouchInput();
+			return touchStyle === 'joystick' ? new TouchInput() : new RelativeTouchInput();
 		}
 
 		// Auto-detect: use touch if device supports it and setting allows
@@ -321,7 +346,7 @@ export class GameScene extends Phaser.Scene {
 			const hasTouch =
 				typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 			if (hasTouch) {
-				return new TouchInput();
+				return touchStyle === 'joystick' ? new TouchInput() : new RelativeTouchInput();
 			}
 		}
 

@@ -42,6 +42,7 @@ onMount(() => {
 				showFps: s.showFps,
 				touchControlsEnabled: s.touchControlsEnabled,
 				controlScheme: s.controlScheme,
+				touchStyle: s.touchStyle,
 			},
 		});
 

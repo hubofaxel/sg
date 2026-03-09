@@ -8,6 +8,8 @@ import type * as Phaser from 'phaser';
 export interface InputIntent {
 	/** Movement direction, each axis normalized to -1..1 */
 	moveVector: { x: number; y: number };
+	/** When true, moveVector is a position delta (pixels) not a velocity direction */
+	isPositionDelta: boolean;
 	/** Primary weapon firing (true = fire when cooldown ready) */
 	fireHeld: boolean;
 	/** Secondary ability (reserved for future use) */
@@ -27,6 +29,7 @@ export interface InputAdapter {
 /** Zero-state intent — no input */
 export const ZERO_INTENT: Readonly<InputIntent> = {
 	moveVector: { x: 0, y: 0 },
+	isPositionDelta: false,
 	fireHeld: true, // firing is unconditional
 	secondaryHeld: false,
 	pausePressed: false,

@@ -71,6 +71,7 @@ export function mountGame(container: HTMLElement, options: GameMountOptions = {}
 		});
 		game.registry.set('touchControlsEnabled', s.touchControlsEnabled ?? true);
 		game.registry.set('controlScheme', s.controlScheme ?? 'wasd');
+		game.registry.set('touchStyle', s.touchStyle ?? 'relative');
 	}
 
 	// Resize handler — recompute world size when container changes

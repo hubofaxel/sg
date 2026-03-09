@@ -94,6 +94,8 @@ export {
 	defaultGameSettings,
 	type GameSettings,
 	GameSettingsSchema,
+	type TouchStyle,
+	TouchStyleSchema,
 } from './settings/settings.schema';
 // Ships
 export {

@@ -22,6 +22,8 @@ export interface GameMountOptions {
 		touchControlsEnabled?: boolean;
 		/** Control scheme: 'wasd' | 'arrows' | 'touch' */
 		controlScheme?: string;
+		/** Touch input style: 'relative' (1:1 tracking) or 'joystick' (virtual stick) */
+		touchStyle?: string;
 	};
 }
 

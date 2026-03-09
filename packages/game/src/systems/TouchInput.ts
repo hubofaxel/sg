@@ -35,6 +35,7 @@ export class TouchInput implements InputAdapter {
 
 	private intent: InputIntent = {
 		moveVector: { x: 0, y: 0 },
+		isPositionDelta: false,
 		fireHeld: true,
 		secondaryHeld: false,
 		pausePressed: false,
