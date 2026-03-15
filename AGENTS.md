@@ -38,6 +38,7 @@
 | PreToolUse | Edit|MultiEdit|Write | Block edits on main branch |
 | PostToolUse | Edit|MultiEdit|Write | Auto-format with Biome |
 | PostToolUse | Edit|MultiEdit|Write | Check vite dev log for errors after .svelte/.ts/.js/.css edits |
+| PostToolUse | Edit|MultiEdit|Write | Append to session audit log (.dev-logs/agent-audit.jsonl) |
 
 ## Commands (`.claude/commands/`)
 
@@ -52,3 +53,19 @@
 | /vertical-slice | Build the Stage 3 vertical slice — one complete playable loop. |
 
 Note: `/commit` is a built-in skill, not a custom command file.
+
+## Context Budget
+
+Estimated instruction tokens loaded per agent session (~0.75 tokens/word). Root CLAUDE.md (~360 tokens) is always loaded.
+
+| Agent | Package CLAUDE.md | Agent def | Likely skills | Est. total |
+|---|---|---|---|---|
+| phaser-integrator | game (790) | 260 | phaser4-rc (505), mobile-adaptation (570), sveltekit-phaser-seam (420) | ~2.9k max |
+| svelte-shell | web (120) | 180 | sveltekit-phaser-seam (420), browser-debugging (475) | ~1.6k max |
+| schema-validator | contracts (185) | 120 | zod4-content-schemas (210) | ~0.9k |
+| asset-pipeline | asset-gen (575) | 475 | asset-generation (595) | ~2.0k |
+| test-runner | (varies) | 125 | (none typical) | ~0.5k base |
+| pr-shipper | (none) | 160 | trunk-based-dev (145) | ~0.7k |
+| diagnostician | (varies) | 200 | browser-debugging (475) | ~1.0k |
+
+**Guideline:** Avoid loading more than 2 skills simultaneously. If a task spans multiple skill domains, break it into sequential steps.

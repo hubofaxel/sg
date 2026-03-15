@@ -87,6 +87,11 @@
 						"type": "command",
 						"command": "fp=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .path // empty' 2>/dev/null); [ -z \"$fp\" ] && exit 0; case \"$fp\" in *.svelte|*.ts|*.js|*.css) sleep 2; if [ -f \"$CLAUDE_PROJECT_DIR/.dev-logs/vite-dev.log\" ]; then ERRORS=$(tail -30 \"$CLAUDE_PROJECT_DIR/.dev-logs/vite-dev.log\" | grep -i 'error\\|500\\|SyntaxError\\|TypeError\\|Cannot find' | tail -5); if [ -n \"$ERRORS\" ]; then echo \"{\\\"additionalContext\\\": \\\"Dev server errors after edit:\\n$ERRORS\\\"}\"; fi; fi;; esac",
 						"timeout": 10000
+					},
+					{
+						"type": "command",
+						"command": "fp=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .path // empty' 2>/dev/null); [ -n \"$fp\" ] && echo \"{\\\"ts\\\":\\\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\\\",\\\"tool\\\":\\\"$CLAUDE_TOOL\\\",\\\"file\\\":\\\"$fp\\\"}\" >> \"${CLAUDE_PROJECT_DIR:-.}/.dev-logs/agent-audit.jsonl\" 2>/dev/null; exit 0",
+						"timeout": 3000
 					}
 				]
 			}
