@@ -3,6 +3,8 @@ name: test-runner
 description: Runs and maintains the test suite across Vitest and Playwright
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
+mcpServers:
+  - playwright
 ---
 
 You are responsible for the ship-game test suite.

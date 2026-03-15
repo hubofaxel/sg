@@ -5,6 +5,9 @@ Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorep
 ## Planning
 
 Current priorities, backlog, and project status: `docs/DELIVERY_PLAN.md`
+Structured task list (tactical): `docs/tasks.json` — use `/tasks` to view and manage
+Agentic infrastructure plan and implementation sequence: `docs/agentic-infra.md`
+Agent roster, skills, hooks, commands: `AGENTS.md` (auto-generated — run `pnpm agents:sync`)
 
 ## Boundaries
 
@@ -41,22 +44,35 @@ Current priorities, backlog, and project status: `docs/DELIVERY_PLAN.md`
 - Chrome debug: `bash tools/scripts/chrome-debug.sh` (port 9222)
 - ALWAYS check the log after any code change that could affect rendering
 - PostToolUse hook auto-checks vite log after .svelte/.ts/.js/.css edits
+- Audit log query: `bash tools/scripts/audit-query.sh --last 20` (also: `--agent`, `--file`, `--branch`)
+- Session log: `.dev-logs/agent-sessions.jsonl` (SubagentStart/Stop hooks log agent lifecycle)
+- Handoff files: `.dev-logs/handoffs/<branch>.json` (written by agents, read by next agent in workflow)
 
 ## Agent Handoff Protocol
 
-When an agent completes a delegated step in a multi-agent workflow (e.g. `/vertical-slice`), it outputs a structured handoff block:
+When an agent completes a delegated step in a multi-agent workflow (e.g. `/vertical-slice`), it writes a handoff file:
 
+```bash
+# File path: .dev-logs/handoffs/<branch-name>.json
+{
+  "agent": "phaser-integrator",
+  "branch": "feat/stage-3-loop",
+  "status": "done | blocked | partial",
+  "files": ["path/to/changed-file.ts", "path/to/another.ts"],
+  "blockers": null,
+  "notes": "context for the next agent",
+  "timestamp": "2026-03-14T12:00:00Z"
+}
+```
+
+The next agent in the workflow reads this file directly — no human copy-paste needed. `pr-shipper` reads the file list from the handoff file for staging.
+
+Agents also write a lightweight console HANDOFF block (for human visibility):
 ```
 HANDOFF
-status: done | blocked | partial
-files:
-  - path/to/changed-file.ts
-  - path/to/another.ts
-blockers: (if blocked/partial) description of what's stuck
-notes: (optional) context for the next agent
+status: done
+files: (see .dev-logs/handoffs/<branch>.json)
 ```
-
-The orchestrating session passes this to the next agent. `pr-shipper` uses the file list for staging.
 
 ## Rules
 

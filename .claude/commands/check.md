@@ -13,3 +13,4 @@ Steps:
    - Lint/format failures -> run `pnpm lint:fix`
    - Test failures -> test-runner agent
    - Asset validation failures -> asset-pipeline agent
+7. Read `docs/tasks.json` and cross-reference: if failures relate to an in-progress or assigned task, note which task and assignee are affected. Example: "Type error in packages/game/ — relates to task `stage-presentation-polish` (assigned: phaser-integrator)"

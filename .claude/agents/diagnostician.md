@@ -3,6 +3,9 @@ name: diagnostician
 description: Diagnoses runtime errors by reading dev server logs, browser console, and network state. Delegate when something renders wrong or crashes.
 tools: Read, Bash, Glob, Grep
 model: sonnet
+memory: project
+mcpServers:
+  - chrome-devtools
 skills:
   - browser-debugging
 ---
@@ -40,3 +43,13 @@ Common SvelteKit + Phaser issues:
 - Asset manifest paths need `/assets/` prefix (SvelteKit serves `static/` at root)
 
 Package scope is `@sg/` — not `@ship-game/`.
+
+## Memory
+
+After diagnosing an issue, update your agent memory with:
+- Error patterns and their root causes
+- Runtime quirks specific to this SvelteKit + Phaser stack
+- Diagnostic shortcuts that saved time
+- False leads worth avoiding in the future
+
+Before starting a diagnosis, consult your memory for recurring patterns.
