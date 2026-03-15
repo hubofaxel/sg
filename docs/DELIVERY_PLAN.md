@@ -15,17 +15,14 @@ Single source of planning truth for the ship-game repo.
 
 ## Near-Term Priorities
 
-### 1. Agent state and task infrastructure
+### 1. Agent Teams integration (Phase 5 — experimental)
 
-Full infrastructure plan: `docs/agentic-infra.md`. Phases 1-3 shipped. Remaining work:
+Full infrastructure plan: `docs/agentic-infra.md`. Phases 1-4 shipped (persistent memory, file-based handoffs, audit query, session tracking, task architecture, observability, MCP scoping). Remaining:
 
-**Observability consolidation (Phase 4 — next):**
-- `/status` command to synthesize task state, session log, handoff files, branches
-- MCP server scoping per agent (reduce context noise)
-
-**Agent Teams (Phase 5 — experimental):**
 - Multi-agent workflows still require human routing between sessions
 - No auto-dispatch from `/check` to responsible agents
+- Agent Teams feature flag not yet enabled
+- See `docs/agentic-infra.md` §6 and §10 Phase 5 for implementation details
 
 ### 2. Responsive test infrastructure
 
@@ -44,9 +41,15 @@ Current unit tests cover HudScale (9 devices), SafeZone (8 aspect ratios), and S
 
 ## Completed
 
-### Agentic dev architecture upgrade (shipped f5df028)
+### Agentic infrastructure Phases 1-4
 
-Orchestration protocols, staleness detection, observability. Shipped: HANDOFF protocol for inter-agent delegation with failure recovery, `gen-agents-md.sh` + `pnpm agents:sync` for auto-generated AGENTS.md, PostToolUse audit log hook (`.dev-logs/agent-audit.jsonl`), context budget table, GitHub MCP server, stale `.agents/` directory cleanup. Remaining gaps (persistent state, task tracking, agent messaging) tracked as new priority #1 above.
+Full implementation of `docs/agentic-infra.md` Phases 1-4:
+- **Phase 1 (foundation):** Persistent memory on 3 agents, automated context budget, enhanced audit log (agent + branch per entry)
+- **Phase 2 (state layer):** File-based HANDOFF relay, `audit-query.sh`, SubagentStart/Stop session tracking
+- **Phase 3 (task architecture):** `docs/tasks.json` structured tasks, `/tasks` command, `/check` + `/land` task integration
+- **Phase 4 (observability):** `/status` command, MCP server scoping per agent (diagnostician → chrome-devtools, test-runner → playwright, pr-shipper → github)
+
+Prior: HANDOFF protocol, `gen-agents-md.sh` + `pnpm agents:sync`, PostToolUse audit log hook, context budget table, GitHub MCP server (shipped f5df028).
 
 ### GitHub Pages hosting (shipped cf63924)
 
