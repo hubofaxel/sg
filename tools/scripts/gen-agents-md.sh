@@ -93,7 +93,10 @@ for (const [event, matchers] of Object.entries(s.hooks || {})) {
       else if (cmd.includes('curl') && cmd.includes('localhost')) desc = 'Warn if dev server is not running';
       else if (cmd.includes('branch') && cmd.includes('main')) desc = 'Block edits on main branch';
       else if (cmd.includes('biome')) desc = 'Auto-format with Biome';
-      console.log('| ' + event + ' | ' + m.matcher + ' | ' + desc + ' |');
+      else if (cmd.includes('agent-sessions') && cmd.includes('start')) desc = 'Log subagent start to .dev-logs/agent-sessions.jsonl';
+      else if (cmd.includes('agent-sessions') && cmd.includes('stop')) desc = 'Log subagent stop to .dev-logs/agent-sessions.jsonl';
+      const matcher = m.matcher || '*';
+      console.log('| ' + event + ' | ' + matcher + ' | ' + desc + ' |');
     }
   }
 }

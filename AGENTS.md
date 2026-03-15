@@ -35,6 +35,8 @@
 |---|---|---|
 | SessionStart | cli | Load direnv env vars via CLAUDE_ENV_FILE |
 | SessionStart | cli | Warn if dev server is not running |
+| SubagentStart | * | Log subagent start to .dev-logs/agent-sessions.jsonl |
+| SubagentStop | * | Log subagent stop to .dev-logs/agent-sessions.jsonl |
 | PreToolUse | Edit|MultiEdit|Write | Block edits on main branch |
 | PostToolUse | Edit|MultiEdit|Write | Auto-format with Biome |
 | PostToolUse | Edit|MultiEdit|Write | Check vite dev log for errors after .svelte/.ts/.js/.css edits |
@@ -63,9 +65,9 @@ Estimated instruction tokens loaded per agent session (~0.75 tokens/word). Root 
 | asset-pipeline | 518 | asset-generation (594), monorepo-conventions (165) | ~1.7k |
 | diagnostician | 239 | browser-debugging (474) | ~1.1k |
 | phaser-integrator | 300 | phaser4-rc (505), sveltekit-phaser-seam (418) | ~1.6k |
-| pr-shipper | 159 | trunk-based-dev (142) | ~0.7k |
+| pr-shipper | 165 | trunk-based-dev (142) | ~0.7k |
 | schema-validator | 117 | zod4-content-schemas (211) | ~0.7k |
-| svelte-shell | 180 | monorepo-conventions (165), sveltekit-phaser-seam (418) | ~1.1k |
+| svelte-shell | 180 | monorepo-conventions (165), sveltekit-phaser-seam (418) | ~1.2k |
 | test-runner | 126 | (none) | ~0.5k |
 
 **Guideline:** Avoid loading more than 2 skills simultaneously. If a task spans multiple skill domains, break it into sequential steps.
