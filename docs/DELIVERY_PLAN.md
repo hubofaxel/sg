@@ -17,35 +17,21 @@ Single source of planning truth for the ship-game repo.
 
 ### 1. Agent state and task infrastructure
 
-The agentic dev framework has orchestration protocols (HANDOFF blocks), observability (audit log hook), and staleness detection (`pnpm agents:sync`). What's missing is persistent state between agent sessions and structured task tracking. Full infrastructure plan and implementation sequence: `docs/agentic-infra.md`. Gap summary below.
+Full infrastructure plan: `docs/agentic-infra.md`. Phases 1-2 shipped (persistent memory, file-based handoffs, audit query, session tracking). Remaining work:
 
-**Inter-agent state management:**
-Currently there is no shared state between agent sessions. Each session starts fresh, reading CLAUDE.md and memory files for context. The HANDOFF protocol requires a human to copy-paste output from one agent into the next. There is no persistent workflow state — if a multi-step command like `/vertical-slice` is interrupted, progress tracking is lost.
-
-Concrete gaps:
-- No shared task queue agents can read/write across sessions
-- No way for an agent to check "what did the last agent do?" without human relay
-- No persistent record of in-flight work beyond git branch existence
-- Audit log (`.dev-logs/agent-audit.jsonl`) is append-only, not queryable by agents
-
-**Task and roadmap tracking:**
-Planning lives in `docs/DELIVERY_PLAN.md` — a flat markdown file with prose descriptions. There are no structured task objects, no status fields, no dependency tracking, no assignment to agents.
-
-Concrete gaps:
+**Task and roadmap tracking (Phase 3 — in progress):**
 - No machine-readable task format (priorities are prose paragraphs)
 - No task lifecycle (created → assigned → in-progress → blocked → done)
 - No way to break a priority into subtasks with tracked completion
 - No integration between task state and `/check` or `/land` commands
-- Backlog items have no size estimates, dependencies, or acceptance criteria
 
-**Agent-to-agent messaging:**
-Communication is human-routed. Agent A outputs a HANDOFF block, human pastes it to Agent B. There is no direct channel, no event bus, no shared inbox.
+**Observability consolidation (Phase 4):**
+- `/status` command to synthesize task state, session log, handoff files, branches
+- MCP server scoping per agent (reduce context noise)
 
-Concrete gaps:
-- Multi-agent workflows (e.g. `/vertical-slice`) require human to be the message bus
-- No way for diagnostician to notify phaser-integrator of a runtime error
-- No mechanism for `/check` to automatically dispatch failures to the right agent
-- HANDOFF protocol is well-defined but not machine-consumable (no file-based relay)
+**Agent Teams (Phase 5 — experimental):**
+- Multi-agent workflows still require human routing between sessions
+- No auto-dispatch from `/check` to responsible agents
 
 ### 2. Responsive test infrastructure
 

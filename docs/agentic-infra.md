@@ -474,18 +474,19 @@ This is optional. The human currently fills this role effectively. Add it only i
 
 Each phase is independently shippable. Estimated sizes are relative.
 
-### Phase 1: Foundation (S — 1 branch)
-- Enable persistent memory on phaser-integrator, diagnostician, asset-pipeline
-- Add memory maintenance instructions to those agent definitions
-- Automate context budget calculation in `gen-agents-md.sh`
-- Enhance audit log schema (add agent, branch, hookResult)
+### Phase 1: Foundation — SHIPPED
+- ~~Enable persistent memory on phaser-integrator, diagnostician, asset-pipeline~~
+- ~~Add memory maintenance instructions to those agent definitions~~
+- ~~Automate context budget calculation in `gen-agents-md.sh`~~
+- ~~Enhance audit log schema (add agent, branch, hookResult)~~
 
-### Phase 2: State layer (M — 1-2 branches)
-- Implement file-based HANDOFF relay (`.dev-logs/handoffs/`)
-- Update CLAUDE.md HANDOFF protocol section
-- Update pr-shipper to read handoff files
-- Add `tools/scripts/audit-query.sh`
-- Add session state files (`.dev-logs/sessions/`)
+### Phase 2: State layer — SHIPPED
+- ~~Implement file-based HANDOFF relay (`.dev-logs/handoffs/`)~~
+- ~~Update CLAUDE.md HANDOFF protocol section~~
+- ~~Update pr-shipper to read handoff files~~
+- ~~Add `tools/scripts/audit-query.sh`~~
+- ~~Add session state files (`.dev-logs/sessions/`)~~
+- ~~Add SubagentStart/SubagentStop hooks~~ (pulled forward from Phase 4)
 
 ### Phase 3: Task architecture (M — 1-2 branches)
 - Create `docs/tasks.json` schema and initial data (migrate from DELIVERY_PLAN.md priorities)
@@ -494,8 +495,8 @@ Each phase is independently shippable. Estimated sizes are relative.
 - Keep DELIVERY_PLAN.md as strategic layer, add task ID cross-references
 
 ### Phase 4: Observability (S — 1 branch)
-- Add SubagentStart/SubagentStop hooks
-- Create `.dev-logs/agent-sessions.jsonl`
+- ~~Add SubagentStart/SubagentStop hooks~~ (shipped in Phase 2)
+- ~~Create `.dev-logs/agent-sessions.jsonl`~~ (shipped in Phase 2)
 - Add `/status` command
 - Scope MCP servers to relevant agents
 
