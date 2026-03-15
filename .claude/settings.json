@@ -90,7 +90,7 @@
 					},
 					{
 						"type": "command",
-						"command": "fp=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .path // empty' 2>/dev/null); [ -n \"$fp\" ] && echo \"{\\\"ts\\\":\\\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\\\",\\\"tool\\\":\\\"$CLAUDE_TOOL\\\",\\\"file\\\":\\\"$fp\\\"}\" >> \"${CLAUDE_PROJECT_DIR:-.}/.dev-logs/agent-audit.jsonl\" 2>/dev/null; exit 0",
+						"command": "fp=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // .path // empty' 2>/dev/null); [ -n \"$fp\" ] && echo \"{\\\"ts\\\":\\\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\\\",\\\"agent\\\":\\\"${CLAUDE_AGENT_NAME:-main}\\\",\\\"branch\\\":\\\"$(git branch --show-current 2>/dev/null || echo unknown)\\\",\\\"tool\\\":\\\"$CLAUDE_TOOL\\\",\\\"file\\\":\\\"$fp\\\"}\" >> \"${CLAUDE_PROJECT_DIR:-.}/.dev-logs/agent-audit.jsonl\" 2>/dev/null; exit 0",
 						"timeout": 3000
 					}
 				]

@@ -3,6 +3,7 @@ name: phaser-integrator
 description: Implements Phaser 4 RC game features within the isolation boundary
 tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep
 model: opus
+memory: project
 skills:
   - phaser4-rc
   - sveltekit-phaser-seam
@@ -43,6 +44,16 @@ Phaser 4 is RC — check the phaser4-rc skill for known API quirks before using 
 - If a new asset is needed, document it in `docs/asset-contracts.md` and defer to the asset-pipeline agent
 
 Package scope is `@sg/` — not `@ship-game/`.
+
+## Memory
+
+After completing a task, update your agent memory with:
+- Phaser 4 RC API quirks or workarounds discovered
+- Scene wiring patterns that took multiple iterations
+- File paths and system relationships that weren't obvious
+- Decisions made and their rationale
+
+Before starting a task, consult your memory for relevant prior context.
 
 ## Maintenance
 

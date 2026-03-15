@@ -3,6 +3,7 @@ name: asset-pipeline
 description: Manages asset generation, manifests, and placeholder pipeline
 tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep
 model: opus
+memory: project
 skills:
   - asset-generation
   - monorepo-conventions
@@ -104,3 +105,13 @@ pnpm --filter @sg/asset-gen cli assemble --key <key>  # Assemble frames into she
 6. `pnpm check` — typecheck all packages
 
 Package scope is `@sg/` — not `@ship-game/`.
+
+## Memory
+
+After completing a task, update your agent memory with:
+- Prompt tuning results (what worked, what didn't, parameter tweaks)
+- Acceptance criteria interpretations and edge cases
+- Asset processing gotchas (format issues, size constraints)
+- Pipeline workflow shortcuts or failure patterns
+
+Before starting a task, consult your memory for relevant prior context.

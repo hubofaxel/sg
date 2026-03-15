@@ -14,13 +14,13 @@ cat > "$OUT" <<'HEADER'
 
 ## Agents
 
-| Agent | Model | Description |
-|---|---|---|
+| Agent | Model | Memory | Description |
+|---|---|---|---|
 HEADER
 
 # Parse agent frontmatter
 for f in .claude/agents/*.md; do
-  name="" model="" desc=""
+  name="" model="" desc="" memory="-"
   in_frontmatter=false
   while IFS= read -r line; do
     if [[ "$line" == "---" ]]; then
@@ -32,11 +32,12 @@ for f in .claude/agents/*.md; do
       case "$line" in
         name:*) name="${line#name: }" ;;
         model:*) model="${line#model: }" ;;
+        memory:*) memory="${line#memory: }" ;;
         description:*) desc="${line#description: }" ;;
       esac
     fi
   done < "$f"
-  printf '| %s | %s | %s |\n' "$name" "$model" "$desc" >> "$OUT"
+  printf '| %s | %s | %s | %s |\n' "$name" "$model" "$memory" "$desc" >> "$OUT"
 done
 
 cat >> "$OUT" <<'SKILLS_HEADER'
@@ -117,24 +118,73 @@ done
 echo "" >> "$OUT"
 echo "Note: \`/commit\` is a built-in skill, not a custom command file." >> "$OUT"
 
-# Context budget (static section — update manually when agent definitions change significantly)
-cat >> "$OUT" <<'BUDGET'
+# Context budget (computed from actual file word counts)
+cat >> "$OUT" <<'BUDGET_HEADER'
 
 ## Context Budget
 
-Estimated instruction tokens loaded per agent session (~0.75 tokens/word). Root CLAUDE.md (~360 tokens) is always loaded.
+Estimated instruction tokens loaded per agent session (~0.75 tokens/word). Root CLAUDE.md is always loaded.
 
-| Agent | Package CLAUDE.md | Agent def | Likely skills | Est. total |
-|---|---|---|---|---|
-| phaser-integrator | game (790) | 260 | phaser4-rc (505), mobile-adaptation (570), sveltekit-phaser-seam (420) | ~2.9k max |
-| svelte-shell | web (120) | 180 | sveltekit-phaser-seam (420), browser-debugging (475) | ~1.6k max |
-| schema-validator | contracts (185) | 120 | zod4-content-schemas (210) | ~0.9k |
-| asset-pipeline | asset-gen (575) | 475 | asset-generation (595) | ~2.0k |
-| test-runner | (varies) | 125 | (none typical) | ~0.5k base |
-| pr-shipper | (none) | 160 | trunk-based-dev (145) | ~0.7k |
-| diagnostician | (varies) | 200 | browser-debugging (475) | ~1.0k |
+| Agent | Agent def | Skills | Est. tokens |
+|---|---|---|---|
+BUDGET_HEADER
+
+root_words=$(wc -w < CLAUDE.md 2>/dev/null || echo 0)
+root_tokens=$(( root_words * 3 / 4 ))
+
+for f in .claude/agents/*.md; do
+  name=""
+  skills=()
+  in_frontmatter=false
+  in_skills=false
+  while IFS= read -r line; do
+    if [[ "$line" == "---" ]]; then
+      if $in_frontmatter; then break; fi
+      in_frontmatter=true
+      continue
+    fi
+    if $in_frontmatter; then
+      case "$line" in
+        name:*) name="${line#name: }" ;;
+        skills:*) in_skills=true ;;
+        "  - "*)
+          if $in_skills; then
+            skills+=("${line#  - }")
+          fi
+          ;;
+        *) in_skills=false ;;
+      esac
+    fi
+  done < "$f"
+
+  agent_words=$(wc -w < "$f" 2>/dev/null || echo 0)
+  agent_tokens=$(( agent_words * 3 / 4 ))
+
+  skill_parts=""
+  skill_tokens=0
+  for s in "${skills[@]}"; do
+    sf=".claude/skills/$s/SKILL.md"
+    if [[ -f "$sf" ]]; then
+      sw=$(wc -w < "$sf" 2>/dev/null || echo 0)
+      st=$(( sw * 3 / 4 ))
+      skill_tokens=$(( skill_tokens + st ))
+      if [[ -n "$skill_parts" ]]; then skill_parts+=", "; fi
+      skill_parts+="$s ($st)"
+    fi
+  done
+  [[ -z "$skill_parts" ]] && skill_parts="(none)"
+
+  total=$(( root_tokens + agent_tokens + skill_tokens ))
+  # Round to nearest 100, format as X.Yk
+  rounded=$(( (total + 50) / 100 * 100 ))
+  major=$(( rounded / 1000 ))
+  minor=$(( (rounded % 1000) / 100 ))
+  printf '| %s | %d | %s | ~%d.%dk |\n' "$name" "$agent_tokens" "$skill_parts" "$major" "$minor" >> "$OUT"
+done
+
+cat >> "$OUT" <<'BUDGET_FOOTER'
 
 **Guideline:** Avoid loading more than 2 skills simultaneously. If a task spans multiple skill domains, break it into sequential steps.
-BUDGET
+BUDGET_FOOTER
 
 echo "Generated $OUT"
