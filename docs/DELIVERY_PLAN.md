@@ -17,15 +17,9 @@ Single source of planning truth for the ship-game repo.
 
 ### 1. Agent state and task infrastructure
 
-Full infrastructure plan: `docs/agentic-infra.md`. Phases 1-2 shipped (persistent memory, file-based handoffs, audit query, session tracking). Remaining work:
+Full infrastructure plan: `docs/agentic-infra.md`. Phases 1-3 shipped. Remaining work:
 
-**Task and roadmap tracking (Phase 3 — in progress):**
-- No machine-readable task format (priorities are prose paragraphs)
-- No task lifecycle (created → assigned → in-progress → blocked → done)
-- No way to break a priority into subtasks with tracked completion
-- No integration between task state and `/check` or `/land` commands
-
-**Observability consolidation (Phase 4):**
+**Observability consolidation (Phase 4 — next):**
 - `/status` command to synthesize task state, session log, handoff files, branches
 - MCP server scoping per agent (reduce context noise)
 
