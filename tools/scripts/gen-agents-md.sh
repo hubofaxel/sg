@@ -40,6 +40,48 @@ for f in .claude/agents/*.md; do
   printf '| %s | %s | %s | %s |\n' "$name" "$model" "$memory" "$desc" >> "$OUT"
 done
 
+# MCP server scoping
+echo "" >> "$OUT"
+echo "### MCP Server Scoping" >> "$OUT"
+echo "" >> "$OUT"
+has_mcp=false
+for f in .claude/agents/*.md; do
+  name=""
+  mcps=()
+  in_frontmatter=false
+  in_mcp=false
+  while IFS= read -r line; do
+    if [[ "$line" == "---" ]]; then
+      if $in_frontmatter; then break; fi
+      in_frontmatter=true
+      continue
+    fi
+    if $in_frontmatter; then
+      case "$line" in
+        name:*) name="${line#name: }" ;;
+        mcpServers:*) in_mcp=true ;;
+        "  - "*)
+          if $in_mcp; then
+            mcps+=("${line#  - }")
+          fi
+          ;;
+        *) in_mcp=false ;;
+      esac
+    fi
+  done < "$f"
+  if [[ ${#mcps[@]} -gt 0 ]]; then
+    if ! $has_mcp; then
+      echo "| Agent | MCP Servers |" >> "$OUT"
+      echo "|---|---|" >> "$OUT"
+      has_mcp=true
+    fi
+    printf '| %s | %s |\n' "$name" "${mcps[*]}" >> "$OUT"
+  fi
+done
+if ! $has_mcp; then
+  echo "No agents have scoped MCP servers." >> "$OUT"
+fi
+
 cat >> "$OUT" <<'SKILLS_HEADER'
 
 ## Skills (`.claude/skills/`)

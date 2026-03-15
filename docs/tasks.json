@@ -23,7 +23,7 @@
 			"id": "infra-phase4-observability",
 			"title": "Observability consolidation (Phase 4)",
 			"priority": 2,
-			"status": "pending",
+			"status": "done",
 			"assignee": null,
 			"depends": ["infra-phase3-tasks"],
 			"acceptance": [

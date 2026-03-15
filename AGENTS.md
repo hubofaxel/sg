@@ -15,6 +15,14 @@
 | svelte-shell | sonnet | - | Builds and maintains the SvelteKit app shell around the Phaser game |
 | test-runner | sonnet | - | Runs and maintains the test suite across Vitest and Playwright |
 
+### MCP Server Scoping
+
+| Agent | MCP Servers |
+|---|---|
+| diagnostician | chrome-devtools |
+| pr-shipper | github |
+| test-runner | playwright |
+
 ## Skills (`.claude/skills/`)
 
 | Skill | Trigger |
@@ -52,6 +60,7 @@
 | /bootstrap | Scaffold the complete ship-game monorepo from scratch. |
 | /check | Run the full quality gate sweep and report results. |
 | /land | Ship current changes to main using trunk-based workflow. |
+| /status | Show agentic development status — a single-command view of project state. |
 | /tasks | Read and manage the structured task list. |
 | /vertical-slice | Build the Stage 3 vertical slice — one complete playable loop. |
 
@@ -64,11 +73,11 @@ Estimated instruction tokens loaded per agent session (~0.75 tokens/word). Root 
 | Agent | Agent def | Skills | Est. tokens |
 |---|---|---|---|
 | asset-pipeline | 518 | asset-generation (594), monorepo-conventions (165) | ~1.7k |
-| diagnostician | 239 | browser-debugging (474) | ~1.1k |
+| diagnostician | 241 | browser-debugging (474) | ~1.1k |
 | phaser-integrator | 300 | phaser4-rc (505), sveltekit-phaser-seam (418) | ~1.7k |
-| pr-shipper | 165 | trunk-based-dev (142) | ~0.7k |
+| pr-shipper | 167 | trunk-based-dev (142) | ~0.7k |
 | schema-validator | 117 | zod4-content-schemas (211) | ~0.8k |
 | svelte-shell | 180 | monorepo-conventions (165), sveltekit-phaser-seam (418) | ~1.2k |
-| test-runner | 126 | (none) | ~0.6k |
+| test-runner | 129 | (none) | ~0.6k |
 
 **Guideline:** Avoid loading more than 2 skills simultaneously. If a task spans multiple skill domains, break it into sequential steps.

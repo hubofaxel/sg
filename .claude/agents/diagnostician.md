@@ -4,6 +4,8 @@ description: Diagnoses runtime errors by reading dev server logs, browser consol
 tools: Read, Bash, Glob, Grep
 model: sonnet
 memory: project
+mcpServers:
+  - chrome-devtools
 skills:
   - browser-debugging
 ---

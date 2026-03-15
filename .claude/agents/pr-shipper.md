@@ -3,6 +3,8 @@ name: pr-shipper
 description: Atomic trunk-based shipping — branch, commit, land
 tools: Read, Bash, Glob, Grep
 model: sonnet
+mcpServers:
+  - github
 skills:
   - trunk-based-dev
 ---

@@ -494,11 +494,11 @@ Each phase is independently shippable. Estimated sizes are relative.
 - ~~Update `/check` and `/land` to reference tasks~~
 - ~~Keep DELIVERY_PLAN.md as strategic layer, add task ID cross-references~~
 
-### Phase 4: Observability (S — 1 branch)
+### Phase 4: Observability — SHIPPED
 - ~~Add SubagentStart/SubagentStop hooks~~ (shipped in Phase 2)
 - ~~Create `.dev-logs/agent-sessions.jsonl`~~ (shipped in Phase 2)
-- Add `/status` command
-- Scope MCP servers to relevant agents
+- ~~Add `/status` command~~
+- ~~Scope MCP servers to relevant agents~~
 
 ### Phase 5: Agent Teams integration (L — experimental, ongoing)
 - Enable Agent Teams feature flag
