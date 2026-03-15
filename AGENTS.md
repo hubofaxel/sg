@@ -1,51 +1,54 @@
-# ship-game — Agentic Configuration
+# ship-game -- Agentic Configuration
+
+> Auto-generated from `.claude/` source files. Do not edit manually.
+> Run `pnpm agents:sync` to regenerate.
 
 ## Agents
 
-| Agent | Purpose |
-|---|---|
-| schema-validator | Zod schema creation, content validation, schema-first enforcement |
-| phaser-integrator | Phaser 4 RC game features within isolation boundary |
-| svelte-shell | SvelteKit app shell, routes, settings, persistence UI |
-| test-runner | Vitest + Playwright test suite maintenance |
-| pr-shipper | Trunk-based shipping: branch, commit, land |
-| asset-pipeline | Asset generation, manifests, placeholder pipeline |
-| diagnostician | Runtime error triage via dev server logs and browser console |
+| Agent | Model | Description |
+|---|---|---|
+| asset-pipeline | opus | Manages asset generation, manifests, and placeholder pipeline |
+| diagnostician | sonnet | Diagnoses runtime errors by reading dev server logs, browser console, and network state. Delegate when something renders wrong or crashes. |
+| phaser-integrator | opus | Implements Phaser 4 RC game features within the isolation boundary |
+| pr-shipper | sonnet | Atomic trunk-based shipping — branch, commit, land |
+| schema-validator | sonnet | Validates content JSON against Zod 4 contracts and enforces schema-first development |
+| svelte-shell | sonnet | Builds and maintains the SvelteKit app shell around the Phaser game |
+| test-runner | sonnet | Runs and maintains the test suite across Vitest and Playwright |
 
 ## Skills (`.claude/skills/`)
 
-| Skill | Trigger Context |
+| Skill | Trigger |
 |---|---|
-| phaser4-rc | Working in packages/game/ |
-| sveltekit-phaser-seam | Working on GameCanvas or mountGame |
-| zod4-content-schemas | Creating/modifying schemas in contracts |
-| asset-generation | Asset generation, adding new assets, modifying pipeline |
-| browser-debugging | 500 errors, blank pages, UI issues |
-| monorepo-conventions | Scaffolding packages, workspace config |
-| trunk-based-dev | Committing, branching, shipping |
-| mobile-adaptation | Mobile adaptation work (any agent) |
-| pwa-delivery | Service worker, manifest, install UX |
+| asset-generation | Asset Generation Patterns |
+| browser-debugging | Browser Debugging Workflow |
+| mobile-adaptation | Mobile Adaptation — Architecture Context |
+| monorepo-conventions | Monorepo Conventions |
+| phaser4-rc | Phaser 4 RC — Working Notes |
+| pwa-delivery | PWA Delivery with @vite-pwa/sveltekit |
+| sveltekit-phaser-seam | SvelteKit <-> Phaser Integration Seam |
+| trunk-based-dev | Trunk-Based Development |
+| zod4-content-schemas | Zod 4 Content Schema Patterns |
 
 ## Hooks
 
 | Hook | Matcher | Action |
 |---|---|---|
-| SessionStart | cli | Load direnv env vars via `CLAUDE_ENV_FILE` (`.claude/hooks/load-env.sh`) |
+| SessionStart | cli | Load direnv env vars via CLAUDE_ENV_FILE |
 | SessionStart | cli | Warn if dev server is not running |
-| PreToolUse | Edit/Write | Block edits on `main` branch |
-| PostToolUse | Edit/Write | Auto-format with Biome |
-| PostToolUse | Edit/Write | Check vite dev log for errors after .svelte/.ts/.js/.css edits |
+| PreToolUse | Edit|MultiEdit|Write | Block edits on main branch |
+| PostToolUse | Edit|MultiEdit|Write | Auto-format with Biome |
+| PostToolUse | Edit|MultiEdit|Write | Check vite dev log for errors after .svelte/.ts/.js/.css edits |
 
 ## Commands (`.claude/commands/`)
 
 | Command | Purpose |
 |---|---|
-| /bootstrap | Full monorepo scaffold from scratch |
-| /add-schema `<name>` | New Zod schema + test + sample content |
-| /add-scene `<name>` | New Phaser scene + wiring |
-| /add-asset `<key>` | Add new asset key to pipeline |
-| /vertical-slice | Stage 3 full gameplay loop buildout |
-| /land | Trunk-based merge to main |
-| /check | Full quality gate sweep with diagnostics |
+| /add-asset | Add a new asset key to the asset pipeline. |
+| /add-scene | Create a new Phaser 4 scene and wire it into the game runtime. |
+| /add-schema | Create a new Zod 4 schema, its tests, and sample content. |
+| /bootstrap | Scaffold the complete ship-game monorepo from scratch. |
+| /check | Run the full quality gate sweep and report results. |
+| /land | Ship current changes to main using trunk-based workflow. |
+| /vertical-slice | Build the Stage 3 vertical slice — one complete playable loop. |
 
 Note: `/commit` is a built-in skill, not a custom command file.
