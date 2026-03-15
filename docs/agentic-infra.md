@@ -488,11 +488,11 @@ Each phase is independently shippable. Estimated sizes are relative.
 - ~~Add session state files (`.dev-logs/sessions/`)~~
 - ~~Add SubagentStart/SubagentStop hooks~~ (pulled forward from Phase 4)
 
-### Phase 3: Task architecture (M — 1-2 branches)
-- Create `docs/tasks.json` schema and initial data (migrate from DELIVERY_PLAN.md priorities)
-- Add `/tasks` command
-- Update `/check` and `/land` to reference tasks
-- Keep DELIVERY_PLAN.md as strategic layer, add task ID cross-references
+### Phase 3: Task architecture — SHIPPED
+- ~~Create `docs/tasks.json` schema and initial data (migrate from DELIVERY_PLAN.md priorities)~~
+- ~~Add `/tasks` command~~
+- ~~Update `/check` and `/land` to reference tasks~~
+- ~~Keep DELIVERY_PLAN.md as strategic layer, add task ID cross-references~~
 
 ### Phase 4: Observability (S — 1 branch)
 - ~~Add SubagentStart/SubagentStop hooks~~ (shipped in Phase 2)

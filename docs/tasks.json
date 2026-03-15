@@ -1,0 +1,149 @@
+{
+	"$schema": "Structured task list for agentic development. Companion to DELIVERY_PLAN.md (strategic) — this file is tactical.",
+	"lifecycle": "pending → assigned → in-progress → review → done | blocked",
+	"tasks": [
+		{
+			"id": "infra-phase3-tasks",
+			"title": "Task architecture (Phase 3)",
+			"priority": 1,
+			"status": "done",
+			"assignee": null,
+			"depends": [],
+			"acceptance": [
+				"docs/tasks.json exists with initial data",
+				"/tasks command reads and manages tasks",
+				"/check references tasks on failure",
+				"/land prompts for task completion"
+			],
+			"size": "M",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md #1"
+		},
+		{
+			"id": "infra-phase4-observability",
+			"title": "Observability consolidation (Phase 4)",
+			"priority": 2,
+			"status": "pending",
+			"assignee": null,
+			"depends": ["infra-phase3-tasks"],
+			"acceptance": [
+				"/status command shows task summary, session log, handoffs, branches",
+				"MCP servers scoped to relevant agents only"
+			],
+			"size": "S",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md #1"
+		},
+		{
+			"id": "infra-phase5-agent-teams",
+			"title": "Agent Teams integration (Phase 5)",
+			"priority": 3,
+			"status": "pending",
+			"assignee": null,
+			"depends": ["infra-phase4-observability"],
+			"acceptance": [
+				"Agent Teams feature flag enabled",
+				"/vertical-slice uses Agent Teams for parallel work",
+				"TeammateIdle/TaskCompleted hooks run quality gates"
+			],
+			"size": "L",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md #1"
+		},
+		{
+			"id": "responsive-test-infra",
+			"title": "Responsive test infrastructure",
+			"priority": 4,
+			"status": "pending",
+			"assignee": "test-runner",
+			"depends": [],
+			"acceptance": [
+				"Playwright devices profiles in playwright.config.ts (iPhone 13, Pixel 8, iPad Pro)",
+				"E2e viewport matrix test: HUD readable at 0.6x and 1.5x scale",
+				"mountGame() resize handler test (debounce, registry update, safe zone recompute)"
+			],
+			"size": "M",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md #2"
+		},
+		{
+			"id": "stage-presentation-polish",
+			"title": "Stage presentation polish",
+			"priority": 10,
+			"status": "pending",
+			"assignee": "phaser-integrator",
+			"depends": [],
+			"acceptance": [
+				"Per-stage intro card system",
+				"Choreographed entry sequences",
+				"Scene pacing and transitions"
+			],
+			"size": "M",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md backlog"
+		},
+		{
+			"id": "audio-polish",
+			"title": "Audio polish — boss music crossfade, low-health warning",
+			"priority": 10,
+			"status": "pending",
+			"assignee": "phaser-integrator",
+			"depends": [],
+			"acceptance": [
+				"AudioManager supports crossfade",
+				"music-boss wired in BossManager",
+				"sfx-low-health triggers at health threshold"
+			],
+			"size": "M",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md backlog"
+		},
+		{
+			"id": "pwa-polish",
+			"title": "PWA — offline install, performance profiling",
+			"priority": 10,
+			"status": "pending",
+			"assignee": "svelte-shell",
+			"depends": [],
+			"acceptance": [
+				"@vite-pwa/sveltekit integrated",
+				"Service worker registered",
+				"Lighthouse baseline established"
+			],
+			"size": "M",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md backlog"
+		},
+		{
+			"id": "vfx-sprites",
+			"title": "VFX sprites — generated hit/death effects",
+			"priority": 10,
+			"status": "pending",
+			"assignee": "asset-pipeline",
+			"depends": [],
+			"acceptance": [
+				"sprite-telegraph instantiated in game",
+				"Hit/death effects use sprite pool instead of code-drawn tweens"
+			],
+			"size": "M",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md backlog"
+		},
+		{
+			"id": "deferred-gameplay",
+			"title": "Deferred gameplay — beam attack, weak point, VFX pools",
+			"priority": 10,
+			"status": "pending",
+			"assignee": "phaser-integrator",
+			"depends": [],
+			"acceptance": [
+				"beam attack type implemented in EnemyAttack.ts",
+				"Weak point damage multiplier functional",
+				"VFX sprite pools for effects"
+			],
+			"size": "L",
+			"parent": null,
+			"plan": "DELIVERY_PLAN.md backlog"
+		}
+	]
+}
