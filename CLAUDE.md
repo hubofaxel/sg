@@ -5,6 +5,8 @@ Arcade shooter — SvelteKit app shell + Phaser 4 RC game engine in pnpm monorep
 ## Planning
 
 Current priorities, backlog, and project status: `docs/DELIVERY_PLAN.md`
+Agentic infrastructure plan and implementation sequence: `docs/agentic-infra.md`
+Agent roster, skills, hooks, commands: `AGENTS.md` (auto-generated — run `pnpm agents:sync`)
 
 ## Boundaries
 

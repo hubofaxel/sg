@@ -15,9 +15,37 @@ Single source of planning truth for the ship-game repo.
 
 ## Near-Term Priorities
 
-### 1. Agentic dev upgrade
+### 1. Agent state and task infrastructure
 
-Harden the agentic development architecture — orchestration protocols, staleness detection, observability. Implementation plan: `docs/planning/agentic-upgrade-impl.md`.
+The agentic dev framework has orchestration protocols (HANDOFF blocks), observability (audit log hook), and staleness detection (`pnpm agents:sync`). What's missing is persistent state between agent sessions and structured task tracking. Full infrastructure plan and implementation sequence: `docs/agentic-infra.md`. Gap summary below.
+
+**Inter-agent state management:**
+Currently there is no shared state between agent sessions. Each session starts fresh, reading CLAUDE.md and memory files for context. The HANDOFF protocol requires a human to copy-paste output from one agent into the next. There is no persistent workflow state — if a multi-step command like `/vertical-slice` is interrupted, progress tracking is lost.
+
+Concrete gaps:
+- No shared task queue agents can read/write across sessions
+- No way for an agent to check "what did the last agent do?" without human relay
+- No persistent record of in-flight work beyond git branch existence
+- Audit log (`.dev-logs/agent-audit.jsonl`) is append-only, not queryable by agents
+
+**Task and roadmap tracking:**
+Planning lives in `docs/DELIVERY_PLAN.md` — a flat markdown file with prose descriptions. There are no structured task objects, no status fields, no dependency tracking, no assignment to agents.
+
+Concrete gaps:
+- No machine-readable task format (priorities are prose paragraphs)
+- No task lifecycle (created → assigned → in-progress → blocked → done)
+- No way to break a priority into subtasks with tracked completion
+- No integration between task state and `/check` or `/land` commands
+- Backlog items have no size estimates, dependencies, or acceptance criteria
+
+**Agent-to-agent messaging:**
+Communication is human-routed. Agent A outputs a HANDOFF block, human pastes it to Agent B. There is no direct channel, no event bus, no shared inbox.
+
+Concrete gaps:
+- Multi-agent workflows (e.g. `/vertical-slice`) require human to be the message bus
+- No way for diagnostician to notify phaser-integrator of a runtime error
+- No mechanism for `/check` to automatically dispatch failures to the right agent
+- HANDOFF protocol is well-defined but not machine-consumable (no file-based relay)
 
 ### 2. Responsive test infrastructure
 
@@ -35,6 +63,10 @@ Current unit tests cover HudScale (9 devices), SafeZone (8 aspect ratios), and S
 - Update this plan after each shipped priority
 
 ## Completed
+
+### Agentic dev architecture upgrade (shipped f5df028)
+
+Orchestration protocols, staleness detection, observability. Shipped: HANDOFF protocol for inter-agent delegation with failure recovery, `gen-agents-md.sh` + `pnpm agents:sync` for auto-generated AGENTS.md, PostToolUse audit log hook (`.dev-logs/agent-audit.jsonl`), context budget table, GitHub MCP server, stale `.agents/` directory cleanup. Remaining gaps (persistent state, task tracking, agent messaging) tracked as new priority #1 above.
 
 ### GitHub Pages hosting (shipped cf63924)
 
@@ -72,4 +104,4 @@ Generated hit/death effects. Currently: all effects are code-drawn tweens (flash
 - Feature work ships in small, reviewable branches
 - Stale planning docs get archived or removed, not left active
 - Runtime behavior wins over doc claims — update docs immediately after behavior changes
-- One canonical doc per concern: this plan (planning), `RESPONSIVE_GAMEPLAY.md` (mobile/responsive), `asset-contracts.md` (assets), `branding.md` (brand)
+- One canonical doc per concern: this plan (planning), `agentic-infra.md` (agent infrastructure), `RESPONSIVE_GAMEPLAY.md` (mobile/responsive), `asset-contracts.md` (assets), `branding.md` (brand)
