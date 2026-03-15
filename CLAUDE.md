@@ -42,6 +42,22 @@ Current priorities, backlog, and project status: `docs/DELIVERY_PLAN.md`
 - ALWAYS check the log after any code change that could affect rendering
 - PostToolUse hook auto-checks vite log after .svelte/.ts/.js/.css edits
 
+## Agent Handoff Protocol
+
+When an agent completes a delegated step in a multi-agent workflow (e.g. `/vertical-slice`), it outputs a structured handoff block:
+
+```
+HANDOFF
+status: done | blocked | partial
+files:
+  - path/to/changed-file.ts
+  - path/to/another.ts
+blockers: (if blocked/partial) description of what's stuck
+notes: (optional) context for the next agent
+```
+
+The orchestrating session passes this to the next agent. `pr-shipper` uses the file list for staging.
+
 ## Rules
 
 - Phaser 4 is RC — pin exact version, never auto-bump

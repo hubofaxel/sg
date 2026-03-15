@@ -36,3 +36,11 @@ Required information:
 
 API keys loaded via direnv + gopass (`ship-game/openai-api-key`, `ship-game/elevenlabs-api-key`).
 For CLI without direnv: `eval "$(direnv export bash)"` before running generate commands.
+
+## Failure recovery
+If any step fails:
+1. Do NOT proceed to the next step
+2. Run `pnpm asset:validate` to assess current state
+3. The branch preserves all work completed so far
+4. Report the failure step, error output, and branch name
+5. The human decides: fix and continue, revert, or debug

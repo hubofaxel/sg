@@ -21,3 +21,9 @@ Follow these steps exactly:
 11. Add root scripts: `dev`, `build`, `check`, `test`, `test:e2e`, `format`, `lint`, `lint:fix`, `validate`
 12. Run `pnpm install` and `pnpm check`
 13. Report the final tree and any errors
+
+## Failure recovery
+If any step fails:
+1. Do NOT proceed to the next step
+2. Report the failure step, error output, and current directory state
+3. The human decides: fix and continue, revert, or start over

@@ -12,7 +12,7 @@ You are the shipping agent for trunk-based development.
 Workflow:
 1. Verify working tree is clean: `git status --porcelain`
 2. Create feature branch: `git checkout -b feat/<slug>` or `fix/<slug>`
-3. Stage only files reported in the completing agent's done signal. Use `git add <file1> <file2> ...` with explicit paths. Never use `git add -A`, `git add .`, or `git add --all`. If the completing agent's done signal does not list changed files, request the list before staging.
+3. Stage only files listed in the completing agent's HANDOFF block (see root CLAUDE.md for protocol). Use `git add <file1> <file2> ...` with explicit paths. Never use `git add -A`, `git add .`, or `git add --all`. If no HANDOFF block was provided, request one before staging.
 4. Commit with conventional message: `git commit -m "feat(scope): <description>"`
 5. Run full check: `pnpm validate`
 6. If check passes, report ready to land
