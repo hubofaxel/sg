@@ -1,8 +1,6 @@
 import * as Phaser from 'phaser';
 import type { GameEventBus } from '../events';
 import { computeTextScaleFactor, scaleFontSize } from '../systems/HudScale';
-import type { SafeAreaInsets } from '../systems/SafeAreaInsets';
-import { toWorldInsets, ZERO_INSETS } from '../systems/SafeAreaInsets';
 import { SCENE_KEYS } from './index';
 
 /** Data passed when returning from GameScene */
@@ -38,7 +36,6 @@ export class MenuScene extends Phaser.Scene {
 	create(): void {
 		const { width, height } = this.scale;
 		const textScale = this.getTextScale();
-		const wi = this.getWorldInsets();
 
 		// Scrolling starfield — two copies for seamless vertical loop
 		const bgKey = 'bg-starfield-sparse';
@@ -178,18 +175,6 @@ export class MenuScene extends Phaser.Scene {
 
 	private getTextScale(): number {
 		return computeTextScaleFactor(this.scale.displaySize.width, this.scale.displaySize.height);
-	}
-
-	private getWorldInsets(): SafeAreaInsets {
-		const raw = this.registry.get('safeAreaInsets') as SafeAreaInsets | undefined;
-		if (!raw) return ZERO_INSETS;
-		return toWorldInsets(
-			raw,
-			this.scale.width,
-			this.scale.height,
-			this.scale.displaySize.width,
-			this.scale.displaySize.height,
-		);
 	}
 
 	private layoutForResize(): void {

@@ -23,7 +23,8 @@
 		"asset:manifest": "pnpm --filter @sg/asset-gen cli manifest",
 		"asset:validate": "pnpm --filter @sg/asset-gen cli validate",
 		"asset:placeholder": "pnpm --filter @sg/asset-gen cli placeholder --all",
-		"asset:rebuild": "pnpm asset:gen && pnpm asset:assemble && pnpm asset:manifest && pnpm asset:validate"
+		"asset:rebuild": "pnpm asset:gen && pnpm asset:assemble && pnpm asset:manifest && pnpm asset:validate",
+		"agents:sync": "bash tools/scripts/gen-agents-md.sh"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [

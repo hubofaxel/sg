@@ -18,21 +18,32 @@ Delegate to phaser-integrator agent:
 - Health/lives system
 - Score tracking
 - Death -> restart loop
+- **Output a HANDOFF block when done** (see root CLAUDE.md)
 
 ## 3. Wire app shell
-Delegate to svelte-shell agent:
+Delegate to svelte-shell agent (pass the previous HANDOFF as context):
 - `/play` route mounts GameCanvas
 - Score display (DOM overlay via Tailwind, not Phaser text)
 - Pause/resume
 - Game over -> restart or return to title
+- **Output a HANDOFF block when done**
 
 ## 4. Add tests
-Delegate to test-runner agent:
+Delegate to test-runner agent (pass the previous HANDOFF as context):
 - Schema validation tests for all content
 - Game utility unit tests (collision math, score calculation)
 - E2E: boot -> start -> play -> die -> restart
+- **Output a HANDOFF block when done**
 
 ## 5. Quality gate
 - Run `pnpm validate`
 - Fix any failures
 - Report final state
+
+## Failure recovery
+If any step fails:
+1. Do NOT proceed to the next step
+2. Run `pnpm validate` to assess current state
+3. The branch preserves all work completed so far
+4. Report the failure step, error output, and branch name
+5. The human decides: fix and continue, revert, or debug

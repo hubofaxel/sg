@@ -15,20 +15,9 @@ Single source of planning truth for the ship-game repo.
 
 ## Near-Term Priorities
 
-### 1. GitHub Pages hosting
+### 1. Agentic dev upgrade
 
-Deploy the game to GitHub Pages as a static site.
-
-**Required changes:**
-- Switch `@sveltejs/adapter-auto` to `@sveltejs/adapter-static`
-- Add `kit.paths.base` config (empty for org repo, `/sg` for project repo)
-- Make Phaser asset paths base-aware — PreloadScene hardcodes `/assets/` prefix; needs to accept base path via `mountGame()` options
-- Update `app.html` meta/icon paths and `manifest.webmanifest` for base path
-- Add `404.html` fallback for SPA client-side routing
-- Add GitHub Actions deploy job (build → upload → deploy-pages)
-- Test with `pnpm build && pnpm preview`
-
-**No blockers:** App has zero server-side dependencies — purely static.
+Harden the agentic development architecture — orchestration protocols, staleness detection, observability. Implementation plan: `docs/planning/agentic-upgrade-impl.md`.
 
 ### 2. Responsive test infrastructure
 
@@ -44,6 +33,12 @@ Current unit tests cover HudScale (9 devices), SafeZone (8 aspect ratios), and S
 - Keep `pnpm validate` green on trunk
 - Keep CLAUDE.md files and agentic config accurate after changes
 - Update this plan after each shipped priority
+
+## Completed
+
+### GitHub Pages hosting (shipped cf63924)
+
+Live at https://hubofaxel.github.io/sg/. `@sveltejs/adapter-static`, `BASE_PATH` from CI, `404.html` SPA fallback, auto-deploy on push to main (`.github/workflows/deploy.yml`).
 
 ## Backlog
 
