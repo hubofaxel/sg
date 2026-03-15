@@ -37,7 +37,8 @@
 			"Bash(bash tools/scripts/*)",
 			"Bash(chmod *)",
 			"mcp__chrome-devtools__*",
-			"mcp__playwright__*"
+			"mcp__playwright__*",
+			"mcp__github__*"
 		],
 		"deny": [
 			"Bash(pnpm publish *)"
